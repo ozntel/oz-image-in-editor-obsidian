@@ -94,3 +94,9 @@ Plugin was tested on:
 
 - [ ] For relative path (Option 2), users need to use a folder from the main project directory due to the fact that relative path part ('../../') is ignored at the moment. There is going to be a new update for viewing the 'relative path' from any source directory.
 - [ ] For shortest path (Option 3), user needs to keep all images in the main vault directory at the moment. There is going to be a new update for checking the user settings for the custom path of attachment folder.
+
+## Support
+
+<a href="https://www.buymeacoffee.com/ozante">
+    <img src='/images/Buy-me-coffee.svg' width="30%" height="auto" />
+</a>
