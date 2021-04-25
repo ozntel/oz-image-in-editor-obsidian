@@ -18,23 +18,6 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
-/*! *****************************************************************************
-OZAN'S PLUGIN USAGE: 
-
-Users needs to use one of settings below to be able to view the images:
-
-    1. New Link Format -> Relative path to file
-    2. New Link Format -> Absolute path in vault
-    3. New Link Format -> Shortest Path Possible & Default location for new attachments -> Vault Folder
-
-Relative and Absolute Path will give you possibility to add "alt" text for the image. You can decide about the size of the image using following 
-alt texts:
-
-    1. #small
-    2. #x-small
-    3. #xx-small
-***************************************************************************** */
-
 class OzanPlugin extends obsidian.Plugin {
     // Initial Load of Plugin
     onload() {
