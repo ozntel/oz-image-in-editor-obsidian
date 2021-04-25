@@ -48,10 +48,10 @@ class OzanPlugin extends obsidian.Plugin {
 async function check_lines(cm, BASE_PATH){
 
     // Regex for [[ ]] format
-    const image_line_regex_1 = /!\[\[.*(jpe?g|png)\]\]/
+    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif)\]\]/
 
     // Regex for ![ ]( ) format
-    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png)\)/
+    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif)\)/
 
     // Last Used Line Number in Code Mirror
     var lastLine = cm.lastLine();
@@ -63,7 +63,11 @@ async function check_lines(cm, BASE_PATH){
         // Current Line Comparison with Regex
         const match_1 = line.text.match(image_line_regex_1);
         const match_2 = line.text.match(image_line_regex_2);
-        
+
+        // Clear the widget if link was removed
+        var line_image_widget = line.widgets ? line.widgets.filter(wid => wid.className === 'oz-image-widget') : false;
+        if(line_image_widget && (!match_1 || !match_2)) line_image_widget[0].clear();
+
         // If any of regex matches, it will add image widget
         if(match_1 || match_2){
 
@@ -89,7 +93,7 @@ async function check_lines(cm, BASE_PATH){
                 alt = 'image';
             } else if(match_2){
                 // Regex for ![ ]( ) format
-                var file_name_regex = /(?<=\().*(jpe?g|png)/;
+                var file_name_regex = /(?<=\().*(jpe?g|png|gif)/;
                 var alt_regex = /(?<=\[)(^$|.*)(?=\])/
                 filename = match_2[0].match(file_name_regex)[0];
                 var first_char = getFirstCharForRelativePath(filename);
