@@ -101,19 +101,15 @@ async function check_lines(cm, BASE_PATH){
                 // Regex for [[ ]] format
                 var lastChar = match_1[0].length - 2;
                 filename = match_1[0].substring(3, lastChar);
+                var first_char = getFirstCharForRelativePath(filename);
+                filename = filename.substring(first_char);
                 alt = 'image';
             } else if(match_2){
                 // Regex for ![ ]( ) format
                 var file_name_regex = /(?<=\().*(jpe?g|png)/;
                 var alt_regex = /(?<=\[)(^$|.*)(?=\])/
                 filename = match_2[0].match(file_name_regex)[0];
-                var first_char = 0;
-                for(let i=0; i<filename.length; i++){
-                    if(filename.charAt(i).match(/[a-z]/i)){
-                        first_char = i;
-                        break;
-                    }
-                }
+                var first_char = getFirstCharForRelativePath(filename);
                 filename = filename.substring(first_char);
                 alt = match_2[0].match(alt_regex)[0];
             }
@@ -138,6 +134,14 @@ async function check_lines(cm, BASE_PATH){
             img.onload = () => {cm.scrollTo(currentScroll.left, currentScroll.top)}
             
             cm.addLineWidget(i, img, { className: 'oz-image-widget'});
+        }
+    }
+}
+
+function getFirstCharForRelativePath(filename){
+    for(let i=0; i<filename.length; i++){
+        if(filename.charAt(i).match(/[a-z]/i)){
+            return i;
         }
     }
 }

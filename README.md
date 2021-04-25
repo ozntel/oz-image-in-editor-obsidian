@@ -28,12 +28,22 @@ Users needs to use one of settings below to be able to view the images properly 
 
 ![Relative Path Settings](images/Relative_Path_Settings.png)
 
-2 - *the attachment folder needs to be selected under main vault directory as a separate folder:*
+2 - the attachment folder needs to be selected under main vault directory as a separate folder:*
 
 - My Vault
     - **Attachments**
         - Pasted Image 2.png
         - Pasted Image 3.png
+    - School Notes
+        - Lectures.md
+    - Programming notes
+        - React.md
+
+Or *Default Location for new attachments should be "Vault Folder"*
+
+- My Vault
+    - **Pasted Image 2.png**
+    - **Pasted Image 3.png**
     - School Notes
         - Lectures.md
     - Programming notes
