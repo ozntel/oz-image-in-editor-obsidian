@@ -2,74 +2,39 @@
 
 ## Brief Explanation
 
-Because I always prefer seeing the images directly under the link when I write my notes in Markdown, I developed a plugin for myself to view images directly under the Editor view. 
+Because I always prefer seeing the images directly under the link when I paste or drag images into my Markdown notes, I developed a plugin for myself to view images directly under the Editor view.
 
 ## Requirement & Samples
 
-Users needs to use one of settings below to be able to view the images properly in the Editor view. It will ensure that plugin is able to generate the image source link correctly.
+- Users needs to use one of settings below to be able to view the images properly in the Editor view. It will ensure that plugin is able to generate the image source link correctly:
 
-### 1 - First Option (Absolute Path)
+### 1 - First Option (Specified Folder)
 
-#### Requirement
+*Files & Links --> Attachment Folder --> In the folder specified below*
 
-*New Link Format -> Absolute path in vault*
+<img src="images/Specified_Folder.png" width="80%"/>
 
-![Absolute Path Settings](images/Absolute_Path_Settings.png)
+You can set the attachment folder using the right click under tree view:
 
-#### View
+<img src="images/Attachment_Folder_Set.png" width="40%"/>
 
-![Absolute Path View](images/Absolute_Path_View.png)
+### 2 - Second Option (Vault Folder)
 
-###  2 - Second Option (Relative Path)
+*Files & Links --> Attachment Folder --> Vault*
 
-#### Requirements
+<img src="images/Default_Location_Vault.png" width="80%"/>
 
-1 - *New Link Format -> Relative path to file*
+## Sample Views
 
-![Relative Path Settings](images/Relative_Path_Settings.png)
+- *Markdown Format*
 
-2 - the attachment folder needs to be selected under main vault directory as a separate folder:*
+<img src="images/Absolute_Path_View.png" width="70%"/>
 
-- My Vault
-    - **Attachments**
-        - Pasted Image 2.png
-        - Pasted Image 3.png
-    - School Notes
-        - Lectures.md
-    - Programming notes
-        - React.md
+<img src="images/Relative_Path_View.png" width="70%"/>
 
-Or *Default Location for new attachments should be "Vault Folder"*
+- *Wikilinks format*
 
-- My Vault
-    - **Pasted Image 2.png**
-    - **Pasted Image 3.png**
-    - School Notes
-        - Lectures.md
-    - Programming notes
-        - React.md
-
-![Relative Path Settings](images/Attachment_Folder_Set.png)
-
-#### View
-
-![Relative Path View](images/Relative_Path_View.png)
-
-### 3- Third Option: 
-
-#### Requirements
-
-1 - *New Link Format -> Shortest Path Possible* 
-
-![Shortest Path Settings](/images/Shortest_Path_Settings.png)
-
-2 - *Default location for new attachments -> Vault Folder*
-
-![Default Location Vault](/images/Default_Location_Vault.png)
-
-#### View
-
-![Shortest Path View](/images/Shortest_Path_Possible_View.png)
+<img src="images/Shortest_Path_Possible_View.png" width="70%"/>
 
 ## Image View Size
 
@@ -80,7 +45,9 @@ alt texts:
 2. #x-small
 3. #xx-small
 
-If you have any issue or you have any suggestion, please feel free to reach me out directly using <me@ozan.pl>
+## Contact
+
+If you have any issue or you have any suggestion, please feel free to reach me out directly using contact page of my website [ozan.pl/contact/](https://www.ozan.pl/contact/) or directly to <me@ozan.pl>.
 
 ## Checklist
 
@@ -90,13 +57,13 @@ Plugin was tested on:
 - [x] macOS
 - [ ] Linux
 
-## Planned Corrections
+## Planned Updates
 
-- [ ] For relative path (Option 2), users need to use a folder from the main project directory due to the fact that relative path part ('../../') is ignored at the moment. There is going to be a new update for viewing the 'relative path' from any source directory.
-- [ ] For shortest path (Option 3), user needs to keep all images in the main vault directory at the moment. There is going to be a new update for checking the user settings for the custom path of attachment folder.
+- [ ] Any attachment folder as long as the absolute path is selected
+- [ ] Mobile Support
 
 ## Support
 
 <a href="https://www.buymeacoffee.com/ozante">
-    <img src='/images/Buy-me-coffee.svg' width="30%" height="auto" />
+    <img src='/images/Buy-me-coffee.svg' width="25%" height="auto" />
 </a>

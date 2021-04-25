@@ -26,15 +26,19 @@ class OzanPlugin extends obsidian.Plugin {
         // Register Code Mirror
         this.registerCodeMirror( (cm) => {
 
-            // Base Path of Vault Folder
+            // Base Path of Vault Folder and Attachment Path
             const BASE_PATH = this.app.vault.adapter.basePath;
+            const ATTACHMENT_PATH = this.app.vault.config.attachmentFolderPath;
+
+            // Full Path of Attachment Folder
+            const FINAL_ATTACHMENT_PATH = path.join(BASE_PATH, ATTACHMENT_PATH);
 
             // Check Lines during initial Load
-            check_lines(cm, BASE_PATH);
+            check_lines(cm, FINAL_ATTACHMENT_PATH);
             
             // Check Lines after each change
             cm.on("change", () => {
-                check_lines(cm, BASE_PATH)
+                check_lines(cm, FINAL_ATTACHMENT_PATH)
             });
         })
     }
@@ -45,7 +49,7 @@ class OzanPlugin extends obsidian.Plugin {
     }
 }
 
-function check_lines(cm, BASE_PATH){
+function check_lines(cm, FINAL_ATTACHMENT_PATH){
 
     // Regex for [[ ]] format
     const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif)\]\]/
@@ -89,7 +93,7 @@ function check_lines(cm, BASE_PATH){
                 // Regex for [[ ]] format
                 var lastChar = match_1[0].length - 2;
                 filename = match_1[0].substring(3, lastChar);
-                var first_char = getFirstCharForRelativePath(filename);
+                var first_char = getFirstIndexOfImageFileName(filename);
                 filename = filename.substring(first_char);
                 alt = 'image';
             } else if(match_2){
@@ -97,7 +101,7 @@ function check_lines(cm, BASE_PATH){
                 var file_name_regex = /(?<=\().*(jpe?g|png|gif)/;
                 var alt_regex = /(?<=\[)(^$|.*)(?=\])/
                 filename = match_2[0].match(file_name_regex)[0];
-                var first_char = getFirstCharForRelativePath(filename);
+                var first_char = getFirstIndexOfImageFileName(filename);
                 filename = filename.substring(first_char);
                 alt = match_2[0].match(alt_regex)[0];
             }
@@ -106,12 +110,10 @@ function check_lines(cm, BASE_PATH){
             const img = document.createElement('img');
 
             // Prepare the src for the Image
-            const filename_is_a_link = (filename) => filename.startsWith('http');
-
             if(filename_is_a_link(filename)){
                 img.src = filename;
             } else {
-                var img_path = path.join(BASE_PATH, filename)
+                var img_path = path.join(FINAL_ATTACHMENT_PATH, filename)
                 if(img_path.charAt(0) === '/'){
                     // For Mac
                     img.src = 'app://local' + img_path;
@@ -132,12 +134,21 @@ function check_lines(cm, BASE_PATH){
     }
 }
 
-function getFirstCharForRelativePath(filename){
-    for(let i=0; i<filename.length; i++){
-        if(filename.charAt(i).match(/\p{L}/u)){
-            return i;
-        }
+// Http, Https Link Check
+const filename_is_a_link = (filename) => filename.startsWith('http');
+
+// Index of first char of original image name 
+function getFirstIndexOfImageFileName(filename){
+    if(filename_is_a_link(filename)){
+        return 0;
     }
+    if(filename.includes('\\')){
+        return filename.lastIndexOf('\\') + 1;
+    }
+    if(filename.includes('/')){
+        return filename.lastIndexOf('/') + 1;
+    }
+    return 0;
 }
 
 module.exports = OzanPlugin;
