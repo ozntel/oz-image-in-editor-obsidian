@@ -140,7 +140,7 @@ async function check_lines(cm, BASE_PATH){
 
 function getFirstCharForRelativePath(filename){
     for(let i=0; i<filename.length; i++){
-        if(filename.charAt(i).match(/[a-z]/i)){
+        if(filename.charAt(i).match(/\p{L}/u)){
             return i;
         }
     }
