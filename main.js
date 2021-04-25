@@ -19,6 +19,7 @@ PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
 class OzanPlugin extends obsidian.Plugin {
+
     // Initial Load of Plugin
     onload() {
 
@@ -44,8 +45,7 @@ class OzanPlugin extends obsidian.Plugin {
     }
 }
 
-
-async function check_lines(cm, BASE_PATH){
+function check_lines(cm, BASE_PATH){
 
     // Regex for [[ ]] format
     const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif)\]\]/
@@ -57,6 +57,7 @@ async function check_lines(cm, BASE_PATH){
     var lastLine = cm.lastLine();
  
     for(let i=0; i <= lastLine; i++){
+        
         // Get the current Line
         const line = cm.lineInfo(i);
 
@@ -105,7 +106,7 @@ async function check_lines(cm, BASE_PATH){
             const img = document.createElement('img');
 
             // Prepare the src for the Image
-            const filename_is_a_link = (filename) => filename.startsWith('http') || filename.startsWith('https');
+            const filename_is_a_link = (filename) => filename.startsWith('http');
 
             if(filename_is_a_link(filename)){
                 img.src = filename;
