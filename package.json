@@ -1,7 +1,7 @@
 {
   "name": "oz-image-plugin",
-  "version": "1.0.1",
-  "description": "You can view images inside of the Editor as soon as you paste.",
+  "version": "1.0.0",
+  "description": "You can view images inside of the Editor as soon as you paste without a necessity to preview the note.",
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",
