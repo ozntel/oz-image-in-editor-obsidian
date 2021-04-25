@@ -1,0 +1,14 @@
+img[alt$='#small'] {
+  max-width: 75% !important;
+  min-width: 200pt !important;
+}
+
+img[alt$='#x-small'] {
+  max-width: 50% !important;
+  min-width: 100pt !important;
+}
+
+img[alt$='#xx-small'] {
+  max-width: 25% !important;
+  min-width: 50pt !important;
+}
