@@ -53,8 +53,8 @@ async function check_lines(cm, BASE_PATH){
     // Regex for ![ ]( ) format
     const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png)\)/
 
+    // Last Used Line Number in Code Mirror
     var lastLine = cm.lastLine();
-    const currentScroll = cm.getScrollInfo();
  
     for(let i=0; i <= lastLine; i++){
         // Get the current Line
@@ -97,26 +97,32 @@ async function check_lines(cm, BASE_PATH){
                 alt = match_2[0].match(alt_regex)[0];
             }
            
-            var img_path = path.join(BASE_PATH, filename)
-
             // Create Image
             const img = document.createElement('img');
 
-            if(img_path.charAt(0) === '/'){
-                // For Mac
-                img.src = 'app://local' + img_path;
+            // Prepare the src for the Image
+            const filename_is_a_link = (filename) => filename.startsWith('http') || filename.startsWith('https');
+
+            if(filename_is_a_link(filename)){
+                img.src = filename;
             } else {
-                // For Windows
-                img.src = 'app:\\\\local\\' + img_path
+                var img_path = path.join(BASE_PATH, filename)
+                if(img_path.charAt(0) === '/'){
+                    // For Mac
+                    img.src = 'app://local' + img_path;
+                } else {
+                    // For Windows
+                    img.src = 'app:\\\\local\\' + img_path
+                }
             }
 
+            // Image Properties
             img.alt = alt;
             img.style.maxWidth = '100%';
             img.style.height = 'auto';
             
-            img.onload = () => {cm.scrollTo(currentScroll.left, currentScroll.top)}
-            
-            cm.addLineWidget(i, img, { className: 'oz-image-widget'});
+            // Add Image widget under the Image Markdown
+            cm.addLineWidget(i, img, {className: 'oz-image-widget'});
         }
     }
 }
