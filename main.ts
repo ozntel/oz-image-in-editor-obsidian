@@ -1,4 +1,4 @@
-import { Plugin, Notice, debounce, normalizePath, Vault } from 'obsidian';
+import { Plugin, Notice, debounce } from 'obsidian';
 
 export default class OzanImagePlugin extends Plugin{
 
