@@ -10,7 +10,7 @@ export default class OzanImagePlugin extends Plugin{
             this.check_lines(cm);
             
             // Check Lines after each change
-            cm.on("change", () => debounce(this.check_lines(cm), 1000, false));
+            cm.on("change", debounce(() => this.check_lines(cm), 500, false))
 
         })
     }
