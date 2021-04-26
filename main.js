@@ -109,14 +109,8 @@ class OzanPlugin extends obsidian.Plugin {
                 if(this.filename_is_a_link(filename)){
                     img.src = filename;
                 } else {
-                    var img_path = obsidian.normalizePath(BASE_PATH + '/' + ATTACHMENT_PATH + '/' + decodeURIComponent(filename))
-                    if(img_path.charAt(0) === '/'){
-                        // For Mac
-                        img.src = 'app://local' + img_path;
-                    } else {
-                        // For Windows
-                        img.src = 'app:\\\\local\\' + img_path
-                    }
+                    var img_path = obsidian.normalizePath(BASE_PATH + '/' + ATTACHMENT_PATH + '/' + decodeURIComponent(filename));
+                    img.src = 'app://local/' + img_path;
                 }
     
                 // Image Properties
