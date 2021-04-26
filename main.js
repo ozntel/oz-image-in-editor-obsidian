@@ -1,7 +1,6 @@
 'use strict';
 
 var obsidian = require('obsidian');
-const path = require('path');
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -30,7 +29,9 @@ class OzanPlugin extends obsidian.Plugin {
             this.check_lines(cm);
             
             // Check Lines after each change
-            cm.on("change", () => { this.check_lines(cm) });
+            cm.on("change", () => { 
+                this.registerInterval(setInterval(this.check_lines(cm), 1000));
+            });
             
         })
     }
@@ -45,9 +46,6 @@ class OzanPlugin extends obsidian.Plugin {
         // Base Path of Vault Folder and Attachment Path
         const BASE_PATH = this.app.vault.adapter.basePath;
         const ATTACHMENT_PATH = this.app.vault.config.attachmentFolderPath;
-
-        // Full Path of Attachment Folder
-        const FINAL_ATTACHMENT_PATH = path.join(BASE_PATH, ATTACHMENT_PATH);
 
         // Regex for [[ ]] format
         const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif)\]\]/
@@ -111,7 +109,7 @@ class OzanPlugin extends obsidian.Plugin {
                 if(this.filename_is_a_link(filename)){
                     img.src = filename;
                 } else {
-                    var img_path = path.join(FINAL_ATTACHMENT_PATH, filename)
+                    var img_path = obsidian.normalizePath(BASE_PATH + '/' + ATTACHMENT_PATH + '/' + decodeURIComponent(filename))
                     if(img_path.charAt(0) === '/'){
                         // For Mac
                         img.src = 'app://local' + img_path;
