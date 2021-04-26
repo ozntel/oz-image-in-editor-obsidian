@@ -26,20 +26,12 @@ class OzanPlugin extends obsidian.Plugin {
         // Register Code Mirror
         this.registerCodeMirror( (cm) => {
 
-            // Base Path of Vault Folder and Attachment Path
-            const BASE_PATH = this.app.vault.adapter.basePath;
-            const ATTACHMENT_PATH = this.app.vault.config.attachmentFolderPath;
-
-            // Full Path of Attachment Folder
-            const FINAL_ATTACHMENT_PATH = path.join(BASE_PATH, ATTACHMENT_PATH);
-
             // Check Lines during initial Load
-            check_lines(cm, FINAL_ATTACHMENT_PATH);
+            this.check_lines(cm);
             
             // Check Lines after each change
-            cm.on("change", () => {
-                check_lines(cm, FINAL_ATTACHMENT_PATH)
-            });
+            cm.on("change", () => { this.check_lines(cm) });
+            
         })
     }
 
@@ -47,108 +39,115 @@ class OzanPlugin extends obsidian.Plugin {
     onunload() {
         new obsidian.Notice('Ozan\'s Image in Editor Plugin  is unloaded');
     }
-}
 
-function check_lines(cm, FINAL_ATTACHMENT_PATH){
+    check_lines(cm){
 
-    // Regex for [[ ]] format
-    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif)\]\]/
+        // Base Path of Vault Folder and Attachment Path
+        const BASE_PATH = this.app.vault.adapter.basePath;
+        const ATTACHMENT_PATH = this.app.vault.config.attachmentFolderPath;
 
-    // Regex for ![ ]( ) format
-    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif)\)/
+        // Full Path of Attachment Folder
+        const FINAL_ATTACHMENT_PATH = path.join(BASE_PATH, ATTACHMENT_PATH);
 
-    // Last Used Line Number in Code Mirror
-    var lastLine = cm.lastLine();
- 
-    for(let i=0; i <= lastLine; i++){
-        
-        // Get the current Line
-        const line = cm.lineInfo(i);
-
-        // Current Line Comparison with Regex
-        const match_1 = line.text.match(image_line_regex_1);
-        const match_2 = line.text.match(image_line_regex_2);
-
-        // Clear the widget if link was removed
-        var line_image_widget = line.widgets ? line.widgets.filter(wid => wid.className === 'oz-image-widget') : false;
-        if(line_image_widget && (!match_1 || !match_2)) line_image_widget[0].clear();
-
-        // If any of regex matches, it will add image widget
-        if(match_1 || match_2){
-
-            // Clear the image widgets if exists
-            if (line.widgets){
-                for(const wid of line.widgets){
-                    if (wid.className === 'oz-image-widget'){
-                        wid.clear()
+        // Regex for [[ ]] format
+        const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif)\]\]/
+    
+        // Regex for ![ ]( ) format
+        const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif)\)/
+    
+        // Last Used Line Number in Code Mirror
+        var lastLine = cm.lastLine();
+     
+        for(let i=0; i <= lastLine; i++){
+            
+            // Get the current Line
+            const line = cm.lineInfo(i);
+    
+            // Current Line Comparison with Regex
+            const match_1 = line.text.match(image_line_regex_1);
+            const match_2 = line.text.match(image_line_regex_2);
+    
+            // Clear the widget if link was removed
+            var line_image_widget = line.widgets ? line.widgets.filter(wid => wid.className === 'oz-image-widget') : false;
+            if(line_image_widget && (!match_1 || !match_2)) line_image_widget[0].clear();
+    
+            // If any of regex matches, it will add image widget
+            if(match_1 || match_2){
+    
+                // Clear the image widgets if exists
+                if (line.widgets){
+                    for(const wid of line.widgets){
+                        if (wid.className === 'oz-image-widget'){
+                            wid.clear()
+                        }
                     }
                 }
-            }
-
-            // Get the file name and alt text depending on format
-            var filename = '';
-            var alt = '';
-
-            if(match_1){
-                // Regex for [[ ]] format
-                var lastChar = match_1[0].length - 2;
-                filename = match_1[0].substring(3, lastChar);
-                var first_char = getFirstIndexOfImageFileName(filename);
-                filename = filename.substring(first_char);
-                alt = 'image';
-            } else if(match_2){
-                // Regex for ![ ]( ) format
-                var file_name_regex = /(?<=\().*(jpe?g|png|gif)/;
-                var alt_regex = /(?<=\[)(^$|.*)(?=\])/
-                filename = match_2[0].match(file_name_regex)[0];
-                var first_char = getFirstIndexOfImageFileName(filename);
-                filename = filename.substring(first_char);
-                alt = match_2[0].match(alt_regex)[0];
-            }
-           
-            // Create Image
-            const img = document.createElement('img');
-
-            // Prepare the src for the Image
-            if(filename_is_a_link(filename)){
-                img.src = filename;
-            } else {
-                var img_path = path.join(FINAL_ATTACHMENT_PATH, filename)
-                if(img_path.charAt(0) === '/'){
-                    // For Mac
-                    img.src = 'app://local' + img_path;
-                } else {
-                    // For Windows
-                    img.src = 'app:\\\\local\\' + img_path
+    
+                // Get the file name and alt text depending on format
+                var filename = '';
+                var alt = '';
+    
+                if(match_1){
+                    // Regex for [[ ]] format
+                    var lastChar = match_1[0].length - 2;
+                    filename = match_1[0].substring(3, lastChar);
+                    var first_char = this.getFirstIndexOfImageFileName(filename);
+                    filename = filename.substring(first_char);
+                    alt = 'image';
+                } else if(match_2){
+                    // Regex for ![ ]( ) format
+                    var file_name_regex = /(?<=\().*(jpe?g|png|gif)/;
+                    var alt_regex = /(?<=\[)(^$|.*)(?=\])/
+                    filename = match_2[0].match(file_name_regex)[0];
+                    var first_char = this.getFirstIndexOfImageFileName(filename);
+                    filename = filename.substring(first_char);
+                    alt = match_2[0].match(alt_regex)[0];
                 }
+               
+                // Create Image
+                const img = document.createElement('img');
+    
+                // Prepare the src for the Image
+                if(this.filename_is_a_link(filename)){
+                    img.src = filename;
+                } else {
+                    var img_path = path.join(FINAL_ATTACHMENT_PATH, filename)
+                    if(img_path.charAt(0) === '/'){
+                        // For Mac
+                        img.src = 'app://local' + img_path;
+                    } else {
+                        // For Windows
+                        img.src = 'app:\\\\local\\' + img_path
+                    }
+                }
+    
+                // Image Properties
+                img.alt = alt;
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                
+                // Add Image widget under the Image Markdown
+                cm.addLineWidget(i, img, {className: 'oz-image-widget'});
             }
-
-            // Image Properties
-            img.alt = alt;
-            img.style.maxWidth = '100%';
-            img.style.height = 'auto';
-            
-            // Add Image widget under the Image Markdown
-            cm.addLineWidget(i, img, {className: 'oz-image-widget'});
         }
     }
-}
 
-// Http, Https Link Check
-const filename_is_a_link = (filename) => filename.startsWith('http');
+    // Http, Https Link Check
+    filename_is_a_link = (filename) => filename.startsWith('http');
 
-// Index of first char of original image name 
-function getFirstIndexOfImageFileName(filename){
-    if(filename_is_a_link(filename)){
+    // Index of first char of original image name 
+    getFirstIndexOfImageFileName = (filename) => {
+        if(this.filename_is_a_link(filename)){
+            return 0;
+        }
+        if(filename.includes('\\')){
+            return filename.lastIndexOf('\\') + 1;
+        }
+        if(filename.includes('/')){
+            return filename.lastIndexOf('/') + 1;
+        }
         return 0;
     }
-    if(filename.includes('\\')){
-        return filename.lastIndexOf('\\') + 1;
-    }
-    if(filename.includes('/')){
-        return filename.lastIndexOf('/') + 1;
-    }
-    return 0;
 }
 
 module.exports = OzanPlugin;
