@@ -30,7 +30,7 @@ class OzanPlugin extends obsidian.Plugin {
             
             // Check Lines after each change
             cm.on("change", () => { 
-                this.registerInterval(setInterval(this.check_lines(cm), 1000));
+                obsidian.debounce(this.check_lines(cm), 1000, false);
             });
             
         })
