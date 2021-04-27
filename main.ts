@@ -33,7 +33,7 @@ export default class OzanImagePlugin extends Plugin{
     onunload(){
 
         this.app.workspace.iterateCodeMirrors( (cm) => {
-            cm.off("changes", this.codemirrorLineChanges); // IT DOESN'T WORK
+            cm.off("changes", this.codemirrorLineChanges);
             cm.off("focus", this.codemirrorScreenChange);
             this.clearWidges(cm);
         });
