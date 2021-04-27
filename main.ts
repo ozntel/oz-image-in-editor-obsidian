@@ -5,41 +5,32 @@ export default class OzanImagePlugin extends Plugin{
     onload(){
         // Register Code Mirror
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
-
             // Check Lines during initial Load
             this.check_lines(cm);
             // Check Lines after each change
             cm.on("changes", this.codemirrorLineChanges);
             // Check Lines once CodeMirror is fired
-            cm.on("focus", this.codemirrorScreenChange);
-
+            cm.on("focus", this.codemirrorScreenChange);  
         })
     }
 
     codemirrorLineChanges = (cm: any, changes: any) => {
-
         changes.some( (change: any) => {
             this.check_line(cm, change.to.line);
         })
-
     }
 
     codemirrorScreenChange = (cm: CodeMirror.Editor) => {
-
         return this.check_lines(cm);
-
     }
 
     onunload(){
-
         this.app.workspace.iterateCodeMirrors( (cm) => {
             cm.off("changes", this.codemirrorLineChanges);
             cm.off("focus", this.codemirrorScreenChange);
             this.clearWidges(cm);
         });
-
         new Notice('Image in Editor Plugin is unloaded');
-
     }
 
     // Check Single Line
@@ -114,14 +105,11 @@ export default class OzanImagePlugin extends Plugin{
 
     // Check All Lines Function
     check_lines: any = (cm: CodeMirror.Editor) => {
-
         // Last Used Line Number in Code Mirror
         var lastLine = cm.lastLine();
-
         for(let i=0; i <= lastLine; i++){
             this.check_line(cm, i);
         }        
-
     }
 
     // Http, Https Link Check
@@ -137,7 +125,6 @@ export default class OzanImagePlugin extends Plugin{
         /* linkType 1: [[myimage.jpg|#x-small]]
            linkType2: ![#x-small](myimage.jpg) 
         returns { fileName: '', altText: '' }   */
-
         var file_name_regex;
         var alt_regex;
 
@@ -159,14 +146,10 @@ export default class OzanImagePlugin extends Plugin{
 
     // Remove Widgets in CodeMirror Editor
     clearWidges = (cm: CodeMirror.Editor) => {
-
         var lastLine = cm.lastLine();
-
         for(let i=0; i <= lastLine; i++){
-
             // Get the current Line
             const line = cm.lineInfo(i);
-
             // Clear the image widgets if exists
             if (line.widgets){
                 for(const wid of line.widgets){
