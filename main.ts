@@ -1,16 +1,18 @@
-import { Plugin, Notice, MarkdownView } from 'obsidian';
+import { Plugin, Notice, MarkdownView, TFile } from 'obsidian';
 
 export default class OzanImagePlugin extends Plugin{
 
     onload(){
-        // Register Code Mirror
+        // Each file open will fire
+        this.registerEvent(
+            this.app.workspace.on("file-open", this.handleFile)
+        )
+
+        // Register event for each change
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
-            // Check Lines during initial Load
-            this.check_lines(cm);
-            // Check Lines after each change
             cm.on("changes", this.codemirrorLineChanges);
-            // Check Lines once CodeMirror is fired
-            cm.on("focus", this.codemirrorScreenChange);  
+            // Check the active CodeMirror during load
+            this.check_lines(cm);
         })
     }
 
@@ -26,8 +28,8 @@ export default class OzanImagePlugin extends Plugin{
 
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
+            this.app.workspace.off("file-open", this.handleFile);
             cm.off("changes", this.codemirrorLineChanges);
-            cm.off("focus", this.codemirrorScreenChange);
             this.clearWidges(cm);
         });
         new Notice('Image in Editor Plugin is unloaded');
@@ -162,4 +164,14 @@ export default class OzanImagePlugin extends Plugin{
         }
     }
 
+    handleFile = (file: TFile): void => {
+        // If the file fired is a markdown file
+        if(file.extension === 'md'){
+            // Get the open CodeMirror to check the lines
+            this.app.workspace.iterateCodeMirrors( (cm) => {
+                // TODO: Check if cm belongs to File opened to check only the fired one !!!
+                this.check_lines(cm);
+            })
+        }  
+    }
 }
