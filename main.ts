@@ -11,7 +11,10 @@ export default class OzanImagePlugin extends Plugin{
         // Register event for each change
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
             cm.on("changes", this.codemirrorLineChanges);
-            // Check the active CodeMirror during load
+        })
+
+        // Check the active CodeMirror during load
+        this.app.workspace.iterateCodeMirrors( (cm) => {
             this.check_lines(cm);
         })
     }
@@ -90,6 +93,7 @@ export default class OzanImagePlugin extends Plugin{
             if(this.filename_is_a_link(filename)){
                 img.src = filename;
             } else {
+                // TODO: this.getActiveNoteFile() to be replaced: if 2-3 notes are open during load, only the active one loads images
                 var image = this.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), this.getActiveNoteFile().path);
                 if(image != null) img.src =  this.app.vault.getResourcePath(image); 
                 // NOTE: doesn't blink with : 'app://local/Users/ozan/Desktop/Debug/' + image.path
@@ -164,13 +168,22 @@ export default class OzanImagePlugin extends Plugin{
         }
     }
 
+    // Get Active Editor
+    getEditor = () => {
+        return this.app.workspace.getActiveViewOfType(MarkdownView)?.editor
+    }
+
+    // Handle file after file-open event
     handleFile = (file: TFile): void => {
         // If the file fired is a markdown file
         if(file.extension === 'md'){
             // Get the open CodeMirror to check the lines
             this.app.workspace.iterateCodeMirrors( (cm) => {
-                // TODO: Check if cm belongs to File opened to check only the fired one !!!
-                this.check_lines(cm);
+                // TODO: There is no Public API to read cm from Editor
+                var editor = this.getEditor();
+                if(editor.cm == cm){
+                    this.check_lines(cm);
+                }
             })
         }  
     }
