@@ -92,7 +92,8 @@ export default class OzanImagePlugin extends Plugin{
                 if(targetFile != null){
                     sourcePath = targetFile.path;
                 }else{
-                    sourcePath = this.app.workspace ? getActiveNoteFile(this.app.workspace).path : '';
+                    let activeNoteFile = getActiveNoteFile(this.app.workspace);
+                    sourcePath = activeNoteFile ? activeNoteFile.path : '';
                 }
                 var image = this.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
                 if(image != null) img.src = getPathOfImage(this.app.vault, image)
