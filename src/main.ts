@@ -17,7 +17,6 @@ export default class OzanImagePlugin extends Plugin{
 
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
-            this.app.workspace.off("file-open", this.handleFileOpen);
             cm.off("changes", this.codemirrorLineChanges);
             clearWidges(cm);
         });

@@ -19,7 +19,10 @@ const clearWidges = (cm: CodeMirror.Editor) => {
 }
 
 // Http, Https Link Check
-const filename_is_a_link = (filename: string) => filename.startsWith('http');
+const filename_is_a_link = (filename: string) => {
+    const url_regex = /^[a-z][a-z0-9+\-.]+:/i
+    return filename.match(url_regex) != null
+};
 
  // Image Name and Alt Text
 const getFileNameAndAltText =(linkType: number, match: any) => {
@@ -50,7 +53,7 @@ const getFileNameAndAltText =(linkType: number, match: any) => {
 
 // Getting Active Markdown File
 const getActiveNoteFile = (workspace: Workspace) => {
-    return (workspace.activeLeaf.view as MarkdownView).file;
+    return workspace.getActiveFile();
 }
 
 // Get Active Editor
