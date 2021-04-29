@@ -5,33 +5,27 @@ import { clearWidges, filename_is_a_link, getFileNameAndAltText,
 export default class OzanImagePlugin extends Plugin{
 
     onload(){
-        // Each file open will fire
-        this.registerEvent(
-            this.app.workspace.on("file-open", this.handleFileOpen)
-        )
         // Register event for each change
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
-            cm.on("changes", this.codemirrorLineChanges);
-        })        
+            cm.on("change", this.codemirrorLineChanges);
+        })
     }
 
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
-            cm.off("changes", this.codemirrorLineChanges);
+            cm.on("change", this.codemirrorLineChanges);
             clearWidges(cm);
         });
         new Notice('Image in Editor Plugin is unloaded');
     }
 
     // Line Edit Changes
-    codemirrorLineChanges = (cm: any, changes: any) => {
-        changes.some( (change: any) => {
-            this.check_line(cm, change.to.line);
-        })
+    codemirrorLineChanges = (cm: any, change: any) => {
+        this.check_lines(cm, change.from.line, change.from.line + change.text.length - 1);
     }
 
     // Check Single Line
-    check_line: any = (cm: CodeMirror.Editor, line_number: number, targetFile?:TFile) => {
+    check_line: any = (cm: CodeMirror.Editor, line_number: number, targetFile:TFile) => {
 
         // Regex for [[ ]] format
         const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif).*\]\]/
@@ -106,20 +100,11 @@ export default class OzanImagePlugin extends Plugin{
     }
 
     // Check All Lines Function
-    check_lines: any = (cm: CodeMirror.Editor) => {
+    check_lines: any = (cm: CodeMirror.Editor, from: number, to: number) => {
         // Last Used Line Number in Code Mirror
-        var lastLine = cm.lastLine();
         var file = getFileCmBelongsTo(cm, this.app.workspace);
-        for(let i=0; i <= lastLine; i++){
+        for(let i=from; i <= to; i++){
             this.check_line(cm, i, file);
         }
-    }
-
-    // Handle file after file-open event
-    handleFileOpen = (targetFile: TFile): void => {
-        // If any file fired, iterated CodeMirrors
-        this.app.workspace.iterateCodeMirrors( (cm) => {
-            this.check_lines(cm);
-        })
     }
 }
