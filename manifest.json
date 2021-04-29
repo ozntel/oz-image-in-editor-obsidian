@@ -6,5 +6,5 @@
 	"description": "You can view images inside of the Editor as soon as you paste without a necessity to preview the note.",
 	"author": "Ozan Tellioglu",
 	"authorUrl": "https://www.ozan.pl/aboutme/",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }
