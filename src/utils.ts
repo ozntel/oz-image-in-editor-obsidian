@@ -69,7 +69,7 @@ const getPathOfVault = (vault: Vault): string => {
 
 // Temporary Solution until getResourcePath improved 
 const getPathOfImage = (vault: Vault, image: TFile) => {
-    // this.app.vault.getResourcePath(image) 
+    // vault.getResourcePath(image) 
     return getPathOfVault(vault) + '/' + image.path
 }
 
