@@ -4,37 +4,30 @@
 
 Because I always prefer seeing the images directly under the link when I paste or drag images into my Markdown notes, I developed a plugin for myself to view images directly under the Editor view.
 
-## Requirement & Samples
+## Formats Supported
 
-- Users needs to use one of settings below to be able to view the images properly in the Editor view. It will ensure that plugin is able to generate the image source link correctly:
+- **!( ALT-TEXT )[ IMAGE-NAME ]**
+**Example**: !( #x-small )[ myimage.png ]
 
-### 1 - First Option (Specified Folder)
+- **!\[[ IMAGE-NAME | ALT-TEXT ]]**
+**Example**: !\[[ myimage.png | #x-small ]]
 
-*Files & Links --> Attachment Folder --> In the folder specified below*
-
-<img src="images/Specified_Folder.png" width="80%"/>
-
-You can set the attachment folder using the right click under tree view:
-
-<img src="images/Attachment_Folder_Set.png" width="40%"/>
-
-### 2 - Second Option (Vault Folder)
-
-*Files & Links --> Attachment Folder --> Vault*
-
-<img src="images/Default_Location_Vault.png" width="80%"/>
+- **!\[[ IMAGE-NAME ]]**
+**Example**: !\[[ myimage.gif ]]
 
 ## Sample Views
 
-- *Markdown Format*
+### *Markdown Format*
 
 <img src="images/Absolute_Path_View.png" width="70%"/>
 
 <img src="images/Relative_Path_View.png" width="70%"/>
 
-- *Wikilinks format*
+### *Wikilinks format*
 
 <img src="images/Shortest_Path_Possible_View.png" width="70%"/>
+
+<img src="images/Wikilinks_2.png" width="70%"/>
 
 ## Image View Size
 
@@ -56,11 +49,6 @@ Plugin was tested on:
 - [x] Windows
 - [x] macOS
 - [ ] Linux
-
-## Planned Updates
-
-- [ ] Any attachment folder as long as the absolute path is selected
-- [ ] Mobile Support
 
 ## Support
 
