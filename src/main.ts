@@ -8,6 +8,7 @@ export default class OzanImagePlugin extends Plugin{
         // Register event for each change
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
             cm.on("change", this.codemirrorLineChanges);
+            this.handleInitialLoad(cm);
         })
     }
 
@@ -24,13 +25,22 @@ export default class OzanImagePlugin extends Plugin{
         this.check_lines(cm, change.from.line, change.from.line + change.text.length - 1);
     }
 
+    // Only Triggered during initial Load
+    handleInitialLoad = (cm: CodeMirror.Editor) => {
+        var lastLine = cm.lastLine();
+        var file = getFileCmBelongsTo(cm, this.app.workspace);
+        for(let i=0; i < lastLine; i++){
+            this.check_line(cm, i, file);
+        }
+    }
+
     // Check Single Line
     check_line: any = (cm: CodeMirror.Editor, line_number: number, targetFile:TFile) => {
 
         // Regex for [[ ]] format
-        const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif).*\]\]/
+        const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg).*\]\]/
         // Regex for ![ ]( ) format
-        const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif)\)/
+        const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg)\)/
         // Get the Line edited
         const line = cm.lineInfo(line_number);
         
@@ -91,8 +101,6 @@ export default class OzanImagePlugin extends Plugin{
 
             // Image Properties
             img.alt = alt;
-            img.style.maxWidth = '100%';
-            img.style.height = 'auto';
             
             // Add Image widget under the Image Markdown
             cm.addLineWidget(line_number, img, {className: 'oz-image-widget'});            

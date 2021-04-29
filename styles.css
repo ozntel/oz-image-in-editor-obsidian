@@ -1,14 +1,19 @@
-img[alt$='#small'] {
+img.oz-image-widget {
+  max-width: 100%;
+  height: auto;
+}
+
+img.oz-image-widget[alt$='#small'] {
   max-width: 75% !important;
   min-width: 200pt !important;
 }
 
-img[alt$='#x-small'] {
+img.oz-image-widget[alt$='#x-small'] {
   max-width: 50% !important;
   min-width: 100pt !important;
 }
 
-img[alt$='#xx-small'] {
+img.oz-image-widget[alt$='#xx-small'] {
   max-width: 25% !important;
   min-width: 50pt !important;
 }
