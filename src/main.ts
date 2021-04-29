@@ -128,7 +128,7 @@ export default class OzanImagePlugin extends Plugin{
     // Handle file after file-open event
     handleFile = (targetFile: TFile): void => {
         // If the file fired is a markdown file
-        if(targetFile.extension === 'md'){
+        if(targetFile && targetFile.extension === 'md'){
             // Get the open CodeMirror to check the lines
             this.check_lines(getCmEditor(this.app.workspace), targetFile);
         }

@@ -64,7 +64,9 @@ const getCmEditor = (workspace: Workspace): CodeMirror.Editor => {
 }
 
 const getPathOfVault = (vault: Vault): string => {
-    return 'app://local' + vault.adapter.basePath
+    var path = vault.adapter.basePath;
+    if(path.startsWith('/')) return 'app://local' + path
+    return 'app://local/' + path
 }
 
 // Temporary Solution until getResourcePath improved 
