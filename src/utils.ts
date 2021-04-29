@@ -75,5 +75,15 @@ const getPathOfImage = (vault: Vault, image: TFile) => {
     return getPathOfVault(vault) + '/' + image.path
 }
 
+const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
+    let leafs = workspace.getLeavesOfType("markdown");
+    for(let i=0; i <= leafs.length; i++){
+        if(leafs[i].view.sourceMode?.cmEditor == cm){
+            return leafs[i].view.file
+        }
+    }
+    return null;
+} 
+
 export { clearWidges, filename_is_a_link, getFileNameAndAltText,
-    getActiveNoteFile, getCmEditor, getPathOfImage };
+    getActiveNoteFile, getCmEditor, getPathOfImage, getFileCmBelongsTo };

@@ -1,22 +1,18 @@
 import { Plugin, Notice, TFile } from 'obsidian';
 import { clearWidges, filename_is_a_link, getFileNameAndAltText,
-        getActiveNoteFile, getCmEditor, getPathOfImage } from './utils';
+        getActiveNoteFile, getPathOfImage, getFileCmBelongsTo } from './utils';
 
 export default class OzanImagePlugin extends Plugin{
 
     onload(){
         // Each file open will fire
         this.registerEvent(
-            this.app.workspace.on("file-open", this.handleFile)
+            this.app.workspace.on("file-open", this.handleFileOpen)
         )
         // Register event for each change
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
             cm.on("changes", this.codemirrorLineChanges);
-        })
-        // Check the active CodeMirror during load
-        this.app.workspace.iterateCodeMirrors( (cm) => {
-            this.check_lines(cm);
-        })
+        })        
     }
 
     codemirrorLineChanges = (cm: any, changes: any) => {
@@ -31,7 +27,7 @@ export default class OzanImagePlugin extends Plugin{
 
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
-            this.app.workspace.off("file-open", this.handleFile);
+            this.app.workspace.off("file-open", this.handleFileOpen);
             cm.off("changes", this.codemirrorLineChanges);
             clearWidges(cm);
         });
@@ -93,7 +89,7 @@ export default class OzanImagePlugin extends Plugin{
             } else {
                 // Source Path
                 var sourcePath = '';
-                if(targetFile){
+                if(targetFile != null){
                     sourcePath = targetFile.path;
                 }else{
                     sourcePath = this.app.workspace ? getActiveNoteFile(this.app.workspace).path : '';
@@ -113,24 +109,20 @@ export default class OzanImagePlugin extends Plugin{
     }
 
     // Check All Lines Function
-    check_lines: any = (cm: CodeMirror.Editor, targetFile?:TFile) => {
+    check_lines: any = (cm: CodeMirror.Editor) => {
         // Last Used Line Number in Code Mirror
         var lastLine = cm.lastLine();
+        var file = getFileCmBelongsTo(cm, this.app.workspace);
         for(let i=0; i <= lastLine; i++){
-            if(targetFile){
-                this.check_line(cm, i, targetFile)
-            }else{
-                this.check_line(cm, i);
-            }
-        }        
+            this.check_line(cm, i, file);
+        }
     }
 
     // Handle file after file-open event
-    handleFile = (targetFile: TFile): void => {
-        // If the file fired is a markdown file
-        if(targetFile && targetFile.extension === 'md'){
-            // Get the open CodeMirror to check the lines
-            this.check_lines(getCmEditor(this.app.workspace), targetFile);
-        }
+    handleFileOpen = (targetFile: TFile): void => {
+        // If any file fired, iterated CodeMirrors
+        this.app.workspace.iterateCodeMirrors( (cm) => {
+            this.check_lines(cm);
+        })
     }
 }
