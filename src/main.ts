@@ -96,7 +96,7 @@ export default class OzanImagePlugin extends Plugin{
                 if(targetFile){
                     sourcePath = targetFile.path;
                 }else{
-                    sourcePath = getActiveNoteFile(this.app.workspace).path;
+                    sourcePath = this.app.workspace ? getActiveNoteFile(this.app.workspace).path : '';
                 }
                 var image = this.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
                 if(image != null) img.src = getPathOfImage(this.app.vault, image)
@@ -117,10 +117,10 @@ export default class OzanImagePlugin extends Plugin{
         // Last Used Line Number in Code Mirror
         var lastLine = cm.lastLine();
         for(let i=0; i <= lastLine; i++){
-            if(TFile){
-                this.check_line(cm, i)
+            if(targetFile){
+                this.check_line(cm, i, targetFile)
             }else{
-                this.check_line(cm, i, TFile);
+                this.check_line(cm, i);
             }
         }        
     }
