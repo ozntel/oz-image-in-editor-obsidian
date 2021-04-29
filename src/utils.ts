@@ -2,14 +2,11 @@ import { Workspace, MarkdownView, Vault, TFile, normalizePath } from 'obsidian';
 
 // Remove Widgets in CodeMirror Editor
 const clearWidges = (cm: CodeMirror.Editor) => {
-
     var lastLine = cm.lastLine();
 
     for(let i=0; i <= lastLine; i++){
-
         // Get the current Line
         const line = cm.lineInfo(i);
-
         // Clear the image widgets if exists
         if (line.widgets){
             for(const wid of line.widgets){
@@ -18,7 +15,6 @@ const clearWidges = (cm: CodeMirror.Editor) => {
                 }
             }
         }
-        
     }
 }
 
@@ -27,7 +23,6 @@ const filename_is_a_link = (filename: string) => filename.startsWith('http');
 
  // Image Name and Alt Text
 const getFileNameAndAltText =(linkType: number, match: any) => {
-
     /* 
        linkType 1: [[myimage.jpg|#x-small]]
        linkType2: ![#x-small](myimage.jpg) 

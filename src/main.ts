@@ -15,16 +15,6 @@ export default class OzanImagePlugin extends Plugin{
         })        
     }
 
-    codemirrorLineChanges = (cm: any, changes: any) => {
-        changes.some( (change: any) => {
-            this.check_line(cm, change.to.line);
-        })
-    }
-
-    codemirrorScreenChange = (cm: CodeMirror.Editor) => {
-        return this.check_lines(cm);
-    }
-
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
             this.app.workspace.off("file-open", this.handleFileOpen);
@@ -32,6 +22,13 @@ export default class OzanImagePlugin extends Plugin{
             clearWidges(cm);
         });
         new Notice('Image in Editor Plugin is unloaded');
+    }
+
+    // Line Edit Changes
+    codemirrorLineChanges = (cm: any, changes: any) => {
+        changes.some( (change: any) => {
+            this.check_line(cm, change.to.line);
+        })
     }
 
     // Check Single Line
