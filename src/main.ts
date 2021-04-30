@@ -14,7 +14,7 @@ export default class OzanImagePlugin extends Plugin{
 
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
-            cm.on("change", this.codemirrorLineChanges);
+            cm.off("change", this.codemirrorLineChanges);
             clearWidges(cm);
         });
         new Notice('Image in Editor Plugin is unloaded');
