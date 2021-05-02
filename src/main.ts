@@ -38,9 +38,9 @@ export default class OzanImagePlugin extends Plugin{
     check_line: any = (cm: CodeMirror.Editor, line_number: number, targetFile:TFile) => {
 
         // Regex for [[ ]] format
-        const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg).*\]\]/
+        const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg|bmp).*\]\]/
         // Regex for ![ ]( ) format
-        const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg)\)/
+        const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg|bmp)\)/
         // Get the Line edited
         const line = cm.lineInfo(line_number);
         

@@ -36,10 +36,10 @@ const getFileNameAndAltText =(linkType: number, match: any) => {
     var alt_regex;
 
     if(linkType == 1){
-        file_name_regex = /(?<=\[\[).*(jpe?g|png|gif|svg)/;
+        file_name_regex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
         alt_regex = /(?<=\|).*(?=]])/;
     } else if(linkType == 2){
-        file_name_regex = /(?<=\().*(jpe?g|png|gif|svg)/;
+        file_name_regex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
         alt_regex = /(?<=\[)(^$|.*)(?=\])/;
     }
 

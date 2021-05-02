@@ -15,6 +15,8 @@ Because I always prefer seeing the images directly under the link when I paste o
 - **!\[[ IMAGE-NAME ]]**
 **Example**: !\[[ myimage.gif ]]
 
+**Scanned Image Formats** : jpg, jpeg, png, gif, svg, bmp
+
 ## Sample Views
 
 ### *Markdown Format*
