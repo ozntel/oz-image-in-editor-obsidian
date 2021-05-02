@@ -1,4 +1,4 @@
-import { Workspace, MarkdownView, Vault, TFile, normalizePath } from 'obsidian';
+import { Workspace, MarkdownView, Vault, TFile } from 'obsidian';
 
 // Remove Widgets in CodeMirror Editor
 const clearWidges = (cm: CodeMirror.Editor) => {
@@ -76,7 +76,7 @@ const getPathOfImage = (vault: Vault, image: TFile) => {
 const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
     let leafs = workspace.getLeavesOfType("markdown");
     for(let i=0; i < leafs.length; i++){
-        if(leafs[i].view.sourceMode?.cmEditor == cm){
+        if(leafs[i].view instanceof MarkdownView && leafs[i].view.sourceMode?.cmEditor == cm){
             return leafs[i].view.file
         }
     }
