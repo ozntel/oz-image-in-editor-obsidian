@@ -21,15 +21,15 @@ Because I always prefer seeing the images directly under the link when I paste o
 
 ### *Markdown Format*
 
-<img src="images/Absolute_Path_View.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Absolute_Path_View.png" width="70%"/>
 
-<img src="images/Relative_Path_View.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Relative_Path_View.png" width="70%"/>
 
 ### *Wikilinks format*
 
-<img src="images/Shortest_Path_Possible_View.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Shortest_Path_Possible_View.png" width="70%"/>
 
-<img src="images/Wikilinks_2.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Wikilinks_2.png" width="70%"/>
 
 ## Image View Size
 
@@ -55,5 +55,5 @@ Plugin was tested on:
 ## Support
 
 <a href="https://www.buymeacoffee.com/ozante">
-    <img src='/images/Buy-me-coffee.svg' width="25%" height="auto" />
+    <img src='https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Buy-me-coffee.svg' width="25%" height="auto" />
 </a>
