@@ -1,5 +1,5 @@
 import { Plugin, Notice } from 'obsidian';
-import { clearWidges, getFileCmBelongsTo } from './utils';
+import { clearWidgets, getFileCmBelongsTo } from './utils';
 import { check_line, check_lines } from './check-line';
 
 export default class OzanImagePlugin extends Plugin{
@@ -16,7 +16,7 @@ export default class OzanImagePlugin extends Plugin{
     onunload(){
         this.app.workspace.iterateCodeMirrors( (cm) => {
             cm.off("change", this.codemirrorLineChanges);
-            clearWidges(cm);
+            clearWidgets(cm);
         });
         new Notice('Image in Editor Plugin is unloaded');
     }

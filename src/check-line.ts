@@ -1,5 +1,5 @@
 import { App, TFile } from 'obsidian';
-import { getFileNameAndAltText, filename_is_a_link, 
+import { getFileNameAndAltText, get_link_in_line,
         getActiveNoteFile, getPathOfImage, getFileCmBelongsTo } from './utils';
 
 // Check Single Line
@@ -14,6 +14,9 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
     
     if(line === null) return;
 
+    // Check if the line is an internet link
+    const link_in_line = get_link_in_line(line.text);
+
     // Current Line Comparison with Regex
     const match_1 = line.text.match(image_line_regex_1);
     const match_2 = line.text.match(image_line_regex_2);
@@ -23,7 +26,7 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
     if(line_image_widget && (!match_1 || !match_2)) line_image_widget[0].clear();
 
     // If any of regex matches, it will add image widget
-    if(match_1 || match_2){
+    if(link_in_line.result || match_1 || match_2){
             
         // Clear the image widgets if exists
         if (line.widgets){
@@ -38,7 +41,11 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
         var filename = '';
         var alt = '';
         
-        if(match_1){
+        if(link_in_line.result){
+            // linkType 3 and 4
+            filename = getFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName
+            alt = getFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText
+        } else if(match_1){
             // Regex for [[myimage.jpg|#x-small]] format
             filename = getFileNameAndAltText(1, match_1).fileName
             alt = getFileNameAndAltText(1, match_1).altText
@@ -52,7 +59,7 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
         const img = document.createElement('img');
 
         // Prepare the src for the Image
-        if(filename_is_a_link(filename)){
+        if(link_in_line.result){
             img.src = filename;
         } else {
             // Source Path
@@ -66,7 +73,6 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
             var image = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
             if(image != null) img.src = getPathOfImage(app.vault, image)
         }
-
         // Image Properties
         img.alt = alt;
         

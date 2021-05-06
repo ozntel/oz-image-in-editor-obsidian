@@ -1,7 +1,7 @@
 import { Workspace, MarkdownView, Vault, TFile } from 'obsidian';
 
 // Remove Widgets in CodeMirror Editor
-const clearWidges = (cm: CodeMirror.Editor) => {
+const clearWidgets = (cm: CodeMirror.Editor) => {
     var lastLine = cm.lastLine();
 
     for(let i=0; i <= lastLine; i++){
@@ -18,28 +18,37 @@ const clearWidges = (cm: CodeMirror.Editor) => {
     }
 }
 
-// Http, Https Link Check
-const filename_is_a_link = (filename: string) => {
-    const url_regex = /^[a-z][a-z0-9+\-.]+:/i
-    return filename.match(url_regex) != null
-};
+// Check line if it is a link
+const get_link_in_line = (line: string) => {
+    const image_http_regex_3 = /!\[\[[a-z][a-z0-9+\-.]+:\/.*\]\]/
+    const image_http_regex_4 = /!\[(^$|.*)\]\([a-z][a-z0-9+\-.]+:\/.*\)/
+    const match_3 = line.match(image_http_regex_3);
+    const match_4 = line.match(image_http_regex_4);
+    if(match_3){
+        return { result: match_3, linkType: 3 };
+    } else if(match_4){
+        return { result: match_4, linkType: 4 };
+    }
+    return { result: false, linkType: 0 };
+}
 
  // Image Name and Alt Text
 const getFileNameAndAltText =(linkType: number, match: any) => {
     /* 
-       linkType 1: [[myimage.jpg|#x-small]]
-       linkType2: ![#x-small](myimage.jpg) 
+       linkType 1: ![[myimage.jpg|#x-small]], linkType 2: ![#x-small](myimage.jpg) 
+       linkType 3: ![[https://image|#x-small]], linkType 4: ![#x-small](https://image) 
        returns { fileName: '', altText: '' }   
     */
-
     var file_name_regex;
     var alt_regex;
 
-    if(linkType == 1){
-        file_name_regex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
+    if(linkType == 1 || linkType == 3){
+        if(linkType == 1) file_name_regex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
+        if(linkType == 3) file_name_regex = /(?<=\[\[).*(?=\|)|(?<=\[\[).*(?=\]\])/;
         alt_regex = /(?<=\|).*(?=]])/;
-    } else if(linkType == 2){
-        file_name_regex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
+    } else if(linkType == 2 || linkType == 4){
+        if(linkType == 2) file_name_regex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
+        if(linkType == 4) file_name_regex = /(?<=\().*(?=\))/;
         alt_regex = /(?<=\[)(^$|.*)(?=\])/;
     }
 
@@ -48,7 +57,6 @@ const getFileNameAndAltText =(linkType: number, match: any) => {
 
     return { fileName: file_match ? file_match[0] : '', 
             altText: alt_match ? alt_match[0] : '' }
-
 }    
 
 // Getting Active Markdown File
@@ -83,5 +91,5 @@ const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
     return null;
 } 
 
-export { clearWidges, filename_is_a_link, getFileNameAndAltText,
+export { clearWidgets, getFileNameAndAltText, get_link_in_line,
     getActiveNoteFile, getCmEditor, getPathOfImage, getFileCmBelongsTo };
