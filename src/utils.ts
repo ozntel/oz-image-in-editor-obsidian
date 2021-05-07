@@ -96,7 +96,7 @@ const getPathOfVault = (vault: Vault): string => {
 // Temporary Solution until getResourcePath improved 
 export const getPathOfImage = (vault: Vault, image: TFile) => {
     // vault.getResourcePath(image) 
-    return getPathOfVault(vault) + '/' + image.path
+    return getPathOfVault(vault) + '/' + image.path + '?' + image.stat.mtime
 }
 
 export const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
