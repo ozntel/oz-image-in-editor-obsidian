@@ -1,4 +1,4 @@
-import { Plugin, Notice } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { clearWidgets, getFileCmBelongsTo } from './utils';
 import { check_line, check_lines } from './check-line';
 
