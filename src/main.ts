@@ -5,7 +5,7 @@ import { check_line, check_lines } from './check-line';
 export default class OzanImagePlugin extends Plugin{
 
     onload(){
-        new Notice('Image in Editor Plugin is loaded');
+        console.log('Image in Editor Plugin is loaded');
         // Register event for each change
         this.registerCodeMirror( (cm: CodeMirror.Editor) => {
             cm.on("change", this.codemirrorLineChanges);
@@ -18,7 +18,7 @@ export default class OzanImagePlugin extends Plugin{
             cm.off("change", this.codemirrorLineChanges);
             clearWidgets(cm);
         });
-        new Notice('Image in Editor Plugin is unloaded');
+        console.log('Image in Editor Plugin is unloaded');
     }
 
     // Line Edit Changes

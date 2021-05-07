@@ -1,25 +1,27 @@
 import { Workspace, MarkdownView, Vault, TFile } from 'obsidian';
 
 // Remove Widgets in CodeMirror Editor
-const clearWidgets = (cm: CodeMirror.Editor) => {
+export const clearWidgets = (cm: CodeMirror.Editor) => {
     var lastLine = cm.lastLine();
-
     for(let i=0; i <= lastLine; i++){
-        // Get the current Line
         const line = cm.lineInfo(i);
-        // Clear the image widgets if exists
-        if (line.widgets){
-            for(const wid of line.widgets){
-                if (wid.className === 'oz-image-widget'){
-                    wid.clear()
-                }
+        clearLineWidgets(line);
+    }
+}
+
+// Clear Single Line Widget
+export const clearLineWidgets = (line: any) => {
+    if(line.widgets){
+        for(const wid of line.widgets){
+            if (wid.className === 'oz-image-widget'){
+                wid.clear()
             }
         }
     }
 }
 
 // Check line if it is a link
-const get_link_in_line = (line: string) => {
+export const get_link_in_line = (line: string) => {
     const image_http_regex_3 = /!\[\[[a-z][a-z0-9+\-.]+:\/.*\]\]/
     const image_http_regex_4 = /!\[(^$|.*)\]\([a-z][a-z0-9+\-.]+:\/.*\)/
     const match_3 = line.match(image_http_regex_3);
@@ -32,8 +34,24 @@ const get_link_in_line = (line: string) => {
     return { result: false, linkType: 0 };
 }
 
+// Check line if it is image
+export const get_image_in_line = (line: string) => {
+    // Regex for [[ ]] format
+    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg|bmp).*\]\]/
+    // Regex for ![ ]( ) format
+    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg|bmp)\)/
+    const match_1 = line.match(image_line_regex_1);
+    const match_2 = line.match(image_line_regex_2);
+    if(match_1){
+        return { result: match_1, linkType: 1}
+    }else if(match_2){
+        return { result: match_2, linkType: 2}
+    }
+    return { result: false, linkType: 0}
+}
+
  // Image Name and Alt Text
-const getFileNameAndAltText =(linkType: number, match: any) => {
+export const getFileNameAndAltText = (linkType: number, match: any) => {
     /* 
        linkType 1: ![[myimage.jpg|#x-small]], linkType 2: ![#x-small](myimage.jpg) 
        linkType 3: ![[https://image|#x-small]], linkType 4: ![#x-small](https://image) 
@@ -60,12 +78,12 @@ const getFileNameAndAltText =(linkType: number, match: any) => {
 }    
 
 // Getting Active Markdown File
-const getActiveNoteFile = (workspace: Workspace) => {
+export const getActiveNoteFile = (workspace: Workspace) => {
     return workspace.getActiveFile();
 }
 
 // Get Active Editor
-const getCmEditor = (workspace: Workspace): CodeMirror.Editor => {
+export const getCmEditor = (workspace: Workspace): CodeMirror.Editor => {
     return workspace.getActiveViewOfType(MarkdownView)?.sourceMode?.cmEditor
 }
 
@@ -76,12 +94,12 @@ const getPathOfVault = (vault: Vault): string => {
 }
 
 // Temporary Solution until getResourcePath improved 
-const getPathOfImage = (vault: Vault, image: TFile) => {
+export const getPathOfImage = (vault: Vault, image: TFile) => {
     // vault.getResourcePath(image) 
     return getPathOfVault(vault) + '/' + image.path
 }
 
-const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
+export const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
     let leafs = workspace.getLeavesOfType("markdown");
     for(let i=0; i < leafs.length; i++){
         if(leafs[i].view instanceof MarkdownView && leafs[i].view.sourceMode?.cmEditor == cm){
@@ -90,6 +108,3 @@ const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
     }
     return null;
 } 
-
-export { clearWidgets, getFileNameAndAltText, get_link_in_line,
-    getActiveNoteFile, getCmEditor, getPathOfImage, getFileCmBelongsTo };

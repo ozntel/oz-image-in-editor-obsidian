@@ -1,41 +1,28 @@
 import { App, TFile } from 'obsidian';
-import { getFileNameAndAltText, get_link_in_line,
-        getActiveNoteFile, getPathOfImage, getFileCmBelongsTo } from './utils';
+import { getFileNameAndAltText, get_link_in_line, get_image_in_line,
+        getActiveNoteFile, getPathOfImage, getFileCmBelongsTo,
+        clearLineWidgets } from './utils';
 
 // Check Single Line
 export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targetFile:TFile, app: App) => {
 
-    // Regex for [[ ]] format
-    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg|bmp).*\]\]/
-    // Regex for ![ ]( ) format
-    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg|bmp)\)/
     // Get the Line edited
     const line = cm.lineInfo(line_number);
-    
     if(line === null) return;
 
     // Check if the line is an internet link
     const link_in_line = get_link_in_line(line.text);
-
-    // Current Line Comparison with Regex
-    const match_1 = line.text.match(image_line_regex_1);
-    const match_2 = line.text.match(image_line_regex_2);
+    const img_in_line = get_image_in_line(line.text);
 
     // Clear the widget if link was removed
     var line_image_widget = line.widgets ? line.widgets.filter((wid: { className: string; }) => wid.className === 'oz-image-widget') : false;
-    if(line_image_widget && (!match_1 || !match_2)) line_image_widget[0].clear();
+    if(line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0].clear();
 
     // If any of regex matches, it will add image widget
-    if(link_in_line.result || match_1 || match_2){
+    if(link_in_line.result || img_in_line.result){
             
         // Clear the image widgets if exists
-        if (line.widgets){
-            for(const wid of line.widgets){
-                if (wid.className === 'oz-image-widget'){
-                    wid.clear()
-                }
-            }
-        }
+        clearLineWidgets(line);
 
         // Get the file name and alt text depending on format
         var filename = '';
@@ -45,14 +32,9 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
             // linkType 3 and 4
             filename = getFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName
             alt = getFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText
-        } else if(match_1){
-            // Regex for [[myimage.jpg|#x-small]] format
-            filename = getFileNameAndAltText(1, match_1).fileName
-            alt = getFileNameAndAltText(1, match_1).altText
-        } else if(match_2){
-            // Regex for ![#x-small](myimage.jpg) format
-            filename = getFileNameAndAltText(2, match_2).fileName
-            alt = getFileNameAndAltText(2, match_2).altText
+        } else if(img_in_line.result){
+            filename = getFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
+            alt = getFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText
         }
         
         // Create Image
