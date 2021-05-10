@@ -2,19 +2,19 @@ import { Plugin } from 'obsidian';
 import { clearWidgets, getFileCmBelongsTo } from './utils';
 import { check_line, check_lines } from './check-line';
 
-export default class OzanImagePlugin extends Plugin{
+export default class OzanImagePlugin extends Plugin {
 
-    onload(){
+    onload() {
         console.log('Image in Editor Plugin is loaded');
         // Register event for each change
-        this.registerCodeMirror( (cm: CodeMirror.Editor) => {
+        this.registerCodeMirror((cm: CodeMirror.Editor) => {
             cm.on("change", this.codemirrorLineChanges);
             this.handleInitialLoad(cm);
         })
     }
 
-    onunload(){
-        this.app.workspace.iterateCodeMirrors( (cm) => {
+    onunload() {
+        this.app.workspace.iterateCodeMirrors((cm) => {
             cm.off("change", this.codemirrorLineChanges);
             clearWidgets(cm);
         });
@@ -30,9 +30,9 @@ export default class OzanImagePlugin extends Plugin{
     handleInitialLoad = (cm: CodeMirror.Editor) => {
         var lastLine = cm.lastLine();
         var file = getFileCmBelongsTo(cm, this.app.workspace);
-        for(let i=0; i < lastLine; i++){
+        for (let i = 0; i < lastLine; i++) {
             check_line(cm, i, file, this.app);
         }
     }
-    
+
 }
