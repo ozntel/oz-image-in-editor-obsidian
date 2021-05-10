@@ -17,3 +17,8 @@ div.oz-image-widget > img[alt$='#xx-small'] {
   max-width: 25% !important;
   min-width: 50pt !important;
 }
+
+.CodeMirror-linewidget > img {
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+}
