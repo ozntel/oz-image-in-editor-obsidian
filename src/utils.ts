@@ -23,7 +23,7 @@ export const clearLineWidgets = (line: any) => {
 // Check line if it is a link
 export const get_link_in_line = (line: string) => {
     const image_http_regex_3 = /!\[\[[a-z][a-z0-9+\-.]+:\/.*\]\]/
-    const image_http_regex_4 = /!\[(^$|.*)\]\([a-z][a-z0-9+\-.]+:\/.*\)/
+    const image_http_regex_4 = /!\[[^)]*\]\([a-z][a-z0-9+\-.]+:\/[^)]*\)/
     const match_3 = line.match(image_http_regex_3);
     const match_4 = line.match(image_http_regex_4);
     if (match_3) {
