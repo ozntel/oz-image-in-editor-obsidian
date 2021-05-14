@@ -2,7 +2,10 @@
 
 ## Brief Explanation
 
-Because I always prefer seeing the images directly under the link when I paste or drag images into my Markdown notes, I developed a plugin for myself to view images directly under the Editor view.
+-   Plugin helps you to view images directly under the Editor view without a necessity to switch to Preview mode.
+-   The plugin allows you to see both your local images and images from internet.
+-   Both Markdown and Wikilinks formats are supported as described below.
+-   You can resize the view of images using ALT-TEXT options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
 
 ## Formats Supported
 
@@ -16,6 +19,15 @@ Because I always prefer seeing the images directly under the link when I paste o
     **Example**: !\[[ myimage.gif ]]
 
 **Scanned Image Formats** : jpg, jpeg, png, gif, svg, bmp
+
+## Image View Size
+
+Relative and Absolute Path will give you possibility to add "alt" text for the image. You can decide about the size of the image using following
+alt texts:
+
+1. #small
+2. #x-small
+3. #xx-small
 
 ## Sample Views
 
@@ -31,26 +43,9 @@ Because I always prefer seeing the images directly under the link when I paste o
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Wikilinks_2.png" width="70%"/>
 
-## Image View Size
-
-Relative and Absolute Path will give you possibility to add "alt" text for the image. You can decide about the size of the image using following
-alt texts:
-
-1. #small
-2. #x-small
-3. #xx-small
-
 ## Contact
 
 If you have any issue or you have any suggestion, please feel free to reach me out directly using contact page of my website [ozan.pl/contact/](https://www.ozan.pl/contact/) or directly to <me@ozan.pl>.
-
-## Checklist
-
-Plugin was tested on:
-
--   [x] Windows
--   [x] macOS
--   [ ] Linux
 
 ## Support
 
