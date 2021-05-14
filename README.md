@@ -6,26 +6,26 @@ Because I always prefer seeing the images directly under the link when I paste o
 
 ## Formats Supported
 
-- **!( ALT-TEXT )[ IMAGE-NAME ]**
-**Example**: !( #x-small )[ myimage.png ]
+-   **!( ALT-TEXT )[ IMAGE-NAME ]**
+    **Example**: !( #x-small )[ myimage.png ]
 
-- **!\[[ IMAGE-NAME | ALT-TEXT ]]**
-**Example**: !\[[ myimage.png | #x-small ]]
+-   **!\[[ IMAGE-NAME | ALT-TEXT ]]**
+    **Example**: !\[[ myimage.png | #x-small ]]
 
-- **!\[[ IMAGE-NAME ]]**
-**Example**: !\[[ myimage.gif ]]
+-   **!\[[ IMAGE-NAME ]]**
+    **Example**: !\[[ myimage.gif ]]
 
 **Scanned Image Formats** : jpg, jpeg, png, gif, svg, bmp
 
 ## Sample Views
 
-### *Markdown Format*
+### _Markdown Format_
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Absolute_Path_View.png" width="70%"/>
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Relative_Path_View.png" width="70%"/>
 
-### *Wikilinks format*
+### _Wikilinks format_
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Shortest_Path_Possible_View.png" width="70%"/>
 
@@ -33,7 +33,7 @@ Because I always prefer seeing the images directly under the link when I paste o
 
 ## Image View Size
 
-Relative and Absolute Path will give you possibility to add "alt" text for the image. You can decide about the size of the image using following 
+Relative and Absolute Path will give you possibility to add "alt" text for the image. You can decide about the size of the image using following
 alt texts:
 
 1. #small
@@ -48,12 +48,10 @@ If you have any issue or you have any suggestion, please feel free to reach me o
 
 Plugin was tested on:
 
-- [x] Windows
-- [x] macOS
-- [ ] Linux
+-   [x] Windows
+-   [x] macOS
+-   [ ] Linux
 
 ## Support
 
-<a href="https://www.buymeacoffee.com/ozante">
-    <img src='https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Buy-me-coffee.svg' width="25%" height="auto" />
-</a>
+<a href="https://www.buymeacoffee.com/ozante" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="20%" height="auto"></a>
