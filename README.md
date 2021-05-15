@@ -38,11 +38,11 @@ You can view both from local files and from the internet.
 
 **Local PDF File**
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/blob/master/images/pdf-local-file.png?raw=true" width="60%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-local-file.png" width="60%"/>
 
 **PDF File From a Link**
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/blob/master/images/pdf-from-link.png?raw=true" width="60%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-from-link.png" width="60%"/>
 
 <h2 style="color: orange">Sample Views</h2>
 
