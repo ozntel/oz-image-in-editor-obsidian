@@ -29,6 +29,10 @@ alt texts:
 2. #x-small
 3. #xx-small
 
+<h2 style="color: orange">Experimental Features</h2>
+
+-   You can turn on option for rendering the PDF files in the Editor mode. At the moment, only Local PDF files are supported.
+
 <h2 style="color: orange">Sample Views</h2>
 
 ### Markdown Format
