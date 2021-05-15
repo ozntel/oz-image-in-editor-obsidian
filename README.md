@@ -31,21 +31,32 @@ alt texts:
 
 <h2 style="color: orange">Experimental Features</h2>
 
--   You can turn on option for rendering the PDF files in the Editor mode. At the moment, only Local PDF files are supported.
+You can turn on option for rendering the PDF files in the Editor mode.
+You can view both from local files and from the internet.
+
+### Samples
+
+**Local PDF File**
+
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/blob/master/images/pdf-local-file.png?raw=true" width="60%"/>
+
+**PDF File From a Link**
+
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/blob/master/images/pdf-from-link.png?raw=true" width="60%"/>
 
 <h2 style="color: orange">Sample Views</h2>
 
 ### Markdown Format
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Absolute_Path_View.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Absolute_Path_View.png" width="60%"/>
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Relative_Path_View.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Relative_Path_View.png" width="60%"/>
 
 ### Wikilinks format
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Shortest_Path_Possible_View.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Shortest_Path_Possible_View.png" width="60%"/>
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Wikilinks_2.png" width="70%"/>
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Wikilinks_2.png" width="60%"/>
 
 <h2 style="color: orange">Contact</h2>
 
