@@ -43,7 +43,7 @@ export default class OzanImagePlugin extends Plugin {
 
     // Line Edit Changes
     codemirrorLineChanges = (cm: any, change: any) => {
-        check_lines(cm, change.from.line, change.from.line + change.text.length - 1, this.app);
+        check_lines(cm, change.from.line, change.from.line + change.text.length - 1, this.app, this.settings);
     }
 
     // Only Triggered during initial Load
@@ -51,7 +51,7 @@ export default class OzanImagePlugin extends Plugin {
         var lastLine = cm.lastLine();
         var file = getFileCmBelongsTo(cm, this.app.workspace);
         for (let i = 0; i < lastLine; i++) {
-            check_line(cm, i, file, this.app);
+            check_line(cm, i, file, this.app, this.settings);
         }
     }
 }

@@ -50,6 +50,33 @@ export const get_image_in_line = (line: string) => {
     return { result: false, linkType: 0 }
 }
 
+// Check line if it is a PDF
+export const get_pdf_in_line = (line: string) => {
+    // Regex for [[ ]] format
+    const pdf_regex_1 = /!\[\[.*(pdf)\]\]/
+    // Regex for ![ ]( ) format
+    const pdf_regex_2 = /!\[(^$|.*)\]\(.*(pdf)\)/
+    const match_1 = line.match(pdf_regex_1);
+    const match_2 = line.match(pdf_regex_2);
+    if (match_1) {
+        return { result: match_1, linkType: 1 }
+    } else if (match_2) {
+        return { result: match_2, linkType: 2 }
+    }
+    return { result: false, linkType: 0 }
+}
+
+export const get_pdf_name = (linkType: number, match: any): string => {
+    let pdf_name_regex;
+
+    if (linkType == 1) pdf_name_regex = /(?<=\[\[).*.pdf/
+    if (linkType == 2) pdf_name_regex = /(?<=\().*.pdf/;
+
+    var file_name_match = match[0].match(pdf_name_regex);
+
+    return file_name_match[0]
+}
+
 // Image Name and Alt Text
 export const getFileNameAndAltText = (linkType: number, match: any) => {
     /* 

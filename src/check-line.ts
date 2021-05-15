@@ -1,12 +1,12 @@
-import { App, TFile } from 'obsidian';
+import { App, normalizePath, TFile } from 'obsidian';
 import {
     getFileNameAndAltText, get_link_in_line, get_image_in_line,
     getActiveNoteFile, getPathOfImage, getFileCmBelongsTo,
-    clearLineWidgets
+    clearLineWidgets, get_pdf_in_line, get_pdf_name
 } from './utils';
 
 // Check Single Line
-export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targetFile: TFile, app: App) => {
+export const check_line: any = async (cm: CodeMirror.Editor, line_number: number, targetFile: TFile, app: App, settings: any) => {
 
     // Get the Line edited
     const line = cm.lineInfo(line_number);
@@ -19,6 +19,48 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
     // Clear the widget if link was removed
     var line_image_widget = line.widgets ? line.widgets.filter((wid: { className: string; }) => wid.className === 'oz-image-widget') : false;
     if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0].clear();
+
+    var sourcePath = '';
+
+    // Render PDF if it is turned on
+    if (settings && settings.renderPDF) {
+
+        // Check if the line is a  PDF 
+        const pdf_in_line = get_pdf_in_line(line.text);
+
+        // If PDF Regex Matches
+        if (pdf_in_line.result) {
+
+            // Clear the Line Widgets
+            clearLineWidgets(line);
+
+            // Get Source Path
+            if (targetFile != null) sourcePath = targetFile.path
+
+            // Get PDF File
+            var pdf_name = get_pdf_name(pdf_in_line.linkType, pdf_in_line.result);
+            var pdfFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdf_name), sourcePath);
+
+            // Create Object URL
+            var buffer = await app.vault.adapter.readBinary(normalizePath(pdfFile.path));
+            var arr = new Uint8Array(buffer);
+            var blob = new Blob([arr], { type: 'application/pdf' })
+            var pdf_path = URL.createObjectURL(blob);
+
+            // Create the Widget
+            var pdf_widget = document.createElement('embed');
+            pdf_widget.src = pdf_path
+            pdf_widget.type = 'application/pdf'
+            pdf_widget.width = '500'
+            pdf_widget.height = '650'
+
+            // Add Widget in Line
+            cm.addLineWidget(line_number, pdf_widget, { className: 'oz-image-widget' })
+
+            // End Rendering of the line
+            return
+        }
+    }
 
     // If any of regex matches, it will add image widget
     if (link_in_line.result || img_in_line.result) {
@@ -47,7 +89,6 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
             img.src = filename;
         } else {
             // Source Path
-            var sourcePath = '';
             if (targetFile != null) {
                 sourcePath = targetFile.path;
             } else {
@@ -66,10 +107,10 @@ export const check_line: any = (cm: CodeMirror.Editor, line_number: number, targ
 }
 
 // Check All Lines Function
-export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, app: App) => {
+export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, app: App, settings: any) => {
     // Last Used Line Number in Code Mirror
     var file = getFileCmBelongsTo(cm, app.workspace);
     for (let i = from; i <= to; i++) {
-        check_line(cm, i, file, app);
+        check_line(cm, i, file, app, settings);
     }
 }
