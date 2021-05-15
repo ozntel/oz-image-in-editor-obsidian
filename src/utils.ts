@@ -20,6 +20,13 @@ export const clearLineWidgets = (line: any) => {
     }
 }
 
+// Check if String is a link
+export const path_is_a_link = (path: string): boolean => {
+    const link_regex = /(http[s]?:\/\/)([^\/\s]+\/)(.*)/;
+    let match = path.match(link_regex);
+    return match ? true : false
+}
+
 // Check line if it is a link
 export const get_link_in_line = (line: string) => {
     const image_http_regex_3 = /!\[\[[a-z][a-z0-9+\-.]+:\/.*\]\]/

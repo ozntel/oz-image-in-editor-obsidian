@@ -2,7 +2,7 @@ import { App, normalizePath, TFile } from 'obsidian';
 import {
     getFileNameAndAltText, get_link_in_line, get_image_in_line,
     getActiveNoteFile, getPathOfImage, getFileCmBelongsTo,
-    clearLineWidgets, get_pdf_in_line, get_pdf_name
+    clearLineWidgets, get_pdf_in_line, get_pdf_name, path_is_a_link
 } from './utils';
 
 // Check Single Line
@@ -35,17 +35,25 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             clearLineWidgets(line);
 
             // Get Source Path
-            if (targetFile != null) sourcePath = targetFile.path
+            if (targetFile != null) sourcePath = targetFile.path;
 
             // Get PDF File
             var pdf_name = get_pdf_name(pdf_in_line.linkType, pdf_in_line.result);
-            var pdfFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdf_name), sourcePath);
 
-            // Create Object URL
-            var buffer = await app.vault.adapter.readBinary(normalizePath(pdfFile.path));
-            var arr = new Uint8Array(buffer);
-            var blob = new Blob([arr], { type: 'application/pdf' })
-            var pdf_path = URL.createObjectURL(blob);
+            // Create URL for Link and Local PDF 
+            var pdf_path = '';
+
+            if (path_is_a_link(pdf_name)) {
+                pdf_path = pdf_name
+            } else {
+                // Get the PDF File Object
+                var pdfFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdf_name), sourcePath);
+                // Create Object URL
+                var buffer = await app.vault.adapter.readBinary(normalizePath(pdfFile.path));
+                var arr = new Uint8Array(buffer);
+                var blob = new Blob([arr], { type: 'application/pdf' });
+                pdf_path = URL.createObjectURL(blob);
+            }
 
             // Create the Widget
             var pdf_widget = document.createElement('embed');
