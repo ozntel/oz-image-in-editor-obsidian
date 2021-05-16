@@ -2,7 +2,7 @@
 
 <h2 style="color: orange">Brief Explanation</h2>
 
--   Plugin helps you to view images directly under the Editor view without a necessity to switch to Preview mode.
+-   Plugin helps you to view `images` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
 -   The plugin allows you to see both your local images and images from internet.
 -   Both Markdown and Wikilinks formats are supported as described below.
 -   You can resize the view of images using ALT-TEXT options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
@@ -29,7 +29,7 @@ alt texts:
 2. #x-small
 3. #xx-small
 
-<h2 style="color: orange">Experimental Features</h2>
+<h2 style="color: orange">Experimental PDF View Feature</h2>
 
 You can turn on option for rendering the PDF files in the Editor mode.
 You can view both from local files and from the internet.
