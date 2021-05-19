@@ -44,9 +44,9 @@ export const get_link_in_line = (line: string) => {
 // Check line if it is image
 export const get_image_in_line = (line: string) => {
     // Regex for [[ ]] format
-    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg|bmp).*\]\]/
+    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg|bmp|excalidraw).*\]\]/
     // Regex for ![ ]( ) format
-    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg|bmp)\)/
+    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg|bmp|excalidraw)\)/
     const match_1 = line.match(image_line_regex_1);
     const match_2 = line.match(image_line_regex_2);
     if (match_1) {
@@ -95,11 +95,11 @@ export const getFileNameAndAltText = (linkType: number, match: any) => {
     var alt_regex;
 
     if (linkType == 1 || linkType == 3) {
-        if (linkType == 1) file_name_regex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
+        if (linkType == 1) file_name_regex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp|excalidraw)/;
         if (linkType == 3) file_name_regex = /(?<=\[\[).*(?=\|)|(?<=\[\[).*(?=\]\])/;
         alt_regex = /(?<=\|).*(?=]])/;
     } else if (linkType == 2 || linkType == 4) {
-        if (linkType == 2) file_name_regex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
+        if (linkType == 2) file_name_regex = /(?<=\().*(jpe?g|png|gif|svg|bmp|excalidraw)/;
         if (linkType == 4) file_name_regex = /(?<=\().*(?=\))/;
         alt_regex = /(?<=\[)(^$|.*)(?=\])/;
     }
@@ -131,7 +131,9 @@ export const getPathOfImage = (vault: Vault, image: TFile) => {
 export const getFileCmBelongsTo = (cm: CodeMirror.Editor, workspace: Workspace) => {
     let leafs = workspace.getLeavesOfType("markdown");
     for (let i = 0; i < leafs.length; i++) {
+        // @ts-ignore
         if (leafs[i].view instanceof MarkdownView && leafs[i].view.sourceMode?.cmEditor == cm) {
+            // @ts-ignore
             return leafs[i].view.file
         }
     }

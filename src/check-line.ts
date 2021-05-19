@@ -92,6 +92,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
         // Create Image
         const img = document.createElement('img');
 
+        var image = null;
+
         // Prepare the src for the Image
         if (link_in_line.result) {
             img.src = filename;
@@ -103,9 +105,25 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 let activeNoteFile = getActiveNoteFile(app.workspace);
                 sourcePath = activeNoteFile ? activeNoteFile.path : '';
             }
-            var image = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
-            if (image != null) img.src = getPathOfImage(app.vault, image)
+
+            if (filename.endsWith('excalidraw')) {
+                // The file is an excalidraw drawing
+                // @ts-ignore
+                if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
+                    // @ts-ignore
+                    ExcalidrawAutomate.reset();
+                    var excalidrawFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
+                    // @ts-ignore
+                    image = await ExcalidrawAutomate.createPNG(excalidrawFile.path);
+                    img.src = URL.createObjectURL(image);
+                }
+            } else {
+                // The file is an image
+                image = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
+                if (image != null) img.src = getPathOfImage(app.vault, image)
+            }
         }
+
         // Image Properties
         img.alt = alt;
 
