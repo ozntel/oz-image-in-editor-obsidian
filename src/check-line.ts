@@ -73,9 +73,6 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     // If any of regex matches, it will add image widget
     if (link_in_line.result || img_in_line.result) {
 
-        // Clear the image widgets if exists
-        clearLineWidgets(line);
-
         // Get the file name and alt text depending on format
         var filename = '';
         var alt = '';
@@ -110,12 +107,19 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 // The file is an excalidraw drawing
                 // @ts-ignore
                 if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
-                    // @ts-ignore
-                    ExcalidrawAutomate.reset();
                     var excalidrawFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
-                    // @ts-ignore
-                    image = await ExcalidrawAutomate.createPNG(excalidrawFile.path);
-                    img.src = URL.createObjectURL(image);
+                    var mtimeAlt = excalidrawFile.stat.mtime + '-' + alt
+                    var loadedDrawing = document.querySelector(`[mtime='${mtimeAlt}']`);
+                    if (loadedDrawing == null) {
+                        // @ts-ignore
+                        ExcalidrawAutomate.reset();
+                        // @ts-ignore
+                        image = await ExcalidrawAutomate.createPNG(excalidrawFile.path);
+                        img.src = URL.createObjectURL(image);
+                        img.setAttr("mtimeAlt", mtimeAlt);
+                    } else {
+                        return
+                    }
                 }
             } else {
                 // The file is an image
@@ -123,6 +127,9 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 if (image != null) img.src = getPathOfImage(app.vault, image)
             }
         }
+
+        // Clear the image widgets if exists
+        clearLineWidgets(line);
 
         // Image Properties
         img.alt = alt;
