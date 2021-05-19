@@ -44,9 +44,9 @@ export const get_link_in_line = (line: string) => {
 // Check line if it is image
 export const get_image_in_line = (line: string) => {
     // Regex for [[ ]] format
-    const image_line_regex_1 = /!\[\[.*(jpe?g|png|gif|svg|bmp|excalidraw).*\]\]/
+    const image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp|excalidraw).*?\]\]/
     // Regex for ![ ]( ) format
-    const image_line_regex_2 = /!\[(^$|.*)\]\(.*(jpe?g|png|gif|svg|bmp|excalidraw)\)/
+    const image_line_regex_2 = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp|excalidraw)\)/
     const match_1 = line.match(image_line_regex_1);
     const match_2 = line.match(image_line_regex_2);
     if (match_1) {

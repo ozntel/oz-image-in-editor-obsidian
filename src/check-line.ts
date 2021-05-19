@@ -108,7 +108,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 // @ts-ignore
                 if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
                     var excalidrawFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
-                    var mtimeAlt = excalidrawFile.stat.mtime + '-' + alt
+                    if (excalidrawFile == null) return;
+                    var mtimeAlt = excalidrawFile.stat.mtime + '-' + alt;
                     var loadedDrawing = document.querySelector(`[mtimeAlt='${mtimeAlt}']`);
                     if (loadedDrawing == null) {
                         // @ts-ignore
