@@ -3,6 +3,8 @@
 <h2 style="color: orange">Brief Explanation</h2>
 
 -   Plugin helps you to view `images` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
+-   You can now view `excalidraw` drawings within the Editor, as well. 
+    Reference: <a href="https://github.com/zsviczian/obsidian-excalidraw-plugin">Excalidraw Plugin</a>
 -   The plugin allows you to see both your local images and images from internet.
 -   Both Markdown and Wikilinks formats are supported as described below.
 -   You can resize the view of images using ALT-TEXT options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
@@ -28,6 +30,16 @@ alt texts:
 1. #small
 2. #x-small
 3. #xx-small
+
+<h2 style="color: orange">Excalidraw View</h2>
+
+Usage: 
+
+- **!\[[drawing.exalidraw|ALT-TEXT]]**
+
+- **!( ALT-TEXT )[drawing.exalidraw]**
+    
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
 
 <h2 style="color: orange">Experimental PDF View Feature</h2>
 
