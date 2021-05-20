@@ -4,30 +4,38 @@
 
 -   Plugin helps you to view `images` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
 -   The plugin allows you to see both your local images and images from internet.
--   Both Markdown and Wikilinks formats are supported as described below.
--   You can resize the view of images using ALT-TEXT options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
+-   Both `Markdown` and `Wikilinks` formats are supported as described below.
+-   You can resize the view of images using `ALT-TEXT` options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
 
 <h2 style="color: orange">Formats Supported</h2>
 
--   **!( ALT-TEXT )[ IMAGE-NAME ]**
+-   `!( ALT-TEXT )[ IMAGE-NAME ]`
     <span style="color: #d1672a">Sample</span>: !( #x-small )[ myimage.png ]
 
--   **!\[[ IMAGE-NAME | ALT-TEXT ]]**
+-   `!\[[ IMAGE-NAME | ALT-TEXT ]]`
     <span style="color: #d1672a">Sample</span>: !\[[ myimage.png | #x-small ]]
 
--   **!\[[ IMAGE-NAME ]]**
+-   `!\[[ IMAGE-NAME ]]`
     <span style="color: #d1672a">Sample</span>: !\[[ myimage.gif ]]
 
-**Scanned Image Formats** : jpg, jpeg, png, gif, svg, bmp
+**Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`
 
 <h2 style="color: orange">Image View Size</h2>
 
-Relative and Absolute Path will give you possibility to add "alt" text for the image. You can decide about the size of the image using following
+Relative and Absolute Path will give you possibility to add `alt` text for the image. You can decide about the size of the image using following
 alt texts:
 
-1. #small
-2. #x-small
-3. #xx-small
+1. `#small`
+2. `#x-small`
+3. `#xx-small`
+
+#### New Feature:
+
+You can now use the formats below to scale the images:
+
+1. **Width x Height**: `![100x100](image.png)`
+
+2. **Width**: `![300](image.png)`
 
 <h2 style="color: orange">Experimental PDF View Feature</h2>
 

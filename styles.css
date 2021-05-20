@@ -1,24 +1,23 @@
 div.oz-image-widget > img {
-  max-width: 100%;
-  height: auto;
+	max-width: 100%;
 }
 
-div.oz-image-widget > img[alt$='#small'] {
-  max-width: 75% !important;
-  min-width: 200pt !important;
+div.oz-image-widget > img[alt$="#small"] {
+	max-width: 75% !important;
+	min-width: 200pt !important;
 }
 
-div.oz-image-widget > img[alt$='#x-small'] {
-  max-width: 50% !important;
-  min-width: 100pt !important;
+div.oz-image-widget > img[alt$="#x-small"] {
+	max-width: 50% !important;
+	min-width: 100pt !important;
 }
 
-div.oz-image-widget > img[alt$='#xx-small'] {
-  max-width: 25% !important;
-  min-width: 50pt !important;
+div.oz-image-widget > img[alt$="#xx-small"] {
+	max-width: 25% !important;
+	min-width: 50pt !important;
 }
 
 .CodeMirror-linewidget > img {
-  margin-top: 5px !important;
-  margin-bottom: 5px !important;
+	margin-top: 5px !important;
+	margin-bottom: 5px !important;
 }

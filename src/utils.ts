@@ -113,6 +113,24 @@ export const getFileNameAndAltText = (linkType: number, match: any) => {
     }
 }
 
+// Checking the Alt 100x100 (WIDTHxHEIGHT) format
+export const altWidthHeight = (altText: string) => {
+    const widthHeightRegex = /[0-9]+x[0-9]+/
+    const widthRegex = /[0-9]+/
+    var match = altText.match(widthHeightRegex);
+    if (match) {
+        var index = match[0].indexOf('x');
+        return {
+            width: parseInt(match[0].substr(0, index)),
+            height: parseInt(match[0].substr(index + 1))
+        }
+    } else {
+        var widthMatch = altText.match(widthRegex);
+        if (widthMatch) return { width: parseInt(widthMatch[0]) }
+    }
+    return false
+}
+
 // Getting Active Markdown File
 export const getActiveNoteFile = (workspace: Workspace) => {
     return workspace.getActiveFile();

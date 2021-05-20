@@ -2,7 +2,8 @@ import { App, normalizePath, TFile } from 'obsidian';
 import {
     getFileNameAndAltText, get_link_in_line, get_image_in_line,
     getActiveNoteFile, getPathOfImage, getFileCmBelongsTo,
-    clearLineWidgets, get_pdf_in_line, get_pdf_name, path_is_a_link
+    clearLineWidgets, get_pdf_in_line, get_pdf_name, path_is_a_link,
+    altWidthHeight
 } from './utils';
 
 // Check Single Line
@@ -133,6 +134,13 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
         clearLineWidgets(line);
 
         // Image Properties
+        var altSizer = altWidthHeight(alt);
+        console.log(altSizer);
+        if (altSizer) {
+            img.width = altSizer.width;
+            if (altSizer.height) img.height = altSizer.height;
+        }
+
         img.alt = alt;
 
         // Add Image widget under the Image Markdown
