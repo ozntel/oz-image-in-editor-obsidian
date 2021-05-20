@@ -135,7 +135,6 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 
         // Image Properties
         var altSizer = altWidthHeight(alt);
-        console.log(altSizer);
         if (altSizer) {
             img.width = altSizer.width;
             if (altSizer.height) img.height = altSizer.height;
