@@ -13,10 +13,10 @@
 -   `!( ALT-TEXT )[ IMAGE-NAME ]`
     <span style="color: #d1672a">Sample</span>: !( #x-small )[ myimage.png ]
 
--   `!\[[ IMAGE-NAME | ALT-TEXT ]]`
+-   `![[ IMAGE-NAME | ALT-TEXT ]]`
     <span style="color: #d1672a">Sample</span>: !\[[ myimage.png | #x-small ]]
 
--   `!\[[ IMAGE-NAME ]]`
+-   `![[ IMAGE-NAME ]]`
     <span style="color: #d1672a">Sample</span>: !\[[ myimage.gif ]]
 
 **Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`
@@ -42,9 +42,9 @@ You can now use the formats below to scale the images:
 
 Usage:
 
--   **!\[[drawing.exalidraw|ALT-TEXT]]**
+-   `![[drawing.exalidraw|ALT-TEXT]]`
 
--   **!( ALT-TEXT )[drawing.exalidraw]**
+-   `!(ALT-TEXT)[drawing.exalidraw]`
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
 
