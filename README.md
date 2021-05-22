@@ -63,6 +63,24 @@ You can view both from local files and from the internet.
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-from-link.png" width="70%"/>
 
+<h2 style="color: orange">New Settings Options</h2>
+
+### Refresh Images After Changes
+
+You can now turn on option to refresh images after each file update. It is especially useful for `excalidraw` drawings:
+
+<img src="./images/refresh-images-settings.png" width="80%"/>
+
+### Turn On / Turn Off Image Rendering
+
+You have an option now to toggle image rendering in your editor:
+
+<img src="./images/render-toggle-settings.png" width="80%"/>
+
+You can do toggle rendering by a command from the pallette:
+
+<img src="./images/render-toggle-command.png" width="80%"/>
+
 <h2 style="color: orange">Sample Views</h2>
 
 ### Markdown Format
