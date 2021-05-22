@@ -1,16 +1,18 @@
-import { Plugin } from 'obsidian';
-import { ObsidianHelpers, WidgetHandler } from './utils';
+import { Plugin, TAbstractFile, TFile } from 'obsidian';
+import { ObsidianHelpers, WidgetHandler, ImageHandler } from './utils';
 import { check_line, check_lines } from './check-line';
 import { OzanImagePluginSettingsTab } from './settings';
 
 interface OzanImagePluginSettings {
     renderAll: boolean,
-    renderPDF: boolean
+    renderPDF: boolean,
+    refreshImagesAfterChange: boolean,
 }
 
 const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAll: true,
-    renderPDF: false
+    renderPDF: false,
+    refreshImagesAfterChange: false
 }
 
 export default class OzanImagePlugin extends Plugin {
@@ -36,6 +38,8 @@ export default class OzanImagePlugin extends Plugin {
             cm.on("change", this.codemirrorLineChanges);
             this.handleInitialLoad(cm);
         })
+        if (!this.settings.refreshImagesAfterChange) return;
+        this.app.vault.on('modify', this.handleFileModify);
     }
 
     onunload() {
@@ -43,6 +47,7 @@ export default class OzanImagePlugin extends Plugin {
             cm.off("change", this.codemirrorLineChanges);
             WidgetHandler.clearWidgets(cm);
         });
+        this.app.vault.off('modify', this.handleFileModify);
         console.log('Image in Editor Plugin is unloaded');
     }
 
@@ -75,11 +80,32 @@ export default class OzanImagePlugin extends Plugin {
                 cm.on("change", this.codemirrorLineChanges);
                 this.handleInitialLoad(cm);
             })
+            if (this.settings.refreshImagesAfterChange) this.app.vault.on('modify', this.handleFileModify);
         } else {
             this.app.workspace.iterateCodeMirrors((cm) => {
                 cm.off("change", this.codemirrorLineChanges);
                 WidgetHandler.clearWidgets(cm);
             });
+            this.app.vault.off('modify', this.handleFileModify);
         }
+    }
+
+    // Handle Toggle for Refresh Images
+    handleRefreshImages = (newRefreshImages: boolean) => {
+        if (newRefreshImages) {
+            this.app.vault.on('modify', this.handleFileModify);
+        } else {
+            this.app.vault.off('modify', this.handleFileModify)
+        }
+    }
+
+    // Handle File Upload
+    handleFileModify = (file: TAbstractFile) => {
+        if (!(file instanceof TFile)) return;
+        if (!ImageHandler.is_an_image(file.path)) return;
+        this.app.workspace.iterateCodeMirrors(cm => {
+            var lastLine = cm.lastLine();
+            check_lines(cm, 0, lastLine, this.app, this.settings);
+        })
     }
 }

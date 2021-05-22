@@ -16,7 +16,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Render Toggle')
-            .setDesc('Turn off this option if you want to stop rendering images, PDF and drawings')
+            .setDesc('Turn off this option if you want to stop rendering images, PDF and drawings. If you turn off, the other settings won\'t have an effect')
             .addToggle((toggle) => toggle
                 .setValue(this.plugin.settings.renderAll)
                 .onChange((value) => {
@@ -33,6 +33,18 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.renderPDF)
                 .onChange((value) => {
                     this.plugin.settings.renderPDF = value;
+                    this.plugin.saveSettings();
+                })
+            )
+
+        new Setting(containerEl)
+            .setName('Refresh Images after Changes')
+            .setDesc('Turn on this option if you want images to refreshed once you edit the original file')
+            .addToggle((toggle) => toggle
+                .setValue(this.plugin.settings.refreshImagesAfterChange)
+                .onChange((value) => {
+                    this.plugin.handleRefreshImages(value);
+                    this.plugin.settings.refreshImagesAfterChange = value;
                     this.plugin.saveSettings();
                 })
             )

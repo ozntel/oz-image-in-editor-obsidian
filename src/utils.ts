@@ -84,6 +84,9 @@ export class PDFHandler {
 
 export class ImageHandler {
 
+    // General Image Regex 
+    static image_regex = /.*.(jpe?g|png|gif|svg|bmp|excalidraw)/
+
     // Regex for [[ ]] format
     static image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp|excalidraw).*?\]\]/;
     static file_name_regex_1 = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp|excalidraw)/;
@@ -152,6 +155,13 @@ export class ImageHandler {
             if (widthMatch) return { width: parseInt(widthMatch[0]) }
         }
         return false
+    }
+
+    // Check if path is an image
+    static is_an_image = (path: string) => {
+        var match = path.match(ImageHandler.image_regex);
+        if (match) return true;
+        return false;
     }
 
 }
