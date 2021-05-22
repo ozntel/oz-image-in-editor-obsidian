@@ -15,7 +15,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
         containerEl.createEl('h2', { text: 'Image in Editor Settings' });
 
         new Setting(containerEl)
-            .setName('Toggle Rendering')
+            .setName('Render Toggle')
             .setDesc('Turn off this option if you want to stop rendering images, PDF and drawings')
             .addToggle((toggle) => toggle
                 .setValue(this.plugin.settings.renderAll)

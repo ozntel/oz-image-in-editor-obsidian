@@ -22,10 +22,6 @@ export default class OzanImagePlugin extends Plugin {
         this.addSettingTab(new OzanImagePluginSettingsTab(this.app, this));
         await this.loadSettings();
         // Register event for each change
-        this.registerCodeMirror((cm: CodeMirror.Editor) => {
-            cm.on("change", this.codemirrorLineChanges);
-            this.handleInitialLoad(cm);
-        })
         this.addCommand({
             id: 'toggle-render-all',
             name: 'Toggle Render All',
@@ -34,6 +30,11 @@ export default class OzanImagePlugin extends Plugin {
                 this.settings.renderAll = !this.settings.renderAll;
                 this.saveSettings();
             }
+        })
+        if (!this.settings.renderAll) return;
+        this.registerCodeMirror((cm: CodeMirror.Editor) => {
+            cm.on("change", this.codemirrorLineChanges);
+            this.handleInitialLoad(cm);
         })
     }
 
