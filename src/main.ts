@@ -4,12 +4,12 @@ import { check_line, check_lines } from './check-line';
 import { OzanImagePluginSettingsTab } from './settings';
 
 interface OzanImagePluginSettings {
-    renderImages: boolean,
+    renderAll: boolean,
     renderPDF: boolean
 }
 
 const DEFAULT_SETTINGS: OzanImagePluginSettings = {
-    renderImages: true,
+    renderAll: true,
     renderPDF: false
 }
 
@@ -25,6 +25,15 @@ export default class OzanImagePlugin extends Plugin {
         this.registerCodeMirror((cm: CodeMirror.Editor) => {
             cm.on("change", this.codemirrorLineChanges);
             this.handleInitialLoad(cm);
+        })
+        this.addCommand({
+            id: 'toggle-render-all',
+            name: 'Toggle Render All',
+            callback: () => {
+                this.handleToggleRenderAll(!this.settings.renderAll);
+                this.settings.renderAll = !this.settings.renderAll;
+                this.saveSettings();
+            }
         })
     }
 
@@ -53,8 +62,23 @@ export default class OzanImagePlugin extends Plugin {
     handleInitialLoad = (cm: CodeMirror.Editor) => {
         var lastLine = cm.lastLine();
         var file = getFileCmBelongsTo(cm, this.app.workspace);
-        for (let i = 0; i < lastLine; i++) {
+        for (let i = 0; i < lastLine + 1; i++) {
             check_line(cm, i, file, this.app, this.settings);
+        }
+    }
+
+    // Handle Toggle for renderAll
+    handleToggleRenderAll = (newRenderAll: boolean) => {
+        if (newRenderAll) {
+            this.registerCodeMirror((cm: CodeMirror.Editor) => {
+                cm.on("change", this.codemirrorLineChanges);
+                this.handleInitialLoad(cm);
+            })
+        } else {
+            this.app.workspace.iterateCodeMirrors((cm) => {
+                cm.off("change", this.codemirrorLineChanges);
+                clearWidgets(cm);
+            });
         }
     }
 }
