@@ -1,12 +1,15 @@
-import { Plugin, PluginSettingTab, App, Setting } from 'obsidian';
+import { Plugin } from 'obsidian';
 import { clearWidgets, getFileCmBelongsTo } from './utils';
 import { check_line, check_lines } from './check-line';
+import { OzanImagePluginSettingsTab } from './settings';
 
 interface OzanImagePluginSettings {
+    renderImages: boolean,
     renderPDF: boolean
 }
 
 const DEFAULT_SETTINGS: OzanImagePluginSettings = {
+    renderImages: true,
     renderPDF: false
 }
 
@@ -54,30 +57,4 @@ export default class OzanImagePlugin extends Plugin {
             check_line(cm, i, file, this.app, this.settings);
         }
     }
-}
-
-class OzanImagePluginSettingsTab extends PluginSettingTab {
-    plugin: OzanImagePlugin;
-
-    constructor(app: App, plugin: OzanImagePlugin) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
-
-    display(): void {
-        let { containerEl } = this;
-        containerEl.empty();
-        containerEl.createEl('h2', { text: 'Image in Editor Settings' });
-        new Setting(containerEl)
-            .setName('Render PDF-s in Editor')
-            .setDesc('Turn on this option if you want also PDF files to be rendered in Editor')
-            .addToggle((toggle) => toggle
-                .setValue(this.plugin.settings.renderPDF)
-                .onChange((value) => {
-                    this.plugin.settings.renderPDF = value;
-                    this.plugin.saveSettings();
-                })
-            )
-    }
-
 }
