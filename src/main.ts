@@ -1,5 +1,5 @@
 import { Plugin } from 'obsidian';
-import { clearWidgets, getFileCmBelongsTo } from './utils';
+import { ObsidianHelpers, WidgetHandler } from './utils';
 import { check_line, check_lines } from './check-line';
 import { OzanImagePluginSettingsTab } from './settings';
 
@@ -41,7 +41,7 @@ export default class OzanImagePlugin extends Plugin {
     onunload() {
         this.app.workspace.iterateCodeMirrors((cm) => {
             cm.off("change", this.codemirrorLineChanges);
-            clearWidgets(cm);
+            WidgetHandler.clearWidgets(cm);
         });
         console.log('Image in Editor Plugin is unloaded');
     }
@@ -62,7 +62,7 @@ export default class OzanImagePlugin extends Plugin {
     // Only Triggered during initial Load
     handleInitialLoad = (cm: CodeMirror.Editor) => {
         var lastLine = cm.lastLine();
-        var file = getFileCmBelongsTo(cm, this.app.workspace);
+        var file = ObsidianHelpers.getFileCmBelongsTo(cm, this.app.workspace);
         for (let i = 0; i < lastLine + 1; i++) {
             check_line(cm, i, file, this.app, this.settings);
         }
@@ -78,7 +78,7 @@ export default class OzanImagePlugin extends Plugin {
         } else {
             this.app.workspace.iterateCodeMirrors((cm) => {
                 cm.off("change", this.codemirrorLineChanges);
-                clearWidgets(cm);
+                WidgetHandler.clearWidgets(cm);
             });
         }
     }

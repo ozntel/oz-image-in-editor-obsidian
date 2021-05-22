@@ -1,9 +1,7 @@
 import { App, normalizePath, TFile } from 'obsidian';
 import {
-    getFileNameAndAltText, get_link_in_line, get_image_in_line,
-    getActiveNoteFile, getPathOfImage, getFileCmBelongsTo,
-    clearLineWidgets, get_pdf_in_line, get_pdf_name, path_is_a_link,
-    altWidthHeight
+    WidgetHandler, LinkHandler, PDFHandler,
+    ImageHandler, ObsidianHelpers
 } from './utils';
 
 // Check Single Line
@@ -14,8 +12,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     if (line === null) return;
 
     // Check if the line is an internet link
-    const link_in_line = get_link_in_line(line.text);
-    const img_in_line = get_image_in_line(line.text);
+    const link_in_line = LinkHandler.get_link_in_line(line.text);
+    const img_in_line = ImageHandler.get_image_in_line(line.text);
 
     // Clear the widget if link was removed
     var line_image_widget = line.widgets ? line.widgets.filter((wid: { className: string; }) => wid.className === 'oz-image-widget') : false;
@@ -27,24 +25,24 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     if (settings && settings.renderPDF) {
 
         // Check if the line is a  PDF 
-        const pdf_in_line = get_pdf_in_line(line.text);
+        const pdf_in_line = PDFHandler.get_pdf_in_line(line.text);
 
         // If PDF Regex Matches
         if (pdf_in_line.result) {
 
             // Clear the Line Widgets
-            clearLineWidgets(line);
+            WidgetHandler.clearLineWidgets(line);
 
             // Get Source Path
             if (targetFile != null) sourcePath = targetFile.path;
 
             // Get PDF File
-            var pdf_name = get_pdf_name(pdf_in_line.linkType, pdf_in_line.result);
+            var pdf_name = PDFHandler.get_pdf_name(pdf_in_line.linkType, pdf_in_line.result);
 
             // Create URL for Link and Local PDF 
             var pdf_path = '';
 
-            if (path_is_a_link(pdf_name)) {
+            if (LinkHandler.path_is_a_link(pdf_name)) {
                 pdf_path = pdf_name
             } else {
                 // Get the PDF File Object
@@ -80,11 +78,11 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 
         if (link_in_line.result) {
             // linkType 3 and 4
-            filename = getFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName
-            alt = getFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText
+            filename = ImageHandler.getFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName
+            alt = ImageHandler.getFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText
         } else if (img_in_line.result) {
-            filename = getFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
-            alt = getFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText
+            filename = ImageHandler.getFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
+            alt = ImageHandler.getFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText
         }
 
         // Create Image
@@ -100,7 +98,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             if (targetFile != null) {
                 sourcePath = targetFile.path;
             } else {
-                let activeNoteFile = getActiveNoteFile(app.workspace);
+                let activeNoteFile = ObsidianHelpers.getActiveNoteFile(app.workspace);
                 sourcePath = activeNoteFile ? activeNoteFile.path : '';
             }
 
@@ -126,15 +124,15 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             } else {
                 // The file is an image
                 image = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
-                if (image != null) img.src = getPathOfImage(app.vault, image)
+                if (image != null) img.src = ObsidianHelpers.getPathOfImage(app.vault, image)
             }
         }
 
         // Clear the image widgets if exists
-        clearLineWidgets(line);
+        WidgetHandler.clearLineWidgets(line);
 
         // Image Properties
-        var altSizer = altWidthHeight(alt);
+        var altSizer = ImageHandler.altWidthHeight(alt);
         if (altSizer) {
             img.width = altSizer.width;
             if (altSizer.height) img.height = altSizer.height;
@@ -150,7 +148,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 // Check All Lines Function
 export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, app: App, settings: any) => {
     // Last Used Line Number in Code Mirror
-    var file = getFileCmBelongsTo(cm, app.workspace);
+    var file = ObsidianHelpers.getFileCmBelongsTo(cm, app.workspace);
     for (let i = from; i <= to; i++) {
         check_line(cm, i, file, app, settings);
     }
