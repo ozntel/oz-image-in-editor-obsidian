@@ -69,17 +69,17 @@ You can view both from local files and from the internet.
 
 You can now turn on option to refresh images after each file update. It is especially useful for `excalidraw` drawings:
 
-<img src="./images/refresh-images-settings.png" width="80%"/>
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/refresh-images-settings.png" width="80%"/>
 
 ### Turn On / Turn Off Image Rendering
 
 You have an option now to toggle image rendering in your editor:
 
-<img src="./images/render-toggle-settings.png" width="80%"/>
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/render-toggle-settings.png" width="80%"/>
 
 You can do toggle rendering by a command from the pallette:
 
-<img src="./images/render-toggle-command.png" width="80%"/>
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/render-toggle-command.png" width="80%"/>
 
 <h2 style="color: orange">Sample Views</h2>
 
