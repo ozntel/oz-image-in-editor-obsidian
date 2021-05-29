@@ -105,7 +105,7 @@ export default class OzanImagePlugin extends Plugin {
         if (!ImageHandler.is_an_image(file.path)) return;
         this.app.workspace.iterateCodeMirrors(cm => {
             var lastLine = cm.lastLine();
-            check_lines(cm, 0, lastLine, this.app, this.settings);
+            check_lines(cm, 0, lastLine, this.app, this.settings, file.path);
         })
     }
 }

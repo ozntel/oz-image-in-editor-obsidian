@@ -5,7 +5,7 @@ import {
 } from './utils';
 
 // Check Single Line
-export const check_line: any = async (cm: CodeMirror.Editor, line_number: number, targetFile: TFile, app: App, settings: any) => {
+export const check_line: any = async (cm: CodeMirror.Editor, line_number: number, targetFile: TFile, app: App, settings: any, changedFilePath?: string) => {
 
     // Get the Line edited
     const line = cm.lineInfo(line_number);
@@ -102,19 +102,23 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 sourcePath = activeNoteFile ? activeNoteFile.path : '';
             }
 
+            var imageFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
+
+            // Additional Check for Changed Files - helps updating only for changed image
+            if (changedFilePath && imageFile && changedFilePath !== imageFile.path) return;
+
             if (filename.endsWith('excalidraw')) {
                 // The file is an excalidraw drawing
                 // @ts-ignore
                 if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
-                    var excalidrawFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
-                    if (excalidrawFile == null) return;
-                    var mtimeAlt = excalidrawFile.stat.mtime + '-' + alt;
+                    if (imageFile == null) return;
+                    var mtimeAlt = imageFile.stat.mtime + '-' + alt;
                     var loadedDrawing = document.querySelector(`[mtimeAlt='${mtimeAlt}']`);
                     if (loadedDrawing == null) {
                         // @ts-ignore
                         ExcalidrawAutomate.reset();
                         // @ts-ignore
-                        image = await ExcalidrawAutomate.createPNG(excalidrawFile.path);
+                        image = await ExcalidrawAutomate.createPNG(imageFile.path);
                         img.src = URL.createObjectURL(image);
                         img.setAttr("mtimeAlt", mtimeAlt);
                     } else {
@@ -123,8 +127,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 }
             } else {
                 // The file is an image
-                image = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
-                if (image != null) img.src = ObsidianHelpers.getPathOfImage(app.vault, image)
+                if (imageFile == null) return;
+                img.src = ObsidianHelpers.getPathOfImage(app.vault, imageFile);
             }
         }
 
@@ -146,10 +150,10 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 }
 
 // Check All Lines Function
-export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, app: App, settings: any) => {
+export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, app: App, settings: any, changedFilePath?: string) => {
     // Last Used Line Number in Code Mirror
     var file = ObsidianHelpers.getFileCmBelongsTo(cm, app.workspace);
     for (let i = from; i <= to; i++) {
-        check_line(cm, i, file, app, settings);
+        check_line(cm, i, file, app, settings, changedFilePath);
     }
 }
