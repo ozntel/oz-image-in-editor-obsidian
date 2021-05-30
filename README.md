@@ -2,7 +2,7 @@
 
 <h2 style="color: orange">Brief Explanation</h2>
 
--   Plugin helps you to view `images` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
+-   Plugin helps you to view `images`, `iframes` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
 -   After a nice collaboration with Zsolt, you can now view `excalidraw` drawings within the Editor, as well. Reference: <a href="https://github.com/zsviczian/obsidian-excalidraw-plugin">Excalidraw Plugin</a>
 -   The plugin allows you to see both your local images and images from internet.
 -   Both `Markdown` and `Wikilinks` formats are supported as described below.

@@ -27,7 +27,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName('Render PDF-s in Editor')
+            .setName('Render PDFs in Editor')
             .setDesc('Turn on this option if you want also PDF files to be rendered in Editor')
             .addToggle((toggle) => toggle
                 .setValue(this.plugin.settings.renderPDF)
@@ -38,8 +38,8 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
-            .setName('Render Iframe-s in Editor')
-            .setDesc('Turn on this option if you want iframe-s to be rendered in Editor')
+            .setName('Render Iframes in Editor')
+            .setDesc('Turn on this option if you want iframes to be rendered in Editor')
             .addToggle((toggle) => toggle
                 .setValue(this.plugin.settings.renderIframe)
                 .onChange((value) => {
