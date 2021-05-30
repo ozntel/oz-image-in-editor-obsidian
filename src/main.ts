@@ -90,7 +90,7 @@ export default class OzanImagePlugin extends Plugin {
         }
     }
 
-    // Handle Toggle for Refresh Images
+    // Handle Toggle for Refresh Images Settings
     handleRefreshImages = (newRefreshImages: boolean) => {
         if (newRefreshImages) {
             this.app.vault.on('modify', this.handleFileModify);
@@ -99,7 +99,7 @@ export default class OzanImagePlugin extends Plugin {
         }
     }
 
-    // Handle File Upload
+    // Handle File Changes to Refhres Images
     handleFileModify = (file: TAbstractFile) => {
         if (!(file instanceof TFile)) return;
         if (!ImageHandler.is_an_image(file.path)) return;
