@@ -1,7 +1,7 @@
 import { App, normalizePath, TFile } from 'obsidian';
 import {
     WidgetHandler, LinkHandler, PDFHandler,
-    ImageHandler, ObsidianHelpers
+    ImageHandler, ObsidianHelpers, IframeHandler
 } from './utils';
 
 // Check Single Line
@@ -18,6 +18,29 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     // Clear the widget if link was removed
     var line_image_widget = line.widgets ? line.widgets.filter((wid: { className: string; }) => wid.className === 'oz-image-widget') : false;
     if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0].clear();
+
+    // Render iFrame if it is turned on
+    if (settings && settings.renderIframe) {
+
+        // Check if the line is a Iframe
+        const iframe_in_line = IframeHandler.get_iframe_in_line(line.text);
+
+        // If Regex Matches
+        if (iframe_in_line.result) {
+
+            // Clear the Line Widgets
+            WidgetHandler.clearLineWidgets(line);
+
+            // Create Iframe Node
+            var iframeNode = IframeHandler.create_iframe_node(iframe_in_line.result);
+
+            // Add Widget in Line
+            cm.addLineWidget(line_number, iframeNode, { className: 'oz-image-widget' })
+
+            // End Rendering of the line
+            return;
+        }
+    }
 
     var sourcePath = '';
 

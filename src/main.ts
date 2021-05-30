@@ -6,12 +6,14 @@ import { OzanImagePluginSettingsTab } from './settings';
 interface OzanImagePluginSettings {
     renderAll: boolean,
     renderPDF: boolean,
+    renderIframe: boolean,
     refreshImagesAfterChange: boolean,
 }
 
 const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAll: true,
     renderPDF: false,
+    renderIframe: false,
     refreshImagesAfterChange: false
 }
 

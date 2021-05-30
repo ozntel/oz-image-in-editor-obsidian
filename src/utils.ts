@@ -166,6 +166,24 @@ export class ImageHandler {
 
 }
 
+export class IframeHandler {
+
+    static iframeRegex = /(?:<iframe[^>]*)(?:(?:\/>)|(?:>.*?<\/iframe>))/;
+
+    static get_iframe_in_line = (line: string) => {
+        const match = line.match(IframeHandler.iframeRegex);
+        if (match) return { result: match, linkType: 'iframe' };
+        return { result: false, linkType: 0 }
+    }
+
+    static create_iframe_node = (match: any): HTMLElement => {
+        var iframeNode = document.createElement('div');
+        iframeNode.innerHTML = match[0].trim();
+        return iframeNode;
+    }
+
+}
+
 export class ObsidianHelpers {
 
     // Getting Active Markdown File

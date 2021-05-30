@@ -38,6 +38,17 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             )
 
         new Setting(containerEl)
+            .setName('Render Iframe-s in Editor')
+            .setDesc('Turn on this option if you want iframe-s to be rendered in Editor')
+            .addToggle((toggle) => toggle
+                .setValue(this.plugin.settings.renderIframe)
+                .onChange((value) => {
+                    this.plugin.settings.renderIframe = value;
+                    this.plugin.saveSettings();
+                })
+            )
+
+        new Setting(containerEl)
             .setName('Refresh Images after Changes')
             .setDesc('Turn on this option if you want images to refreshed once you edit the original file')
             .addToggle((toggle) => toggle
