@@ -2,24 +2,28 @@ import { Plugin, TAbstractFile, TFile } from 'obsidian';
 import { ObsidianHelpers, WidgetHandler, ImageHandler } from './utils';
 import { check_line, check_lines } from './check-line';
 import { OzanImagePluginSettingsTab } from './settings';
+import { WYSIWYG_Style } from './constants';
 
 interface OzanImagePluginSettings {
     renderAll: boolean,
     renderPDF: boolean,
     renderIframe: boolean,
     refreshImagesAfterChange: boolean,
+    WYSIWYG: boolean,
 }
 
 const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAll: true,
     renderPDF: false,
     renderIframe: false,
-    refreshImagesAfterChange: false
+    refreshImagesAfterChange: false,
+    WYSIWYG: false
 }
 
 export default class OzanImagePlugin extends Plugin {
 
     settings: OzanImagePluginSettings;
+    loadedStyles: Array<HTMLStyleElement>;
 
     async onload() {
         console.log('Image in Editor Plugin is loaded');
@@ -35,6 +39,7 @@ export default class OzanImagePlugin extends Plugin {
                 this.saveSettings();
             }
         })
+        if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
         if (!this.settings.renderAll) return;
         this.registerCodeMirror((cm: CodeMirror.Editor) => {
             cm.on("change", this.codemirrorLineChanges);
@@ -50,6 +55,7 @@ export default class OzanImagePlugin extends Plugin {
             WidgetHandler.clearWidgets(cm);
         });
         this.app.vault.off('modify', this.handleFileModify);
+        this.unload_WYSIWYG_Styles();
         console.log('Image in Editor Plugin is unloaded');
     }
 
@@ -109,5 +115,29 @@ export default class OzanImagePlugin extends Plugin {
             var lastLine = cm.lastLine();
             check_lines(cm, 0, lastLine, this.app, this.settings, file.path);
         })
+    }
+
+    // Handle WYSIWYG Toggle
+    handleWYSIWYG = (newWYSIWYG: boolean) => {
+        if (newWYSIWYG) {
+            this.load_WYSIWYG_Styles();
+        } else {
+            this.unload_WYSIWYG_Styles();
+        }
+    }
+
+    load_WYSIWYG_Styles = () => {
+        this.loadedStyles = Array<HTMLStyleElement>(0);
+        var style = document.createElement("style");
+        style.innerHTML = WYSIWYG_Style;
+        document.head.appendChild(style);
+        this.loadedStyles.push(style);
+    }
+
+    unload_WYSIWYG_Styles = () => {
+        for (let style of this.loadedStyles) {
+            document.head.removeChild(style);
+        }
+        this.loadedStyles = Array<HTMLStyleElement>(0);
     }
 }

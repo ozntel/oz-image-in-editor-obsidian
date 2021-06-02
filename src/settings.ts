@@ -14,6 +14,8 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
         containerEl.empty();
         containerEl.createEl('h2', { text: 'Image in Editor Settings' });
 
+        containerEl.createEl('h2', { text: 'Render Options' });
+
         new Setting(containerEl)
             .setName('Render Toggle')
             .setDesc('Turn off this option if you want to stop rendering images, PDF and drawings. If you turn off, the other settings won\'t have an effect')
@@ -48,6 +50,8 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 })
             )
 
+        this.containerEl.createEl('h2', { text: 'Alternative Settings' });
+
         new Setting(containerEl)
             .setName('Refresh Images after Changes')
             .setDesc('Turn on this option if you want images to refreshed once you edit the original file')
@@ -56,6 +60,18 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 .onChange((value) => {
                     this.plugin.handleRefreshImages(value);
                     this.plugin.settings.refreshImagesAfterChange = value;
+                    this.plugin.saveSettings();
+                })
+            )
+
+        new Setting(containerEl)
+            .setName('WYSIWYG Like Experience')
+            .setDesc('Turn on this option if you want WYSIWYG style to be loaded for editor view')
+            .addToggle((toggle) => toggle
+                .setValue(this.plugin.settings.WYSIWYG)
+                .onChange((value) => {
+                    this.plugin.settings.WYSIWYG = value;
+                    this.plugin.handleWYSIWYG(value);
                     this.plugin.saveSettings();
                 })
             )
