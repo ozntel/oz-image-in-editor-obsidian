@@ -1,5 +1,8 @@
 <h1 style="color: orange">Ozan's Image in Editor Plugin</h1>
 
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ozntel/oz-image-in-editor-obsidian?style=for-the-badge)
+![GitHub all releases](https://img.shields.io/github/downloads/ozntel/oz-image-in-editor-obsidian/total?style=for-the-badge)
+
 <h2 style="color: orange">Brief Explanation</h2>
 
 -   Plugin helps you to view `images`, `iframes` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
