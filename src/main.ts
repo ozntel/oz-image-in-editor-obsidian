@@ -120,7 +120,7 @@ export default class OzanImagePlugin extends Plugin {
     }
 
     unload_WYSIWYG_Styles = () => {
-        if (!this.loadedStyles) return;
+        if (!this.loadedStyles || typeof this.loadedStyles[Symbol.iterator] !== 'function') return;
         for (let style of this.loadedStyles) {
             document.head.removeChild(style);
         }
