@@ -1,6 +1,22 @@
 import { PluginSettingTab, Setting, App } from 'obsidian';
 import OzanImagePlugin from './main';
 
+export interface OzanImagePluginSettings {
+    renderAll: boolean,
+    renderPDF: boolean,
+    renderIframe: boolean,
+    refreshImagesAfterChange: boolean,
+    WYSIWYG: boolean,
+}
+
+export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
+    renderAll: true,
+    renderPDF: false,
+    renderIframe: false,
+    refreshImagesAfterChange: false,
+    WYSIWYG: false
+}
+
 export class OzanImagePluginSettingsTab extends PluginSettingTab {
     plugin: OzanImagePlugin;
 

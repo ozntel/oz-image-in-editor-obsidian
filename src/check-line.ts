@@ -35,7 +35,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             var iframeNode = IframeHandler.create_iframe_node(iframe_in_line.result);
 
             // Add Widget in Line
-            cm.addLineWidget(line_number, iframeNode, { className: 'oz-image-widget' })
+            cm.addLineWidget(line_number, iframeNode, { className: 'oz-image-widget', showIfHidden: false })
 
             // End Rendering of the line
             return;
@@ -85,7 +85,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             pdf_widget.height = '650'
 
             // Add Widget in Line
-            cm.addLineWidget(line_number, pdf_widget, { className: 'oz-image-widget' })
+            cm.addLineWidget(line_number, pdf_widget, { className: 'oz-image-widget', showIfHidden: false })
 
             // End Rendering of the line
             return
@@ -168,7 +168,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
         img.alt = alt;
 
         // Add Image widget under the Image Markdown
-        cm.addLineWidget(line_number, img, { className: 'oz-image-widget' });
+        cm.addLineWidget(line_number, img, { className: 'oz-image-widget', showIfHidden: false });
     }
 }
 

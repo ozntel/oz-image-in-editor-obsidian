@@ -3,22 +3,7 @@ import { ObsidianHelpers, WidgetHandler, ImageHandler } from './utils';
 import { check_line, check_lines } from './check-line';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './constants';
-
-interface OzanImagePluginSettings {
-    renderAll: boolean,
-    renderPDF: boolean,
-    renderIframe: boolean,
-    refreshImagesAfterChange: boolean,
-    WYSIWYG: boolean,
-}
-
-const DEFAULT_SETTINGS: OzanImagePluginSettings = {
-    renderAll: true,
-    renderPDF: false,
-    renderIframe: false,
-    refreshImagesAfterChange: false,
-    WYSIWYG: false
-}
+import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
 
 export default class OzanImagePlugin extends Plugin {
 
