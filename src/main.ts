@@ -120,6 +120,7 @@ export default class OzanImagePlugin extends Plugin {
     }
 
     unload_WYSIWYG_Styles = () => {
+        if (!this.loadedStyles) return;
         for (let style of this.loadedStyles) {
             document.head.removeChild(style);
         }
