@@ -135,18 +135,26 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 // @ts-ignore
                 if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
                     if (imageFile == null) return;
-                    var mtimeAlt = imageFile.stat.mtime + '-' + alt;
-                    var loadedDrawing = document.querySelector(`[mtimeAlt='${mtimeAlt}']`);
-                    if (loadedDrawing == null) {
-                        // @ts-ignore
-                        ExcalidrawAutomate.reset();
-                        // @ts-ignore
-                        image = await ExcalidrawAutomate.createPNG(imageFile.path);
-                        img.src = URL.createObjectURL(image);
-                        img.setAttr("mtimeAlt", mtimeAlt);
-                    } else {
-                        return
+
+                    // @ts-ignore
+                    ExcalidrawAutomate.reset();
+
+                    // @ts-ignore
+                    image = await ExcalidrawAutomate.createPNG(imageFile.path);
+
+                    // Check if Object or Alt Changed
+                    if (line.handle.widgets) {
+                        var currentImageNode = line.handle.widgets[0].node;
+                        var blobLink = currentImageNode.currentSrc;
+                        var existingBlop = await ImageHandler.getBlobObject(blobLink);
+                        if (existingBlop.size === image.size && currentImageNode.alt === alt) {
+                            // Drawing hasn't changed
+                            return;
+                        }
                     }
+
+                    // Generate New Link for new Drawing
+                    img.src = URL.createObjectURL(image);
                 }
             } else {
                 // The file is an image

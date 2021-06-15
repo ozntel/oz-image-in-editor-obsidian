@@ -164,6 +164,11 @@ export class ImageHandler {
         return false;
     }
 
+    // Return Blob Object from Url
+    static getBlobObject = async (blobLink: string) => {
+        return fetch(blobLink).then(res => res.blob())
+    }
+
 }
 
 export class IframeHandler {
