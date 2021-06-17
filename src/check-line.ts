@@ -1,4 +1,4 @@
-import { App, normalizePath, TFile } from 'obsidian';
+import { App, normalizePath, TFile, Menu } from 'obsidian';
 import {
     WidgetHandler, LinkHandler, PDFHandler,
     ImageHandler, ObsidianHelpers, IframeHandler
@@ -160,6 +160,30 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 // The file is an image
                 if (imageFile == null) return;
                 img.src = ObsidianHelpers.getPathOfImage(app.vault, imageFile);
+
+                // Add option to copy to clipboard
+                document.on('contextmenu', 'div.CodeMirror-linewidget.oz-image-widget > img', (e) => {
+                    e.stopPropagation();
+                    const fileMenu = new Menu(app);
+
+                    fileMenu.addItem(menuItem => {
+                        menuItem.setTitle('Copy Image to Clipboard');
+                        menuItem.setIcon('image-file');
+                        menuItem.onClick(async (e) => {
+                            var buffer = await app.vault.adapter.readBinary(imageFile.path);
+                            var arr = new Uint8Array(buffer);
+                            var blob = new Blob([arr], { type: 'image/png' });
+                            // @ts-ignore
+                            const item = new ClipboardItem({ "image/png": blob });
+                            // @ts-ignore
+                            window.navigator['clipboard'].write([item]);
+                        })
+                    })
+
+                    app.workspace.trigger('file-menu', fileMenu, imageFile, 'file-explorer');
+                    fileMenu.showAtPosition({ x: e.pageX, y: e.pageY });
+                    return false;
+                })
             }
         }
 
