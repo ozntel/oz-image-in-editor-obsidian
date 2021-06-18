@@ -1,11 +1,12 @@
 import { App, normalizePath, TFile, Menu } from 'obsidian';
+import OzanImagePlugin from './main';
 import {
     WidgetHandler, LinkHandler, PDFHandler,
     ImageHandler, ObsidianHelpers, IframeHandler
 } from './utils';
 
 // Check Single Line
-export const check_line: any = async (cm: CodeMirror.Editor, line_number: number, targetFile: TFile, app: App, settings: any, changedFilePath?: string) => {
+export const check_line: any = async (cm: CodeMirror.Editor, line_number: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
 
     // Get the Line edited
     const line = cm.lineInfo(line_number);
@@ -20,7 +21,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0].clear();
 
     // Render iFrame if it is turned on
-    if (settings && settings.renderIframe) {
+    if (plugin.settings && plugin.settings.renderIframe) {
 
         // Check if the line is a Iframe
         const iframe_in_line = IframeHandler.get_iframe_in_line(line.text);
@@ -45,7 +46,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     var sourcePath = '';
 
     // Render PDF if it is turned on
-    if (settings && settings.renderPDF) {
+    if (plugin.settings && plugin.settings.renderPDF) {
 
         // Check if the line is a  PDF 
         const pdf_in_line = PDFHandler.get_pdf_in_line(line.text);
@@ -69,9 +70,9 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 pdf_path = pdf_name
             } else {
                 // Get the PDF File Object
-                var pdfFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdf_name), sourcePath);
+                var pdfFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdf_name), sourcePath);
                 // Create Object URL
-                var buffer = await app.vault.adapter.readBinary(normalizePath(pdfFile.path));
+                var buffer = await plugin.app.vault.adapter.readBinary(normalizePath(pdfFile.path));
                 var arr = new Uint8Array(buffer);
                 var blob = new Blob([arr], { type: 'application/pdf' });
                 pdf_path = URL.createObjectURL(blob);
@@ -121,11 +122,11 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             if (targetFile != null) {
                 sourcePath = targetFile.path;
             } else {
-                let activeNoteFile = ObsidianHelpers.getActiveNoteFile(app.workspace);
+                let activeNoteFile = ObsidianHelpers.getActiveNoteFile(plugin.app.workspace);
                 sourcePath = activeNoteFile ? activeNoteFile.path : '';
             }
 
-            var imageFile = app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
+            var imageFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
 
             // Additional Check for Changed Files - helps updating only for changed image
             if (changedFilePath && imageFile && changedFilePath !== imageFile.path) return;
@@ -159,18 +160,20 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             } else {
                 // The file is an image
                 if (imageFile == null) return;
-                img.src = ObsidianHelpers.getPathOfImage(app.vault, imageFile);
+
+                img.src = ObsidianHelpers.getPathOfImage(plugin.app.vault, imageFile);
+                img.setAttr('data-path', imageFile.path);
 
                 // Add option to copy to clipboard
-                document.on('contextmenu', 'div.CodeMirror-linewidget.oz-image-widget > img', (e) => {
+                document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path="${imageFile.path}"]`, (e) => {
                     e.stopPropagation();
-                    const fileMenu = new Menu(app);
+                    const fileMenu = new Menu(plugin.app);
 
                     fileMenu.addItem(menuItem => {
                         menuItem.setTitle('Copy Image to Clipboard');
                         menuItem.setIcon('image-file');
                         menuItem.onClick(async (e) => {
-                            var buffer = await app.vault.adapter.readBinary(imageFile.path);
+                            var buffer = await plugin.app.vault.adapter.readBinary(imageFile.path);
                             var arr = new Uint8Array(buffer);
                             var blob = new Blob([arr], { type: 'image/png' });
                             // @ts-ignore
@@ -180,7 +183,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                         })
                     })
 
-                    app.workspace.trigger('file-menu', fileMenu, imageFile, 'file-explorer');
+                    plugin.app.workspace.trigger('file-menu', fileMenu, imageFile, 'file-explorer');
                     fileMenu.showAtPosition({ x: e.pageX, y: e.pageY });
                     return false;
                 })
@@ -205,10 +208,10 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 }
 
 // Check All Lines Function
-export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, app: App, settings: any, changedFilePath?: string) => {
+export const check_lines: any = (cm: CodeMirror.Editor, from: number, to: number, plugin: OzanImagePlugin, changedFilePath?: string) => {
     // Last Used Line Number in Code Mirror
-    var file = ObsidianHelpers.getFileCmBelongsTo(cm, app.workspace);
+    var file = ObsidianHelpers.getFileCmBelongsTo(cm, plugin.app.workspace);
     for (let i = from; i <= to; i++) {
-        check_line(cm, i, file, app, settings, changedFilePath);
+        check_line(cm, i, file, plugin, changedFilePath);
     }
 }

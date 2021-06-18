@@ -54,7 +54,7 @@ export default class OzanImagePlugin extends Plugin {
 
     // Line Edit Changes
     codemirrorLineChanges = (cm: any, change: any) => {
-        check_lines(cm, change.from.line, change.from.line + change.text.length - 1, this.app, this.settings);
+        check_lines(cm, change.from.line, change.from.line + change.text.length - 1, this);
     }
 
     // Only Triggered during initial Load
@@ -62,7 +62,7 @@ export default class OzanImagePlugin extends Plugin {
         var lastLine = cm.lastLine();
         var file = ObsidianHelpers.getFileCmBelongsTo(cm, this.app.workspace);
         for (let i = 0; i < lastLine + 1; i++) {
-            check_line(cm, i, file, this.app, this.settings);
+            check_line(cm, i, file, this);
         }
     }
 
@@ -98,7 +98,7 @@ export default class OzanImagePlugin extends Plugin {
         if (!ImageHandler.is_an_image(file.path)) return;
         this.app.workspace.iterateCodeMirrors(cm => {
             var lastLine = cm.lastLine();
-            check_lines(cm, 0, lastLine, this.app, this.settings, file.path);
+            check_lines(cm, 0, lastLine, this, file.path);
         })
     }
 
