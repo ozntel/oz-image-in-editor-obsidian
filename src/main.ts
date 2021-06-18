@@ -9,6 +9,7 @@ export default class OzanImagePlugin extends Plugin {
 
     settings: OzanImagePluginSettings;
     loadedStyles: Array<HTMLStyleElement>;
+    imagePromiseList: Array<string> = [];
 
     async onload() {
         console.log('Image in Editor Plugin is loaded');
@@ -125,5 +126,17 @@ export default class OzanImagePlugin extends Plugin {
             document.head.removeChild(style);
         }
         this.loadedStyles = Array<HTMLStyleElement>(0);
+    }
+
+    addToImagePromiseList = (path: string) => {
+        if (!this.imagePromiseList.contains(path)) {
+            this.imagePromiseList.push(path);
+        }
+    }
+
+    removeFromImagePromiseList = (path: string) => {
+        if (this.imagePromiseList.contains(path)) {
+            this.imagePromiseList = this.imagePromiseList.filter(crPath => crPath !== path);
+        }
     }
 }

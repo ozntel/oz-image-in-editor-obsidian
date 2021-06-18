@@ -137,6 +137,9 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
                     if (imageFile == null) return;
 
+                    if (plugin.imagePromiseList.contains(imageFile.path)) return;
+                    plugin.addToImagePromiseList(imageFile.path);
+
                     // @ts-ignore
                     ExcalidrawAutomate.reset();
 
@@ -150,12 +153,14 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                         var existingBlop = await ImageHandler.getBlobObject(blobLink);
                         if (existingBlop.size === image.size && currentImageNode.alt === alt) {
                             // Drawing hasn't changed
+                            plugin.removeFromImagePromiseList(imageFile.path);
                             return;
                         }
                     }
 
                     // Generate New Link for new Drawing
                     img.src = URL.createObjectURL(image);
+                    plugin.removeFromImagePromiseList(imageFile.path);
                 }
             } else {
                 // The file is an image
