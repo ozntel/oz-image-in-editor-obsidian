@@ -13,9 +13,13 @@ export default class OzanImagePlugin extends Plugin {
 
     async onload() {
         console.log('Image in Editor Plugin is loaded');
+
         this.addSettingTab(new OzanImagePluginSettingsTab(this.app, this));
+
         await this.loadSettings();
+
         // Register event for each change
+
         this.addCommand({
             id: 'toggle-render-all',
             name: 'Toggle Render All',
@@ -25,6 +29,51 @@ export default class OzanImagePlugin extends Plugin {
                 this.saveSettings();
             }
         })
+
+        this.addCommand({
+            id: 'toggle-WYSIWYG',
+            name: 'Toggle WYSIWYG',
+            callback: () => {
+                this.handleWYSIWYG(!this.settings.WYSIWYG);
+                this.settings.WYSIWYG = !this.settings.WYSIWYG;
+                this.saveSettings();
+            }
+        })
+
+        this.addCommand({
+            id: 'toggle-render-pdf',
+            name: 'Toggle Render PDF',
+            callback: () => {
+                this.settings.renderPDF = !this.settings.renderPDF;
+                this.app.workspace.iterateCodeMirrors(cm => {
+                    this.handleInitialLoad(cm);
+                })
+                this.saveSettings();
+            }
+        })
+
+        this.addCommand({
+            id: 'toggle-render-iframe',
+            name: 'Toggle Render Iframe',
+            callback: () => {
+                this.settings.renderIframe = !this.settings.renderIframe;
+                this.app.workspace.iterateCodeMirrors(cm => {
+                    this.handleInitialLoad(cm);
+                })
+                this.saveSettings();
+            }
+        })
+
+        this.addCommand({
+            id: 'toggle-refresh-images-after-changes',
+            name: 'Toggle Refresh Images After Changes',
+            callback: () => {
+                this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
+                this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
+                this.saveSettings();
+            }
+        })
+
         if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
         if (!this.settings.renderAll) return;
         this.registerCodeMirror((cm: CodeMirror.Editor) => {
