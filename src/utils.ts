@@ -53,11 +53,11 @@ export class LinkHandler {
 export class PDFHandler {
 
     // Regex for [[ ]] format
-    static pdf_regex_1 = /!\[\[.*(pdf)\]\]/
+    static pdf_regex_1 = /!\[\[.*(pdf)(.*)?\]\]/
     static pdf_name_regex_1 = /(?<=\[\[).*.pdf/
 
     // Regex for ![ ]( ) format
-    static pdf_regex_2 = /!\[(^$|.*)\]\(.*(pdf)\)/
+    static pdf_regex_2 = /!\[(^$|.*)\]\(.*(pdf)(.*)?\)/
     static pdf_name_regex_2 = /(?<=\().*.pdf/;
 
     // Check line if it is a PDF
@@ -78,6 +78,13 @@ export class PDFHandler {
         if (linkType == 2) pdf_name_regex = PDFHandler.pdf_name_regex_2;
         var file_name_match = match[0].match(pdf_name_regex);
         return file_name_match[0]
+    }
+
+    static get_pdf_page_number = (match: any): string | boolean => {
+        const reg = new RegExp("#page=[0-9]+")
+        const page_match = match[0].match(reg)
+        if (page_match) return page_match[0]
+        return false;
     }
 
 }

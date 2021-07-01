@@ -76,6 +76,9 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 var arr = new Uint8Array(buffer);
                 var blob = new Blob([arr], { type: 'application/pdf' });
                 pdf_path = URL.createObjectURL(blob);
+                // Add Page Number
+                var pdf_page_nr = PDFHandler.get_pdf_page_number(pdf_in_line.result)
+                if (pdf_page_nr) pdf_path = pdf_path + pdf_page_nr
             }
 
             // Create the Widget
