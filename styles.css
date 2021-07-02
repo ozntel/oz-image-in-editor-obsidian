@@ -21,3 +21,9 @@ div.oz-image-widget > img[alt$="#xx-small"] {
 	margin-top: 5px !important;
 	margin-bottom: 5px !important;
 }
+
+.theme-dark img[alt$="#invert"], 
+.theme-dark div.oz-image-widget > img[alt$="#invert"] {
+	filter: invert(1) hue-rotate(180deg);
+	mix-blend-mode: screen;
+}
