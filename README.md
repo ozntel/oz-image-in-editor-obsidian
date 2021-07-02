@@ -41,13 +41,20 @@ You can now use the formats below to scale the images:
 
 2. **Width**: `![300](image.png)`
 
+### Invert Color Feature
+
+Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view the images in `invert color` mode:
+
+- `![[image.png|#invert]]`
+- `![#invert](image.png)`
+
 <h2 style="color: orange">Excalidraw View</h2>
 
 Usage:
 
--   `![[drawing.exalidraw|ALT-TEXT]]`
+-   `![[drawing.excalidraw|ALT-TEXT]]`
 
--   `!(ALT-TEXT)[drawing.exalidraw]`
+-   `!(ALT-TEXT)[drawing.excalidraw]`
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
 
@@ -55,6 +62,10 @@ Usage:
 
 You can turn on option for rendering the PDF files in the Editor mode.
 You can view both from local files and from the internet.
+You can also start viewing the `PDF` file from certain page number using the following pattern:
+
+- `![[myfile.pdf#page=12]]`
+- `![](myfile.pdf#page=12)`
 
 ### Samples
 
@@ -65,6 +76,12 @@ You can view both from local files and from the internet.
 **PDF File From a Link**
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-from-link.png" width="70%"/>
+
+<h2 style="color: orange">iFrame Render Feature</h2>
+
+You can turn on the `iFrame` option from settings to render `iframes` within the editor:
+
+<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/iframe-render.png" width="70%"/>
 
 <h2 style="color: orange">New Settings Options</h2>
 
@@ -84,7 +101,7 @@ You can do toggle rendering by a command from the pallette:
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/render-toggle-command.png" width="80%"/>
 
-<h2 style="color: orange">Sample Views</h2>
+<h2 style="color: orange">Sample Image Render Views</h2>
 
 ### Markdown Format
 
