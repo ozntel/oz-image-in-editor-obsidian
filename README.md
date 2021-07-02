@@ -41,7 +41,7 @@ You can now use the formats below to scale the images:
 
 2. **Width**: `![300](image.png)`
 
-### Invert Color Feature
+#### Invert Color Feature
 
 Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view the images in `invert color` mode:
 
