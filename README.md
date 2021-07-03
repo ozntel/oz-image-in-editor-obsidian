@@ -1,9 +1,9 @@
-<h1 style="color: orange">Ozan's Image in Editor Plugin</h1>
+# Ozan's Image in Editor Plugin
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ozntel/oz-image-in-editor-obsidian?style=for-the-badge)
 ![GitHub all releases](https://img.shields.io/github/downloads/ozntel/oz-image-in-editor-obsidian/total?style=for-the-badge)
 
-<h2 style="color: orange">Brief Explanation</h2>
+## Brief Explanation
 
 -   Plugin helps you to view `images`, `iframes` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
 -   After a nice collaboration with Zsolt, you can now view `excalidraw` drawings within the Editor, as well. Reference: <a href="https://github.com/zsviczian/obsidian-excalidraw-plugin">Excalidraw Plugin</a>
@@ -11,7 +11,7 @@
 -   Both `Markdown` and `Wikilinks` formats are supported as described below.
 -   You can resize the view of images using `ALT-TEXT` options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
 
-<h2 style="color: orange">Formats Supported</h2>
+## Formats Supported
 
 -   `!( ALT-TEXT )[ IMAGE-NAME ]`
     <span style="color: #d1672a">Sample</span>: !( #x-small )[ myimage.png ]
@@ -24,7 +24,7 @@
 
 **Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`
 
-<h2 style="color: orange">Image View Size</h2>
+## Image View Size
 
 Relative and Absolute Path will give you possibility to add `alt` text for the image. You can decide about the size of the image using following
 alt texts:
@@ -48,7 +48,7 @@ Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view 
 - `![[image.png|#invert]]`
 - `![#invert](image.png)`
 
-<h2 style="color: orange">Excalidraw View</h2>
+## Excalidraw View
 
 Usage:
 
@@ -58,7 +58,7 @@ Usage:
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
 
-<h2 style="color: orange">Experimental PDF View Feature</h2>
+## Experimental PDF View Feature
 
 You can turn on option for rendering the PDF files in the Editor mode.
 You can view both from local files and from the internet.
@@ -77,13 +77,13 @@ You can also start viewing the `PDF` file from certain page number using the fol
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-from-link.png" width="70%"/>
 
-<h2 style="color: orange">iFrame Render Feature</h2>
+## iFrame Render Feature
 
 You can turn on the `iFrame` option from settings to render `iframes` within the editor:
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/iframe-render.png" width="70%"/>
 
-<h2 style="color: orange">New Settings Options</h2>
+## New Settings Options
 
 ### Refresh Images After Changes
 
@@ -101,7 +101,7 @@ You can do toggle rendering by a command from the pallette:
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/render-toggle-command.png" width="80%"/>
 
-<h2 style="color: orange">Sample Image Render Views</h2>
+## Sample Image Render Views
 
 ### Markdown Format
 
@@ -115,10 +115,14 @@ You can do toggle rendering by a command from the pallette:
 
 <img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Wikilinks_2.png" width="70%"/>
 
-<h2 style="color: orange">Contact</h2>
+## Contact
 
 If you have any issue or you have any suggestion, please feel free to reach me out directly using contact page of my website [ozan.pl/contact/](https://www.ozan.pl/contact/) or directly to <me@ozan.pl>.
 
-<h2 style="color: orange">Support</h2>
+## Support
 
-<a href="https://www.buymeacoffee.com/ozante"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=ozante&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
+If you are enjoying the plugin then you can support my work and enthusiasm by buying me a coffee:
+
+<a href='https://ko-fi.com/L3L356V6Q' target='_blank'>
+    <img height='48' style='border:0px;height:48px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+</a>
