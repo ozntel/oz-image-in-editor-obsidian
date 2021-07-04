@@ -135,6 +135,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             }
 
             var imageFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
+            if (!imageFile) return;
 
             // Additional Check for Changed Files - helps updating only for changed image
             if (changedFilePath && imageFile && changedFilePath !== imageFile.path) return;
@@ -168,11 +169,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             } else {
                 /* ------------------ ALL IMAGE RENDERS ------------------ */
 
-                if (imageFile == null) return;
-
                 img.src = ObsidianHelpers.getPathOfImage(plugin.app.vault, imageFile);
                 img.setAttr('data-path', imageFile.path);
-
                 ImageHandler.addContextMenu(plugin, imageFile);
             }
         }

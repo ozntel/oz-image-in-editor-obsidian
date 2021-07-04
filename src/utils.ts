@@ -216,12 +216,11 @@ export class ExcalidrawHandler {
     }
 
     static isDrawing = (imageFile: TFile) => {
-        return imageFile &&
-            (
-                imageFile.extension === 'excalidraw'
-                // @ts-ignore
-                || (ExcalidrawAutomate.isExcalidrawFile && ExcalidrawAutomate.isExcalidrawFile(imageFile))
-            )
+        return (
+            imageFile.extension === 'excalidraw'
+            // @ts-ignore
+            || (ExcalidrawAutomate.isExcalidrawFile && ExcalidrawAutomate.isExcalidrawFile(imageFile))
+        )
     }
 
     static createPNG = async (imageFile: TFile) => {
