@@ -1,4 +1,4 @@
-import { Workspace, MarkdownView, Vault, TFile, Menu } from 'obsidian';
+import { Workspace, MarkdownView, Vault, TFile, Menu, App } from 'obsidian';
 import OzanImagePlugin from './main';
 
 export class WidgetHandler {
@@ -204,6 +204,32 @@ export class ImageHandler {
             fileMenu.showAtPosition({ x: e.pageX, y: e.pageY });
             return false;
         })
+    }
+
+}
+
+export class ExcalidrawHandler {
+
+    static pluginActive = (app: App) => {
+        // @ts-ignore
+        return app.plugins.getPlugin('obsidian-excalidraw-plugin')
+    }
+
+    static isDrawing = (imageFile: TFile) => {
+        return imageFile &&
+            (
+                imageFile.extension === 'excalidraw'
+                // @ts-ignore
+                || (ExcalidrawAutomate.isExcalidrawFile && ExcalidrawAutomate.isExcalidrawFile(imageFile))
+            )
+    }
+
+    static createPNG = async (imageFile: TFile) => {
+        // @ts-ignore
+        ExcalidrawAutomate.reset();
+        // @ts-ignore
+        var image = await ExcalidrawAutomate.createPNG(imageFile.path);
+        return image
     }
 
 }

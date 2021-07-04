@@ -2,7 +2,8 @@ import { normalizePath, TFile, Menu } from 'obsidian';
 import OzanImagePlugin from './main';
 import {
     WidgetHandler, LinkHandler, PDFHandler,
-    ImageHandler, ObsidianHelpers, IframeHandler
+    ImageHandler, ObsidianHelpers, IframeHandler,
+    ExcalidrawHandler
 } from './utils';
 
 // Check Single Line
@@ -140,21 +141,13 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 
             /* ------------------ EXCALIDRAW RENDER ------------------ */
 
-            // @ts-ignore
-            if (app.plugins.getPlugin('obsidian-excalidraw-plugin')
-                && imageFile && (filename.endsWith('excalidraw')
-                    // @ts-ignore
-                    || (ExcalidrawAutomate.isExcalidrawFile && ExcalidrawAutomate.isExcalidrawFile(imageFile)))) {
+            if (ExcalidrawHandler.pluginActive && ExcalidrawHandler.isDrawing(imageFile)) {
 
                 // The file is an excalidraw drawing
                 if (plugin.imagePromiseList.contains(imageFile.path)) return;
                 plugin.addToImagePromiseList(imageFile.path);
 
-                // @ts-ignore
-                ExcalidrawAutomate.reset();
-
-                // @ts-ignore
-                image = await ExcalidrawAutomate.createPNG(imageFile.path);
+                var image = await ExcalidrawHandler.createPNG(imageFile)
 
                 // Check if Object or Alt Changed
                 if (line.handle.widgets) {
