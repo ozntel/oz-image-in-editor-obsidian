@@ -93,15 +93,15 @@ export class PDFHandler {
 export class ImageHandler {
 
     // General Image Regex 
-    static image_regex = /.*.(jpe?g|png|gif|svg|bmp|excalidraw)/
+    static image_regex = /.*.(jpe?g|png|gif|svg|bmp|excalidraw|md)/
 
     // Regex for [[ ]] format
-    static image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp|excalidraw).*?\]\]/;
-    static file_name_regex_1 = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp|excalidraw)/;
+    static image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp|excalidraw|md).*?\]\]/;
+    static file_name_regex_1 = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp|excalidraw|md)/;
 
     // Regex for ![ ]( ) format
-    static image_line_regex_2 = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp|excalidraw)\)/;
-    static file_name_regex_2 = /(?<=\().*(jpe?g|png|gif|svg|bmp|excalidraw)/;
+    static image_line_regex_2 = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp|excalidraw|md)\)/;
+    static file_name_regex_2 = /(?<=\().*(jpe?g|png|gif|svg|bmp|excalidraw|md)/;
 
     // Regex for Links
     static file_name_regex_3 = /(?<=\[\[).*(?=\|)|(?<=\[\[).*(?=\]\])/;

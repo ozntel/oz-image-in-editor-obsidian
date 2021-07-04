@@ -5,6 +5,7 @@ export interface OzanImagePluginSettings {
     renderAll: boolean,
     renderPDF: boolean,
     renderIframe: boolean,
+    renderExcalidraw: boolean,
     refreshImagesAfterChange: boolean,
     WYSIWYG: boolean,
 }
@@ -13,6 +14,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAll: true,
     renderPDF: false,
     renderIframe: false,
+    renderExcalidraw: false,
     refreshImagesAfterChange: false,
     WYSIWYG: false
 }
@@ -62,6 +64,17 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.renderIframe)
                 .onChange((value) => {
                     this.plugin.settings.renderIframe = value;
+                    this.plugin.saveSettings();
+                })
+            )
+
+        new Setting(containerEl)
+            .setName('Render Excalidraw in Editor')
+            .setDesc('Turn on this option if you want drawings to be rendered in Editor')
+            .addToggle((toggle) => toggle
+                .setValue(this.plugin.settings.renderExcalidraw)
+                .onChange((value) => {
+                    this.plugin.settings.renderExcalidraw = value;
                     this.plugin.saveSettings();
                 })
             )

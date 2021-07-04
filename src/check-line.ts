@@ -124,8 +124,11 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 
         // Prepare the src for the Image
         if (link_in_line.result) {
+
             img.src = filename;
+
         } else {
+
             // Source Path
             if (targetFile != null) {
                 sourcePath = targetFile.path;
@@ -134,6 +137,7 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
                 sourcePath = activeNoteFile ? activeNoteFile.path : '';
             }
 
+            // Get Image File
             var imageFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
             if (!imageFile) return;
 
@@ -142,37 +146,50 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 
             /* ------------------ EXCALIDRAW RENDER ------------------ */
 
-            if (ExcalidrawHandler.pluginActive && ExcalidrawHandler.isDrawing(imageFile)) {
+            if (['md', 'excalidraw'].contains(imageFile.extension)) {
 
-                // The file is an excalidraw drawing
-                if (plugin.imagePromiseList.contains(imageFile.path)) return;
-                plugin.addToImagePromiseList(imageFile.path);
+                // Do not render drawing if option turned off
+                if (!plugin.settings.renderExcalidraw) return;
 
-                var image = await ExcalidrawHandler.createPNG(imageFile)
+                // md, excalidraw file check to be rendered
+                if (ExcalidrawHandler.pluginActive && ExcalidrawHandler.isDrawing(imageFile)) {
 
-                // Check if Object or Alt Changed
-                if (line.handle.widgets) {
-                    var currentImageNode = line.handle.widgets[0].node;
-                    var blobLink = currentImageNode.currentSrc;
-                    var existingBlop = await ImageHandler.getBlobObject(blobLink);
-                    if (existingBlop.size === image.size && currentImageNode.alt === alt) {
-                        // Drawing hasn't changed
-                        plugin.removeFromImagePromiseList(imageFile.path);
-                        return;
+                    // The file is an excalidraw drawing
+                    if (plugin.imagePromiseList.contains(imageFile.path)) return;
+                    plugin.addToImagePromiseList(imageFile.path);
+
+                    var image = await ExcalidrawHandler.createPNG(imageFile)
+
+                    // Check if Object or Alt Changed
+                    if (line.handle.widgets) {
+                        var currentImageNode = line.handle.widgets[0].node;
+                        var blobLink = currentImageNode.currentSrc;
+                        var existingBlop = await ImageHandler.getBlobObject(blobLink);
+                        if (existingBlop.size === image.size && currentImageNode.alt === alt) {
+                            // Drawing hasn't changed
+                            plugin.removeFromImagePromiseList(imageFile.path);
+                            return;
+                        }
                     }
+
+                    // Generate New Link for new Drawing
+                    img.src = URL.createObjectURL(image);
+                    plugin.removeFromImagePromiseList(imageFile.path);
+
+                } else {
+                    return
                 }
 
-                // Generate New Link for new Drawing
-                img.src = URL.createObjectURL(image);
-                plugin.removeFromImagePromiseList(imageFile.path);
+            }
 
-            } else {
-                /* ------------------ ALL IMAGE RENDERS ------------------ */
+            /* ------------------ ALL IMAGE RENDERS ------------------ */
 
+            if (['jpeg', 'jpg', 'png', 'gif', 'svg', 'bmp'].contains(imageFile.extension)) {
                 img.src = ObsidianHelpers.getPathOfImage(plugin.app.vault, imageFile);
                 img.setAttr('data-path', imageFile.path);
                 ImageHandler.addContextMenu(plugin, imageFile);
             }
+
         }
 
         // Clear the image widgets if exists
