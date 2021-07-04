@@ -1,4 +1,4 @@
-import { App, normalizePath, TFile, Menu } from 'obsidian';
+import { normalizePath, TFile, Menu } from 'obsidian';
 import OzanImagePlugin from './main';
 import {
     WidgetHandler, LinkHandler, PDFHandler,
@@ -20,7 +20,10 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
     var line_image_widget = line.widgets ? line.widgets.filter((wid: { className: string; }) => wid.className === 'oz-image-widget') : false;
     if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0].clear();
 
-    // Render iFrame if it is turned on
+    var sourcePath = '';
+
+    /* ------------------ IFRAME RENDER  ------------------ */
+
     if (plugin.settings && plugin.settings.renderIframe) {
 
         // Check if the line is a Iframe
@@ -43,9 +46,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
         }
     }
 
-    var sourcePath = '';
+    /* ------------------ PDF RENDER  ------------------ */
 
-    // Render PDF if it is turned on
     if (plugin.settings && plugin.settings.renderPDF) {
 
         // Check if the line is a  PDF 
@@ -96,6 +98,8 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
         }
     }
 
+    /* ------------------ EXCALIDRAW & IMAGE RENDER ------------------ */
+
     // If any of regex matches, it will add image widget
     if (link_in_line.result || img_in_line.result) {
 
@@ -134,39 +138,43 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             // Additional Check for Changed Files - helps updating only for changed image
             if (changedFilePath && imageFile && changedFilePath !== imageFile.path) return;
 
-            if (filename.endsWith('excalidraw')) {
+            /* ------------------ EXCALIDRAW RENDER ------------------ */
+
+            // @ts-ignore
+            if (app.plugins.getPlugin('obsidian-excalidraw-plugin')
+                && imageFile && (filename.endsWith('excalidraw')
+                    // @ts-ignore
+                    || (ExcalidrawAutomate.isExcalidrawFile && ExcalidrawAutomate.isExcalidrawFile(imageFile)))) {
+
                 // The file is an excalidraw drawing
+                if (plugin.imagePromiseList.contains(imageFile.path)) return;
+                plugin.addToImagePromiseList(imageFile.path);
+
                 // @ts-ignore
-                if (app.plugins.getPlugin('obsidian-excalidraw-plugin')) {
-                    if (imageFile == null) return;
+                ExcalidrawAutomate.reset();
 
-                    if (plugin.imagePromiseList.contains(imageFile.path)) return;
-                    plugin.addToImagePromiseList(imageFile.path);
+                // @ts-ignore
+                image = await ExcalidrawAutomate.createPNG(imageFile.path);
 
-                    // @ts-ignore
-                    ExcalidrawAutomate.reset();
-
-                    // @ts-ignore
-                    image = await ExcalidrawAutomate.createPNG(imageFile.path);
-
-                    // Check if Object or Alt Changed
-                    if (line.handle.widgets) {
-                        var currentImageNode = line.handle.widgets[0].node;
-                        var blobLink = currentImageNode.currentSrc;
-                        var existingBlop = await ImageHandler.getBlobObject(blobLink);
-                        if (existingBlop.size === image.size && currentImageNode.alt === alt) {
-                            // Drawing hasn't changed
-                            plugin.removeFromImagePromiseList(imageFile.path);
-                            return;
-                        }
+                // Check if Object or Alt Changed
+                if (line.handle.widgets) {
+                    var currentImageNode = line.handle.widgets[0].node;
+                    var blobLink = currentImageNode.currentSrc;
+                    var existingBlop = await ImageHandler.getBlobObject(blobLink);
+                    if (existingBlop.size === image.size && currentImageNode.alt === alt) {
+                        // Drawing hasn't changed
+                        plugin.removeFromImagePromiseList(imageFile.path);
+                        return;
                     }
-
-                    // Generate New Link for new Drawing
-                    img.src = URL.createObjectURL(image);
-                    plugin.removeFromImagePromiseList(imageFile.path);
                 }
+
+                // Generate New Link for new Drawing
+                img.src = URL.createObjectURL(image);
+                plugin.removeFromImagePromiseList(imageFile.path);
+
             } else {
-                // The file is an image
+                /* ------------------ ALL IMAGE RENDERS ------------------ */
+
                 if (imageFile == null) return;
 
                 img.src = ObsidianHelpers.getPathOfImage(plugin.app.vault, imageFile);
