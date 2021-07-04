@@ -14,13 +14,13 @@
 ## Formats Supported
 
 -   `!( ALT-TEXT )[ IMAGE-NAME ]`
-    <span style="color: #d1672a">Sample</span>: !( #x-small )[ myimage.png ]
+    <span style="color: #d1672a">Sample</span>: `![ #x-small ]( myimage.png )`
 
 -   `![[ IMAGE-NAME | ALT-TEXT ]]`
-    <span style="color: #d1672a">Sample</span>: !\[[ myimage.png | #x-small ]]
+    <span style="color: #d1672a">Sample</span>: `![[ myimage.png | #x-small ]]`
 
 -   `![[ IMAGE-NAME ]]`
-    <span style="color: #d1672a">Sample</span>: !\[[ myimage.gif ]]
+    <span style="color: #d1672a">Sample</span>: `![[ myimage.gif ]]`
 
 **Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`
 
@@ -33,7 +33,7 @@ alt texts:
 2. `#x-small`
 3. `#xx-small`
 
-#### New Feature:
+#### New Sizing Feature:
 
 You can now use the formats below to scale the images:
 
@@ -50,15 +50,23 @@ Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view 
 
 ## Excalidraw View
 
-Usage:
+Usage with `excalidraw` extension:
 
 -   `![[drawing.excalidraw|ALT-TEXT]]`
-
 -   `!(ALT-TEXT)[drawing.excalidraw]`
+
+Usage with `.md` extension:
+
+-   `![[drawing.md|ALT-TEXT]]`
+-   `!(ALT-TEXT)[drawing.md]`
+
+**Important:** If you are using `1.2.x` version of Excalidraw plugin, `Wikilinks` format needs to include `.md` extension, otherwise, drawing won't be rendered in Editor.
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
 
-## Experimental PDF View Feature
+- You can now turn on/off rendering option for `Excalidraw` drawings.
+
+## PDF Render Feature
 
 You can turn on option for rendering the PDF files in the Editor mode.
 You can view both from local files and from the internet.
