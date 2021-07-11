@@ -17,6 +17,10 @@ div:not(.CodeMirror-activeline) >
   background: var(--text-accent);
 }
 
+.cm-s-obsidian pre.HyperMD-header-1{
+  padding-bottom: 5px;
+}
+
 /* except numbered list */
 div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-formatting-list {
    display: inline !important;
@@ -47,10 +51,10 @@ div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-hmd-indent-in-quote {
 }
 
 div:not(.CodeMirror-activeline)>.HyperMD-quote {
-   background-color:rgb(238, 234, 234);
+	 background-color: var(--background-primary-alt);
    border-left: 3px solid var(--text-selection);
    border-color: red !important;
-   font-size: 17px;
+   font-size: var(--editor-font-size) !important;
    line-height: 1.5em;
    margin-left: 5px;
    padding: 10px 6px 10px 6px;
@@ -64,17 +68,17 @@ div:not(.CodeMirror-activeline) > .CodeMirror-line span.cm-hashtag-end:before {
 }
 
 .tag, div:not(.CodeMirror-activeline) > .CodeMirror-line span.cm-hashtag-end {
-  background-color: #bd6b19;
+  background-color: var(--text-accent);
   border: none;
-  color: white !important;
-  font-size: 14px;
-  padding: 0px 8px;
+  color: white;
+  font-size: var(--editor-font-size) !important;
+  padding: 0px 6px !important;
   padding-top: -2px;
-  padding-bottom: 3px;
+  padding-bottom: 2px;
   text-align: center;
   text-decoration: none !important;
   display: inline-block;
-  margin: 1px 1px;
+  margin: 0.5px 0.5px;
   cursor: pointer;
   border-radius: 14px;
 }
