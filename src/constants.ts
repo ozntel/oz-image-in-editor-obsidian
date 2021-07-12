@@ -38,6 +38,36 @@ span.cm-formatting-task {
   font-family: monospace;
 }
 
+/* Checkboxes instead of brackets in edit mode */
+div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-formatting-task.cm-meta,
+div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-formatting-task.cm-property {
+    color: transparent;
+    position: relative;
+    display: inline !important;
+    margin-right: -0.1rem;
+}
+
+div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-formatting-task.cm-meta:after,
+div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-formatting-task.cm-property:after {
+    content: "○";
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    color: rgb(219, 95, 12);
+    font-size: calc(var(--editor-font-size) * 1.2);
+    text-align: center;
+}
+
+div:not(.CodeMirror-activeline)>.CodeMirror-line span.cm-formatting-task.cm-property:after {
+  content: "✓";
+  color: rgb(124, 131, 124) !important;
+}
+
+span.cm-formatting-task.cm-property ~ span {
+  text-decoration: line-through;
+  color: rgb(124, 131, 124) !important;
+}
+
 /* highlight (==) not visible anymore if not active line */
 div:not(.CodeMirror-activeline) > .CodeMirror-line .cm-formatting-highlight.cm-highlight {
  font-size: 0;
