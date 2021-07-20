@@ -2,7 +2,7 @@ export const WYSIWYG_Style = `
 
 /* Not Active Lines */
 div:not(.CodeMirror-activeline) >
-.CodeMirror-line span.cm-formatting:not(.cm-formatting-list) /* not(.cm-formatting-code-block) */ {
+.CodeMirror-line span.cm-formatting:not(.cm-formatting-list):not(.cm-image):not(.cm-url):not(.cm-link) /* not(.cm-formatting-code-block) */ {
   display: none !important;
 }
 
