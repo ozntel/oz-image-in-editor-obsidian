@@ -187,7 +187,6 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
             if (['jpeg', 'jpg', 'png', 'gif', 'svg', 'bmp'].contains(imageFile.extension)) {
                 img.src = ObsidianHelpers.getPathOfImage(plugin.app.vault, imageFile);
                 img.setAttr('data-path', imageFile.path);
-                ImageHandler.addContextMenu(plugin, imageFile);
             }
 
         }

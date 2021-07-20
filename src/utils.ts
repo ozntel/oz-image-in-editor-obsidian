@@ -178,32 +178,24 @@ export class ImageHandler {
     }
 
     // Add a context menu for image widget
-    static addContextMenu = (plugin: OzanImagePlugin, imageFile: TFile) => {
-
-        // Add option to copy to clipboard
-        document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path="${imageFile.path}"]`, (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            const fileMenu = new Menu(plugin.app);
-
-            fileMenu.addItem(menuItem => {
-                menuItem.setTitle('Copy Image to Clipboard');
-                menuItem.setIcon('image-file');
-                menuItem.onClick(async (e) => {
-                    var buffer = await plugin.app.vault.adapter.readBinary(imageFile.path);
-                    var arr = new Uint8Array(buffer);
-                    var blob = new Blob([arr], { type: 'image/png' });
-                    // @ts-ignore
-                    const item = new ClipboardItem({ "image/png": blob });
-                    // @ts-ignore
-                    window.navigator['clipboard'].write([item]);
-                })
+    static addContextMenu = (event: MouseEvent, plugin: OzanImagePlugin, imageFile: TFile) => {
+        const fileMenu = new Menu(plugin.app);
+        fileMenu.addItem(menuItem => {
+            menuItem.setTitle('Copy Image to Clipboard');
+            menuItem.setIcon('image-file');
+            menuItem.onClick(async (e) => {
+                var buffer = await plugin.app.vault.adapter.readBinary(imageFile.path);
+                var arr = new Uint8Array(buffer);
+                var blob = new Blob([arr], { type: 'image/png' });
+                // @ts-ignore
+                const item = new ClipboardItem({ "image/png": blob });
+                // @ts-ignore
+                window.navigator['clipboard'].write([item]);
             })
-
-            plugin.app.workspace.trigger('file-menu', fileMenu, imageFile, 'file-explorer');
-            fileMenu.showAtPosition({ x: e.pageX, y: e.pageY });
-            return false;
         })
+        plugin.app.workspace.trigger('file-menu', fileMenu, imageFile, 'file-explorer');
+        fileMenu.showAtPosition({ x: event.pageX, y: event.pageY });
+        return false;
     }
 
 }

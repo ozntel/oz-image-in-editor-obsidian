@@ -74,6 +74,8 @@ export default class OzanImagePlugin extends Plugin {
             }
         })
 
+        document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
+
         if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
         if (!this.settings.renderAll) return;
         this.registerCodeMirror((cm: CodeMirror.Editor) => {
@@ -90,6 +92,7 @@ export default class OzanImagePlugin extends Plugin {
             WidgetHandler.clearWidgets(cm);
         });
         this.app.vault.off('modify', this.handleFileModify);
+        document.off('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
         this.unload_WYSIWYG_Styles();
         console.log('Image in Editor Plugin is unloaded');
     }
@@ -100,6 +103,16 @@ export default class OzanImagePlugin extends Plugin {
 
     async saveSettings() {
         await this.saveData(this.settings);
+    }
+
+    // Context Menu for Rendered Images
+    onImageMenu = (event: MouseEvent, target: HTMLElement) => {
+        const file = this.app.vault.getAbstractFileByPath(target.dataset.path);
+        if (!(file instanceof TFile)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        ImageHandler.addContextMenu(event, this, file);
+        return false;
     }
 
     // Line Edit Changes
