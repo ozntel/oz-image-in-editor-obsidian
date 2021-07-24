@@ -1,4 +1,4 @@
-import { normalizePath, TFile, Menu } from 'obsidian';
+import { normalizePath, TFile } from 'obsidian';
 import OzanImagePlugin from './main';
 import {
     WidgetHandler, LinkHandler, PDFHandler,
