@@ -124,8 +124,11 @@ export const check_line: any = async (cm: CodeMirror.Editor, line_number: number
 
         // Prepare the src for the Image
         if (link_in_line.result) {
-            if (filename.startsWith('file://')) filename = filename.replace('file://', 'app://local/');
-            img.src = filename;
+
+            // Local File URL Correction (Outside of Vault)
+            if (filename.startsWith('file:///'))
+                filename = filename.replace('file:///', 'app://local/');
+            img.src = decodeURI(filename);
 
         } else {
 
