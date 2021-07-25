@@ -1,6 +1,6 @@
 {
   "name": "oz-image-plugin",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "You can view images inside of the Editor as soon as you paste without a necessity to preview the note.",
   "main": "main.js",
   "scripts": {
