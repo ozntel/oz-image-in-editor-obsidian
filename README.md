@@ -45,8 +45,8 @@ You can now use the formats below to scale the images:
 
 Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view the images in `invert color` mode:
 
-- `![[image.png|#invert]]`
-- `![#invert](image.png)`
+-   `![[image.png|#invert]]`
+-   `![#invert](image.png)`
 
 ## Excalidraw View
 
@@ -64,7 +64,7 @@ Usage with `.md` extension:
 
 <img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
 
-- You can now turn on/off rendering option for `Excalidraw` drawings.
+-   You can now turn on/off rendering option for `Excalidraw` drawings.
 
 ## PDF Render Feature
 
@@ -72,8 +72,8 @@ You can turn on option for rendering the PDF files in the Editor mode.
 You can view both from local files and from the internet.
 You can also start viewing the `PDF` file from certain page number using the following pattern:
 
-- `![[myfile.pdf#page=12]]`
-- `![](myfile.pdf#page=12)`
+-   `![[myfile.pdf#page=12]]`
+-   `![](myfile.pdf#page=12)`
 
 ### Samples
 

@@ -113,4 +113,4 @@ div:not(.CodeMirror-activeline) > .CodeMirror-line span.cm-hashtag-end:before {
   border-radius: 14px;
 }
 
-`
+`;
