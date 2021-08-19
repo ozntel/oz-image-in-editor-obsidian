@@ -95,8 +95,8 @@ export const check_line: any = async (
 			var pdf_widget = document.createElement('embed');
 			pdf_widget.src = pdf_path;
 			pdf_widget.type = 'application/pdf';
-			pdf_widget.width = '500';
-			pdf_widget.height = '650';
+			pdf_widget.width = '100%';
+			pdf_widget.height = '800px';
 
 			// Add Widget in Line
 			cm.addLineWidget(line_number, pdf_widget, { className: 'oz-image-widget', showIfHidden: false });
