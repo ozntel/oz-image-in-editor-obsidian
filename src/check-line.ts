@@ -152,11 +152,11 @@ export const check_line: any = async (
 			/* ------------------ EXCALIDRAW RENDER ------------------ */
 
 			if (['md', 'excalidraw'].contains(imageFile.extension)) {
-				// Do not render drawing if option turned off
-				if (!plugin.settings.renderExcalidraw) return;
-
 				// md, excalidraw file check to be rendered
 				if (ExcalidrawHandler.pluginActive && ExcalidrawHandler.isDrawing(imageFile)) {
+					// Do not render drawing if option turned off
+					if (!plugin.settings.renderExcalidraw) return;
+
 					// The file is an excalidraw drawing
 					if (plugin.imagePromiseList.contains(imageFile.path)) return;
 					plugin.addToImagePromiseList(imageFile.path);
