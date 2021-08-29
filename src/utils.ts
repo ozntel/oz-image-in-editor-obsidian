@@ -316,4 +316,33 @@ export class TransclusionHandler {
 		html.innerHTML = TransclusionHandler.convertMdToHtml(mdToRender);
 		return html;
 	};
+
+	static clearHTML = (html: HTMLElement, app: App) => {
+		// --> Add Line Number for CodeBlocks
+		let codeBlocks = html.querySelectorAll('pre > code');
+		codeBlocks.forEach((cb) => {
+			cb.addClass('line-numbers');
+		});
+		// --> Change Image Links & Width
+		let images = html.querySelectorAll('img');
+		images.forEach((img) => {
+			let imgSource = img.getAttr('src');
+			if (imgSource) {
+				let imgFile = app.metadataCache.getFirstLinkpathDest(img.getAttr('src'), '');
+				if (imgFile) {
+					let realSource = ObsidianHelpers.getPathOfImage(app.vault, imgFile);
+					img.setAttr('src', realSource);
+					// --> Check also Alt for Width
+					let altText = img.getAttr('alt');
+					if (altText) {
+						let widthHeight = ImageHandler.altWidthHeight(altText);
+						if (widthHeight) {
+							img.width = widthHeight.width;
+							if (widthHeight.height) img.height = widthHeight.height;
+						}
+					}
+				}
+			}
+		});
+	};
 }

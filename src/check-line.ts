@@ -11,6 +11,8 @@ import {
 	ExcalidrawHandler,
 	TransclusionHandler,
 } from './utils';
+import Prism from 'prismjs';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 
 // Check Single Line
 export const check_line: any = async (
@@ -57,24 +59,26 @@ export const check_line: any = async (
 		let cache = plugin.app.metadataCache.getCache(file.path);
 		let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
 
+		// --> Handle #^ Block Id
 		if (TransclusionHandler.lineIsWithBlockId(line.text)) {
-			// --> Render #^ Block Id
 			const blockId = TransclusionHandler.getBlockId(line.text);
 			// --> Wait for Block Id Creation by Obsidian
 			await pollUntil(() => cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
 				const block = cache.blocks[blockId];
 				if (block) {
 					let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+					TransclusionHandler.clearHTML(htmlElement, plugin.app);
 					cm.addLineWidget(line_number, htmlElement, {
 						className: 'oz-transclusion-widget',
 						showIfHidden: false,
 					});
+					Prism.highlightAll();
 				}
 			});
 		}
 
+		// --> Render # Header Block
 		if (TransclusionHandler.lineIsWithHeading(line.text)) {
-			// --> Render # Header Block
 			const header = TransclusionHandler.getHeader(line.text);
 			const blockHeading = cache.headings.find((h) => h.heading === header);
 			if (blockHeading) {
@@ -91,10 +95,12 @@ export const check_line: any = async (
 				}
 				// --> Get HTML Render and add as Widget
 				let htmlElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
+				TransclusionHandler.clearHTML(htmlElement, plugin.app);
 				cm.addLineWidget(line_number, htmlElement, {
 					className: 'oz-transclusion-widget',
 					showIfHidden: false,
 				});
+				Prism.highlightAll();
 			}
 		}
 
