@@ -1,4 +1,5 @@
-import { Workspace, MarkdownView, Vault, TFile, Menu, App } from 'obsidian';
+import { Workspace, MarkdownView, Vault, TFile, Menu, App, BlockCache } from 'obsidian';
+import showdown from 'showdown';
 import OzanImagePlugin from './main';
 
 export class WidgetHandler {
@@ -14,8 +15,9 @@ export class WidgetHandler {
 	// Clear Single Line Widget
 	static clearLineWidgets = (line: any) => {
 		if (line.widgets) {
+			let classes = ['oz-image-widget', 'oz-transclusion-widget'];
 			for (const wid of line.widgets) {
-				if (wid.className === 'oz-image-widget') {
+				if (classes.contains(wid.className)) {
 					wid.clear();
 				}
 			}
@@ -257,5 +259,61 @@ export class ObsidianHelpers {
 			}
 		}
 		return null;
+	};
+}
+
+export class TransclusionHandler {
+	static lineIsWithBlockId = (line: string) => {
+		// --> Line Id Regex ![[hello.md#^f76b62]]
+		const idRegex = /!\[\[(.*).md#\^(.*)\]\]/;
+		return line.match(idRegex);
+	};
+
+	static lineIsWithHeading = (line: string) => {
+		// --> Block Regex ![[hello.md#header1]]
+		const blockRegex = /!\[\[(.*).md#((?!\^).*)\]\]/;
+		return line.match(blockRegex);
+	};
+
+	static lineIsTransclusion = (line: string) => {
+		return TransclusionHandler.lineIsWithBlockId(line) || TransclusionHandler.lineIsWithHeading(line);
+	};
+
+	static getFile = (line: string, app: App, sourcePath: string): TFile | null => {
+		const fileRegex = /(?<=!\[\[).*.md/;
+		const match = line.match(fileRegex);
+		if (!match) return null;
+		return app.metadataCache.getFirstLinkpathDest(line.match(fileRegex)[0], sourcePath);
+	};
+
+	static getBlockId = (line: string) => {
+		const blockIdRegex = /(?<=.md#\^).*(?=]])/;
+		return line.match(blockIdRegex)[0];
+	};
+
+	static getHeader = (line: string) => {
+		const headerRegex = /(?<=.md#).*(?=]])/;
+		return line.match(headerRegex)[0];
+	};
+
+	static convertMdToHtml = (md: string) => {
+		let converter = new showdown.Converter();
+		return converter.makeHtml(md);
+	};
+
+	static renderHeader = (startNum: number, endNum: number, cachedReadOfTarget: string) => {
+		let html = document.createElement('div');
+		let mdToRender = cachedReadOfTarget.substr(startNum, endNum - startNum);
+		html.innerHTML = TransclusionHandler.convertMdToHtml(mdToRender);
+		return html;
+	};
+
+	static renderBlockCache = (blockCache: BlockCache, cachedReadOfTarget: string): HTMLElement => {
+		let html = document.createElement('div');
+		let blockStart = blockCache.position.start.offset;
+		let blockEnd = blockCache.position.end.offset;
+		let mdToRender = cachedReadOfTarget.substr(blockStart, blockEnd - blockStart);
+		html.innerHTML = TransclusionHandler.convertMdToHtml(mdToRender);
+		return html;
 	};
 }

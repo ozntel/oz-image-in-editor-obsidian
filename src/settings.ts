@@ -6,6 +6,7 @@ export interface OzanImagePluginSettings {
 	renderPDF: boolean;
 	renderIframe: boolean;
 	renderExcalidraw: boolean;
+	renderTransclusion: boolean;
 	refreshImagesAfterChange: boolean;
 	WYSIWYG: boolean;
 }
@@ -15,6 +16,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
 	renderPDF: false,
 	renderIframe: false,
 	renderExcalidraw: false,
+	renderTransclusion: false,
 	refreshImagesAfterChange: false,
 	WYSIWYG: false,
 };
@@ -73,6 +75,16 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 			.addToggle((toggle) =>
 				toggle.setValue(this.plugin.settings.renderExcalidraw).onChange((value) => {
 					this.plugin.settings.renderExcalidraw = value;
+					this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Render Transclusion in Editor (Experiment)')
+			.setDesc('Turn on this option if you want transclusions to be rendered in Editor')
+			.addToggle((toggle) =>
+				toggle.setValue(this.plugin.settings.renderTransclusion).onChange((value) => {
+					this.plugin.settings.renderTransclusion = value;
 					this.plugin.saveSettings();
 				})
 			);
