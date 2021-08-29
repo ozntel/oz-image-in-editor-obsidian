@@ -303,7 +303,7 @@ export class TransclusionHandler {
 
 	static renderHeader = (startNum: number, endNum: number, cachedReadOfTarget: string) => {
 		let html = document.createElement('div');
-		let mdToRender = cachedReadOfTarget.substr(startNum, endNum - startNum + 1);
+		let mdToRender = cachedReadOfTarget.substr(startNum, endNum - startNum);
 		html.innerHTML = TransclusionHandler.convertMdToHtml(mdToRender);
 		return html;
 	};
