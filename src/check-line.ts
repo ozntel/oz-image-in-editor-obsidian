@@ -1,5 +1,6 @@
 import { normalizePath, TFile } from 'obsidian';
 import OzanImagePlugin from './main';
+import pollUntil from 'pollUntil';
 import {
 	WidgetHandler,
 	LinkHandler,
@@ -58,14 +59,17 @@ export const check_line: any = async (
 		if (TransclusionHandler.lineIsWithBlockId(line.text)) {
 			// --> Render #^ Block Id
 			const blockId = TransclusionHandler.getBlockId(line.text);
-			const block = cache.blocks[blockId];
-			if (block) {
-				let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
-				cm.addLineWidget(line_number, htmlElement, {
-					className: 'oz-transclusion-widget',
-					showIfHidden: false,
-				});
-			}
+			// --> Wait for Block Id Creation by Obsidian
+			await pollUntil(() => cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
+				const block = cache.blocks[blockId];
+				if (block) {
+					let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+					cm.addLineWidget(line_number, htmlElement, {
+						className: 'oz-transclusion-widget',
+						showIfHidden: false,
+					});
+				}
+			});
 		}
 
 		if (TransclusionHandler.lineIsWithHeading(line.text)) {
