@@ -5,7 +5,7 @@
 
 ## Brief Explanation
 
--   Plugin helps you to view `images`, `iframes` and `PDF Files` directly under the Editor view without a necessity to switch to Preview mode.
+-   Plugin helps you to view `images`, `iframes`, `PDF Files` and `transclusions` directly under the Editor view without a necessity to switch to Preview mode.
 -   After a nice collaboration with Zsolt, you can now view `excalidraw` drawings within the Editor, as well. Reference: <a href="https://github.com/zsviczian/obsidian-excalidraw-plugin">Excalidraw Plugin</a>
 -   The plugin allows you to see both your local images and images from internet.
 -   Both `Markdown` and `Wikilinks` formats are supported as described below.
@@ -47,6 +47,21 @@ Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view 
 
 -   `![[image.png|#invert]]`
 -   `![#invert](image.png)`
+
+## Transclusions Rendering
+
+The plugin now renders the Transclusions within the Editor. You can use both with `block id` and `header`:
+
+-   `![[myFile#^316sd1]]`
+-   `![[myFile#Header2]]`
+
+To be able to use this functionality, you need to enable render in plugin settings.
+
+Sample Views:
+
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusions-header.png" width="70%"/>
+
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusions-block.png" width="70%"/>
 
 ## Excalidraw View
 
