@@ -297,7 +297,7 @@ export class TransclusionHandler {
 	};
 
 	static convertMdToHtml = (md: string) => {
-		let converter = new showdown.Converter();
+		let converter = new showdown.Converter({ tables: true });
 		return converter.makeHtml(md);
 	};
 
