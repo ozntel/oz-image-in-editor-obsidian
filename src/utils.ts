@@ -264,14 +264,14 @@ export class ObsidianHelpers {
 
 export class TransclusionHandler {
 	static lineIsWithBlockId = (line: string) => {
-		// --> Line Id Regex ![[hello.md#^f76b62]]
-		const idRegex = /!\[\[(.*).md#\^(.*)\]\]/;
+		// --> Line Id Regex ![[hello#^f76b62]]
+		const idRegex = /!\[\[(.*)#\^(.*)\]\]/;
 		return line.match(idRegex);
 	};
 
 	static lineIsWithHeading = (line: string) => {
-		// --> Block Regex ![[hello.md#header1]]
-		const blockRegex = /!\[\[(.*).md#((?!\^).*)\]\]/;
+		// --> Block Regex ![[hello#header1]]
+		const blockRegex = /!\[\[(.*)#((?!\^).*)\]\]/;
 		return line.match(blockRegex);
 	};
 
@@ -280,19 +280,19 @@ export class TransclusionHandler {
 	};
 
 	static getFile = (line: string, app: App, sourcePath: string): TFile | null => {
-		const fileRegex = /(?<=!\[\[).*.md/;
+		const fileRegex = /(?<=!\[\[)(.*)(?=#)/;
 		const match = line.match(fileRegex);
 		if (!match) return null;
-		return app.metadataCache.getFirstLinkpathDest(line.match(fileRegex)[0], sourcePath);
+		return app.metadataCache.getFirstLinkpathDest(match[0], sourcePath);
 	};
 
 	static getBlockId = (line: string) => {
-		const blockIdRegex = /(?<=.md#\^).*(?=]])/;
+		const blockIdRegex = /(?<=#\^).*(?=]])/;
 		return line.match(blockIdRegex)[0];
 	};
 
 	static getHeader = (line: string) => {
-		const headerRegex = /(?<=.md#).*(?=]])/;
+		const headerRegex = /(?<=#).*(?=]])/;
 		return line.match(headerRegex)[0];
 	};
 
