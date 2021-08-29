@@ -63,7 +63,7 @@ export const check_line: any = async (
 		if (TransclusionHandler.lineIsWithBlockId(line.text)) {
 			const blockId = TransclusionHandler.getBlockId(line.text);
 			// --> Wait for Block Id Creation by Obsidian
-			await pollUntil(() => cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
+			await pollUntil(() => cache.blocks && cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
 				const block = cache.blocks[blockId];
 				if (block) {
 					let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
