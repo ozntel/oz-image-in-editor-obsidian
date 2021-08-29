@@ -53,6 +53,7 @@ export const check_line: any = async (
 		WidgetHandler.clearLineWidgets(line);
 
 		let file = TransclusionHandler.getFile(line.text, plugin.app, sourcePath);
+		if (!file) return;
 		let cache = plugin.app.metadataCache.getCache(file.path);
 		let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
 
