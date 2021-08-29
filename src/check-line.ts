@@ -1,5 +1,6 @@
 import { normalizePath, TFile } from 'obsidian';
 import OzanImagePlugin from './main';
+import pollUntil from 'pollUntil';
 import {
 	WidgetHandler,
 	LinkHandler,
@@ -8,7 +9,10 @@ import {
 	ObsidianHelpers,
 	IframeHandler,
 	ExcalidrawHandler,
+	TransclusionHandler,
 } from './utils';
+import Prism from 'prismjs';
+import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 
 // Check Single Line
 export const check_line: any = async (
@@ -28,11 +32,80 @@ export const check_line: any = async (
 
 	// Clear the widget if link was removed
 	var line_image_widget = line.widgets
-		? line.widgets.filter((wid: { className: string }) => wid.className === 'oz-image-widget')
+		? line.widgets.filter(
+				(wid: { className: string }) =>
+					wid.className === 'oz-image-widget' || wid.className === 'oz-transclusion-widget'
+		  )
 		: false;
-	if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0].clear();
+	if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0]?.clear();
 
+	// --> Source Path for finding best File Match for Links
 	var sourcePath = '';
+	if (targetFile != null) {
+		sourcePath = targetFile.path;
+	} else {
+		let activeNoteFile = ObsidianHelpers.getActiveNoteFile(plugin.app.workspace);
+		sourcePath = activeNoteFile ? activeNoteFile.path : '';
+	}
+
+	/* ------------------ TRANSCLUSION RENDER  ------------------ */
+
+	if (TransclusionHandler.lineIsTransclusion(line.text)) {
+		if (!plugin.settings.renderTransclusion) return;
+		WidgetHandler.clearLineWidgets(line);
+
+		let file = TransclusionHandler.getFile(line.text, plugin.app, sourcePath);
+		if (!file) return;
+		let cache = plugin.app.metadataCache.getCache(file.path);
+		let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
+
+		// --> Handle #^ Block Id
+		if (TransclusionHandler.lineIsWithBlockId(line.text)) {
+			const blockId = TransclusionHandler.getBlockId(line.text);
+			// --> Wait for Block Id Creation by Obsidian
+			await pollUntil(() => cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
+				const block = cache.blocks[blockId];
+				if (block) {
+					let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+					TransclusionHandler.clearHTML(htmlElement, plugin.app);
+					cm.addLineWidget(line_number, htmlElement, {
+						className: 'oz-transclusion-widget',
+						showIfHidden: false,
+					});
+					Prism.highlightAll();
+				}
+			});
+		}
+
+		// --> Render # Header Block
+		if (TransclusionHandler.lineIsWithHeading(line.text)) {
+			const header = TransclusionHandler.getHeader(line.text);
+			const blockHeading = cache.headings.find((h) => h.heading === header);
+			if (blockHeading) {
+				// --> Start Num
+				let startNum = blockHeading.position.start.offset;
+				// --> End Num
+				const blockHeadingIndex = cache.headings.indexOf(blockHeading);
+				let endNum = cachedReadOfTarget.length - 1;
+				for (let h of cache.headings.slice(blockHeadingIndex + 1)) {
+					if (h.level === blockHeading.level) {
+						endNum = h.position.start.offset;
+						break;
+					}
+				}
+				// --> Get HTML Render and add as Widget
+				let htmlElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
+				TransclusionHandler.clearHTML(htmlElement, plugin.app);
+				cm.addLineWidget(line_number, htmlElement, {
+					className: 'oz-transclusion-widget',
+					showIfHidden: false,
+				});
+				Prism.highlightAll();
+			}
+		}
+
+		return;
+	}
 
 	/* ------------------ IFRAME RENDER  ------------------ */
 
@@ -134,14 +207,6 @@ export const check_line: any = async (
 			if (filename.startsWith('file:///')) filename = filename.replace('file:///', 'app://local/');
 			img.src = decodeURI(filename);
 		} else {
-			// Source Path
-			if (targetFile != null) {
-				sourcePath = targetFile.path;
-			} else {
-				let activeNoteFile = ObsidianHelpers.getActiveNoteFile(plugin.app.workspace);
-				sourcePath = activeNoteFile ? activeNoteFile.path : '';
-			}
-
 			// Get Image File
 			var imageFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(filename), sourcePath);
 			if (!imageFile) return;
@@ -152,11 +217,11 @@ export const check_line: any = async (
 			/* ------------------ EXCALIDRAW RENDER ------------------ */
 
 			if (['md', 'excalidraw'].contains(imageFile.extension)) {
-				// Do not render drawing if option turned off
-				if (!plugin.settings.renderExcalidraw) return;
-
 				// md, excalidraw file check to be rendered
 				if (ExcalidrawHandler.pluginActive && ExcalidrawHandler.isDrawing(imageFile)) {
+					// Do not render drawing if option turned off
+					if (!plugin.settings.renderExcalidraw) return;
+
 					// The file is an excalidraw drawing
 					if (plugin.imagePromiseList.contains(imageFile.path)) return;
 					plugin.addToImagePromiseList(imageFile.path);
