@@ -96,7 +96,7 @@ export const check_line: any = async (
 				let startNum = blockHeading.position.start.offset;
 				// --> End Num
 				const blockHeadingIndex = cache.headings.indexOf(blockHeading);
-				let endNum = cachedReadOfTarget.length - 1;
+				let endNum = cachedReadOfTarget.length;
 				for (let h of cache.headings.slice(blockHeadingIndex + 1)) {
 					if (h.level <= blockHeading.level) {
 						endNum = h.position.start.offset;
