@@ -60,8 +60,8 @@ export const check_line: any = async (
 		let file = TransclusionHandler.getFile(line.text, plugin.app, sourcePath);
 		if (!file) return;
 
-		// If a file changed, check if it is the referenced one, return if not
-		if (changedFilePath !== undefined && file.path !== changedFilePath) return;
+		// If a file changed, do not render the line again
+		if (changedFilePath !== undefined) return;
 
 		// Get the file and text cache
 		let cache = plugin.app.metadataCache.getCache(file.path);
