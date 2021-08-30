@@ -31,12 +31,7 @@ export const check_line: any = async (
 	const img_in_line = ImageHandler.get_image_in_line(line.text);
 
 	// Clear the widget if link was removed
-	var line_image_widget = line.widgets
-		? line.widgets.filter(
-				(wid: { className: string }) =>
-					wid.className === 'oz-image-widget' || wid.className === 'oz-transclusion-widget'
-		  )
-		: false;
+	var line_image_widget = WidgetHandler.getWidgets(line, 'oz-image-widget');
 	if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0]?.clear();
 
 	// --> Source Path for finding best File Match for Links
@@ -50,14 +45,28 @@ export const check_line: any = async (
 
 	/* ------------------ TRANSCLUSION RENDER  ------------------ */
 
-	if (TransclusionHandler.lineIsTransclusion(line.text)) {
-		if (!plugin.settings.renderTransclusion) return;
-		WidgetHandler.clearLineWidgets(line);
+	let lineIsTransclusion = TransclusionHandler.lineIsTransclusion(line.text);
 
+	// Clear if there is a widget but reference is removed
+	var line_transclusion_widget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
+	if (line_transclusion_widget && !lineIsTransclusion) {
+		line_transclusion_widget[0]?.clear();
+	}
+
+	if (lineIsTransclusion) {
+		if (!plugin.settings.renderTransclusion) return;
+
+		// Get the referenced file and return if doesn't exist
 		let file = TransclusionHandler.getFile(line.text, plugin.app, sourcePath);
 		if (!file) return;
+
+		// If a file changed, check if it is the referenced one, return if not
+		if (changedFilePath !== undefined && file.path !== changedFilePath) return;
+
+		// Get the file and text cache
 		let cache = plugin.app.metadataCache.getCache(file.path);
 		let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
+		WidgetHandler.clearLineWidgets(line);
 
 		// --> Handle #^ Block Id
 		if (TransclusionHandler.lineIsWithBlockId(line.text)) {

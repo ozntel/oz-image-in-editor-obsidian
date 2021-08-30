@@ -23,6 +23,11 @@ export class WidgetHandler {
 			}
 		}
 	};
+
+	// Returns widgets with classname or false if there is not any
+	static getWidgets = (line: any, className: string) => {
+		return line.widgets ? line.widgets.filter((wid: { className: string }) => wid.className === className) : false;
+	};
 }
 
 export class LinkHandler {
