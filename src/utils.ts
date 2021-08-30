@@ -302,7 +302,13 @@ export class TransclusionHandler {
 	};
 
 	static convertMdToHtml = (md: string) => {
-		let converter = new showdown.Converter({ tables: true });
+		let converter = new showdown.Converter({
+			tables: true,
+			simpleLineBreaks: true,
+			strikethrough: true,
+			tasklists: true,
+			smartIndentationFix: true,
+		});
 		return converter.makeHtml(md);
 	};
 
