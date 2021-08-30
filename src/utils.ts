@@ -313,6 +313,13 @@ export class TransclusionHandler {
 		let blockStart = blockCache.position.start.offset;
 		let blockEnd = blockCache.position.end.offset;
 		let mdToRender = cachedReadOfTarget.substr(blockStart, blockEnd - blockStart);
+		// Clear Block Reference from Render
+		let indexOfBlockId = mdToRender.indexOf(`^${blockCache.id}`);
+		if (indexOfBlockId !== -1) {
+			mdToRender =
+				mdToRender.slice(0, indexOfBlockId) + mdToRender.slice(indexOfBlockId + blockCache.id.length + 1);
+		}
+		// Convert to Html
 		html.innerHTML = TransclusionHandler.convertMdToHtml(mdToRender);
 		return html;
 	};
