@@ -302,6 +302,7 @@ export class TransclusionHandler {
 	};
 
 	static convertMdToHtml = (md: string) => {
+		let mdText = TransclusionHandler.convertWikiImagesToMarkdownImages(md);
 		let converter = new showdown.Converter({
 			tables: true,
 			simpleLineBreaks: true,
@@ -309,7 +310,7 @@ export class TransclusionHandler {
 			tasklists: true,
 			smartIndentationFix: true,
 		});
-		return converter.makeHtml(md);
+		return converter.makeHtml(mdText);
 	};
 
 	static renderHeader = (startNum: number, endNum: number, cachedReadOfTarget: string) => {
@@ -335,6 +336,24 @@ export class TransclusionHandler {
 		return html;
 	};
 
+	static convertWikiImagesToMarkdownImages = (md: string) => {
+		let newMdText = md;
+		let wikiRegex = new RegExp(ImageHandler.image_line_regex_1.source, 'g');
+		let matches = newMdText.match(wikiRegex);
+		if (matches) {
+			for (let wiki of matches) {
+				let fileNameMatch = wiki.match(ImageHandler.file_name_regex_1);
+				let alt_regex = /(?<=\|).*(?=]])/;
+				let altMatch = wiki.match(alt_regex);
+				if (fileNameMatch) {
+					let mdLink = `![${altMatch ? altMatch[0] : ''}](${encodeURI(fileNameMatch[0])})`;
+					newMdText = newMdText.replace(wiki, mdLink);
+				}
+			}
+		}
+		return newMdText;
+	};
+
 	static clearHTML = (html: HTMLElement, app: App) => {
 		// --> Add Line Number for CodeBlocks
 		let codeBlocks = html.querySelectorAll('pre > code');
@@ -346,7 +365,7 @@ export class TransclusionHandler {
 		images.forEach((img) => {
 			let imgSource = img.getAttr('src');
 			if (imgSource) {
-				let imgFile = app.metadataCache.getFirstLinkpathDest(img.getAttr('src'), '');
+				let imgFile = app.metadataCache.getFirstLinkpathDest(decodeURI(img.getAttr('src')), '');
 				if (imgFile) {
 					let realSource = ObsidianHelpers.getPathOfImage(app.vault, imgFile);
 					img.setAttr('src', realSource);

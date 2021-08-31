@@ -29,7 +29,7 @@ div.oz-image-widget > img[alt$='#xx-small'] {
 }
 
 .oz-transclusion-widget {
-	padding: 3px 3px 3px 15px;
+	padding: 3px 3px 3px 19px;
 	border-left: 2px solid var(--text-muted);
 }
 
