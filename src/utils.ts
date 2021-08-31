@@ -150,6 +150,10 @@ export class ImageHandler {
 
 	// Checking the Alt 100x100 (WIDTHxHEIGHT) format
 	static altWidthHeight = (altText: string) => {
+		// Exclude Alt Text containing Letters other than 'x'
+		let excludeRegex = /[^(x|0-9)]/;
+		if (altText.match(excludeRegex)) return;
+		// Create Width & Height
 		const widthHeightRegex = /[0-9]+x[0-9]+/;
 		const widthRegex = /[0-9]+/;
 		var match = altText.match(widthHeightRegex);
