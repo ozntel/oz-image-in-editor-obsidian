@@ -80,6 +80,8 @@ export default class OzanImagePlugin extends Plugin {
 			false
 		);
 
+		document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
+
 		if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
 		if (!this.settings.renderAll) return;
 		this.registerCodeMirror((cm: CodeMirror.Editor) => {
@@ -102,6 +104,7 @@ export default class OzanImagePlugin extends Plugin {
 			this.onImageMenu,
 			false
 		);
+		document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
 		this.unload_WYSIWYG_Styles();
 		console.log('Image in Editor Plugin is unloaded');
 	}
@@ -122,6 +125,12 @@ export default class OzanImagePlugin extends Plugin {
 		event.stopPropagation();
 		ImageHandler.addContextMenu(event, this, file);
 		return false;
+	};
+
+	onClickTransclusionLink = (event: MouseEvent, target: HTMLElement) => {
+		event.preventDefault();
+		event.stopPropagation();
+		ObsidianHelpers.openInternalLink(event, target.getAttr('href'), this.app);
 	};
 
 	// Line Edit Changes

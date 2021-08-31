@@ -1,4 +1,5 @@
-import { Workspace, MarkdownView, Vault, TFile, Menu, App, BlockCache } from 'obsidian';
+// @ts-ignore
+import { Workspace, MarkdownView, Vault, TFile, Menu, App, BlockCache, Keymap } from 'obsidian';
 import showdown from 'showdown';
 import OzanImagePlugin from './main';
 
@@ -265,6 +266,10 @@ export class ObsidianHelpers {
 		}
 		return null;
 	};
+
+	static openInternalLink = (event: MouseEvent, link: string, app: App) => {
+		app.workspace.openLinkText(link, '/', Keymap.isModifier(event, 'Mod') || 1 === event.button);
+	};
 }
 
 export class TransclusionHandler {
@@ -302,7 +307,7 @@ export class TransclusionHandler {
 	};
 
 	static convertMdToHtml = (md: string) => {
-		let mdText = TransclusionHandler.convertWikiImagesToMarkdownImages(md);
+		let mdText = TransclusionHandler.convertWikiLinksToMarkdown(md);
 		let converter = new showdown.Converter({
 			tables: true,
 			simpleLineBreaks: true,
@@ -336,17 +341,18 @@ export class TransclusionHandler {
 		return html;
 	};
 
-	static convertWikiImagesToMarkdownImages = (md: string) => {
+	static convertWikiLinksToMarkdown = (md: string): string => {
 		let newMdText = md;
-		let wikiRegex = new RegExp(ImageHandler.image_line_regex_1.source, 'g');
+		let wikiRegex = /\[\[.*\]\]/g;
 		let matches = newMdText.match(wikiRegex);
 		if (matches) {
 			for (let wiki of matches) {
-				let fileNameMatch = wiki.match(ImageHandler.file_name_regex_1);
-				let alt_regex = /(?<=\|).*(?=]])/;
-				let altMatch = wiki.match(alt_regex);
-				if (fileNameMatch) {
-					let mdLink = `![${altMatch ? altMatch[0] : ''}](${encodeURI(fileNameMatch[0])})`;
+				let fileRegex = /(?<=\[\[).*?(?=(\]|\|))/;
+				let altRegex = /(?<=\|).*(?=]])/;
+				let fileMatch = wiki.match(fileRegex);
+				if (fileMatch) {
+					let altMatch = wiki.match(altRegex);
+					let mdLink = `[${altMatch ? altMatch[0] : ''}](${encodeURI(fileMatch[0])})`;
 					newMdText = newMdText.replace(wiki, mdLink);
 				}
 			}
@@ -355,12 +361,23 @@ export class TransclusionHandler {
 	};
 
 	static clearHTML = (html: HTMLElement, app: App) => {
-		// --> Add Line Number for CodeBlocks
+		// --> Convert Code Blocks for Transclusion
+		TransclusionHandler.clearCodeBlocksInHtml(html);
+		// --> Convert Image Links to Usable in Obsidian
+		TransclusionHandler.clearImagesInHtml(html, app);
+		// --> Convert Links to make Usable in Obsidian
+		TransclusionHandler.clearAnchorsInHtml(html, app);
+	};
+
+	static clearCodeBlocksInHtml = (html: HTMLElement) => {
+		// Add Line Number for Code Blocks
 		let codeBlocks = html.querySelectorAll('pre > code');
 		codeBlocks.forEach((cb) => {
 			cb.addClass('line-numbers');
 		});
-		// --> Change Image Links & Width
+	};
+
+	static clearImagesInHtml = (html: HTMLElement, app: App) => {
 		let images = html.querySelectorAll('img');
 		images.forEach((img) => {
 			let imgSource = img.getAttr('src');
@@ -378,6 +395,22 @@ export class TransclusionHandler {
 							if (widthHeight.height) img.height = widthHeight.height;
 						}
 					}
+				}
+			}
+		});
+	};
+
+	static clearAnchorsInHtml = (html: HTMLElement, app: App) => {
+		let anchors = html.querySelectorAll('a');
+		anchors.forEach((a) => {
+			if (a.innerText === '') {
+				// If no link text, take href as link text
+				let href = a.getAttr('href');
+				a.innerText = href;
+				// If the link is a file, add class (which has event listener in main)
+				let file = app.metadataCache.getFirstLinkpathDest(decodeURI(href), '');
+				if (file) {
+					a.addClass('oz-obsidian-inner-link');
 				}
 			}
 		});
