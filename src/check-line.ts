@@ -45,38 +45,66 @@ export const check_line: any = async (
 
 	/* ------------------ TRANSCLUSION RENDER  ------------------ */
 
-	let lineIsTransclusion = TransclusionHandler.lineIsTransclusion(line.text);
+	if (plugin.settings && plugin.settings.renderTransclusion) {
+		let lineIsTransclusion = TransclusionHandler.lineIsTransclusion(line.text);
+		// Clear if there is a widget but reference is removed
+		var line_transclusion_widget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
+		if (line_transclusion_widget && !lineIsTransclusion) {
+			line_transclusion_widget[0]?.clear();
+		}
 
-	// Clear if there is a widget but reference is removed
-	var line_transclusion_widget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
-	if (line_transclusion_widget && !lineIsTransclusion) {
-		line_transclusion_widget[0]?.clear();
-	}
+		if (lineIsTransclusion) {
+			// Get the referenced file and return if doesn't exist
+			let file = TransclusionHandler.getFile(line.text, plugin.app, sourcePath);
+			if (!file) return;
 
-	if (lineIsTransclusion) {
-		if (!plugin.settings.renderTransclusion) return;
+			// If a file changed, do not render the line again
+			if (changedFilePath !== undefined) return;
 
-		// Get the referenced file and return if doesn't exist
-		let file = TransclusionHandler.getFile(line.text, plugin.app, sourcePath);
-		if (!file) return;
+			// Get the file and text cache
+			let cache = plugin.app.metadataCache.getCache(file.path);
+			let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
+			WidgetHandler.clearLineWidgets(line);
 
-		// If a file changed, do not render the line again
-		if (changedFilePath !== undefined) return;
+			// --> Handle #^ Block Id
+			if (TransclusionHandler.lineIsWithBlockId(line.text)) {
+				const blockId = TransclusionHandler.getBlockId(line.text);
+				// --> Wait for Block Id Creation by Obsidian
+				await pollUntil(() => cache.blocks && cache.blocks[blockId], [cache.blocks], 3000, 100).then(
+					(result) => {
+						if (!result) return;
+						const block = cache.blocks[blockId];
+						if (block) {
+							let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+							TransclusionHandler.clearHTML(htmlElement, plugin.app);
+							cm.addLineWidget(line_number, htmlElement, {
+								className: 'oz-transclusion-widget',
+								showIfHidden: false,
+							});
+							Prism.highlightAll();
+						}
+					}
+				);
+			}
 
-		// Get the file and text cache
-		let cache = plugin.app.metadataCache.getCache(file.path);
-		let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
-		WidgetHandler.clearLineWidgets(line);
-
-		// --> Handle #^ Block Id
-		if (TransclusionHandler.lineIsWithBlockId(line.text)) {
-			const blockId = TransclusionHandler.getBlockId(line.text);
-			// --> Wait for Block Id Creation by Obsidian
-			await pollUntil(() => cache.blocks && cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
-				if (!result) return;
-				const block = cache.blocks[blockId];
-				if (block) {
-					let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+			// --> Render # Header Block
+			if (TransclusionHandler.lineIsWithHeading(line.text)) {
+				const header = TransclusionHandler.getHeader(line.text);
+				const blockHeading = cache.headings.find((h) => h.heading === header);
+				if (blockHeading) {
+					// --> Start Num
+					let startNum = blockHeading.position.start.offset;
+					// --> End Num
+					const blockHeadingIndex = cache.headings.indexOf(blockHeading);
+					let endNum = cachedReadOfTarget.length;
+					for (let h of cache.headings.slice(blockHeadingIndex + 1)) {
+						if (h.level <= blockHeading.level) {
+							endNum = h.position.start.offset;
+							break;
+						}
+					}
+					// --> Get HTML Render and add as Widget
+					let htmlElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
 					TransclusionHandler.clearHTML(htmlElement, plugin.app);
 					cm.addLineWidget(line_number, htmlElement, {
 						className: 'oz-transclusion-widget',
@@ -84,37 +112,10 @@ export const check_line: any = async (
 					});
 					Prism.highlightAll();
 				}
-			});
-		}
-
-		// --> Render # Header Block
-		if (TransclusionHandler.lineIsWithHeading(line.text)) {
-			const header = TransclusionHandler.getHeader(line.text);
-			const blockHeading = cache.headings.find((h) => h.heading === header);
-			if (blockHeading) {
-				// --> Start Num
-				let startNum = blockHeading.position.start.offset;
-				// --> End Num
-				const blockHeadingIndex = cache.headings.indexOf(blockHeading);
-				let endNum = cachedReadOfTarget.length;
-				for (let h of cache.headings.slice(blockHeadingIndex + 1)) {
-					if (h.level <= blockHeading.level) {
-						endNum = h.position.start.offset;
-						break;
-					}
-				}
-				// --> Get HTML Render and add as Widget
-				let htmlElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
-				TransclusionHandler.clearHTML(htmlElement, plugin.app);
-				cm.addLineWidget(line_number, htmlElement, {
-					className: 'oz-transclusion-widget',
-					showIfHidden: false,
-				});
-				Prism.highlightAll();
 			}
-		}
 
-		return;
+			return;
+		}
 	}
 
 	/* ------------------ IFRAME RENDER  ------------------ */

@@ -15,12 +15,19 @@ export class WidgetHandler {
 
 	// Clear Single Line Widget
 	static clearLineWidgets = (line: any) => {
+		let classes = ['oz-image-widget', 'oz-transclusion-widget'];
+		WidgetHandler.clearWidgetsWithClass(classes, line);
+	};
+
+	// Clear Transclusion Widgets
+	static clearTransclusionWidgets = (line: any) => {
+		WidgetHandler.clearWidgetsWithClass(['oz-transclusion-widget'], line);
+	};
+
+	static clearWidgetsWithClass = (classList: string[], line: any) => {
 		if (line.widgets) {
-			let classes = ['oz-image-widget', 'oz-transclusion-widget'];
 			for (const wid of line.widgets) {
-				if (classes.contains(wid.className)) {
-					wid.clear();
-				}
+				if (classList.contains(wid.className)) wid.clear();
 			}
 		}
 	};

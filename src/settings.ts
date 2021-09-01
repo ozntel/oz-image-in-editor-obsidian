@@ -85,6 +85,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 			.addToggle((toggle) =>
 				toggle.setValue(this.plugin.settings.renderTransclusion).onChange((value) => {
 					this.plugin.settings.renderTransclusion = value;
+					this.plugin.handleTransclusionSetting(value);
 					this.plugin.saveSettings();
 				})
 			);
