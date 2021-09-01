@@ -166,14 +166,16 @@ export default class OzanImagePlugin extends Plugin {
 
 	// Handle Transclusion Setting Off
 	handleTransclusionSetting = (newSetting: boolean) => {
-		if (!newSetting) {
-			this.app.workspace.iterateCodeMirrors((cm) => {
+		this.app.workspace.iterateCodeMirrors((cm) => {
+			if (!newSetting) {
 				for (let i = 0; i <= cm.lastLine(); i++) {
 					let line = cm.lineInfo(i);
 					WidgetHandler.clearTransclusionWidgets(line);
 				}
-			});
-		}
+			} else {
+				check_lines(cm, 0, cm.lastLine(), this);
+			}
+		});
 	};
 
 	// Handle Toggle for Refresh Images Settings
