@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Workspace, MarkdownView, Vault, TFile, Menu, App, BlockCache, Keymap } from 'obsidian';
+import { Workspace, MarkdownView, Vault, TFile, Menu, App, BlockCache, Keymap, normalizePath } from 'obsidian';
 import showdown from 'showdown';
 import OzanImagePlugin from './main';
 
@@ -318,7 +318,7 @@ export class TransclusionHandler {
 	};
 
 	static convertMdToHtml = (md: string) => {
-		let mdText = TransclusionHandler.convertWikiLinksToMarkdown(md);
+		let mdText = WikiMarkdownHandler.convertWikiLinksToMarkdown(md);
 		let converter = new showdown.Converter({
 			tables: true,
 			simpleLineBreaks: true,
@@ -350,25 +350,6 @@ export class TransclusionHandler {
 		// Convert to Html
 		html.innerHTML = TransclusionHandler.convertMdToHtml(mdToRender);
 		return html;
-	};
-
-	static convertWikiLinksToMarkdown = (md: string): string => {
-		let newMdText = md;
-		let wikiRegex = /\[\[.*\]\]/g;
-		let matches = newMdText.match(wikiRegex);
-		if (matches) {
-			for (let wiki of matches) {
-				let fileRegex = /(?<=\[\[).*?(?=(\]|\|))/;
-				let altRegex = /(?<=\|).*(?=]])/;
-				let fileMatch = wiki.match(fileRegex);
-				if (fileMatch) {
-					let altMatch = wiki.match(altRegex);
-					let mdLink = `[${altMatch ? altMatch[0] : ''}](${encodeURI(fileMatch[0])})`;
-					newMdText = newMdText.replace(wiki, mdLink);
-				}
-			}
-		}
-		return newMdText;
 	};
 
 	static clearHTML = (html: HTMLElement, app: App) => {
@@ -424,6 +405,61 @@ export class TransclusionHandler {
 					a.addClass('oz-obsidian-inner-link');
 				}
 			}
+		});
+	};
+}
+
+export class WikiMarkdownHandler {
+	static convertWikiLinksToMarkdown = (md: string): string => {
+		let newMdText = md;
+		let wikiRegex = /\[\[.*\]\]/g;
+		let matches = newMdText.match(wikiRegex);
+		if (matches) {
+			let fileRegex = /(?<=\[\[).*?(?=(\]|\|))/;
+			let altRegex = /(?<=\|).*(?=]])/;
+			for (let wiki of matches) {
+				let fileMatch = wiki.match(fileRegex);
+				if (fileMatch) {
+					let altMatch = wiki.match(altRegex);
+					let mdLink = `[${altMatch ? altMatch[0] : ''}](${encodeURI(fileMatch[0])})`;
+					newMdText = newMdText.replace(wiki, mdLink);
+				}
+			}
+		}
+		return newMdText;
+	};
+
+	static convertMarkdownLinksToWikiLinks = (md: string): string => {
+		let newMdText = md;
+		let mdLinkRegex = /\[(^$|.*?)\]\((.*)\)/g;
+		let matches = newMdText.match(mdLinkRegex);
+		if (matches) {
+			let fileRegex = /(?<=\().*(?=\))/;
+			let altRegex = /(?<=\[)(^$|.*)(?=\])/;
+			for (let mdLink of matches) {
+				let fileMatch = mdLink.match(fileRegex);
+				if (fileMatch) {
+					let altMatch = mdLink.match(altRegex);
+					let wikiLink = `[[${decodeURI(fileMatch[0])}${
+						altMatch && altMatch[0] !== '' ? '|' + altMatch[0] : ''
+					}]]`;
+					newMdText = newMdText.replace(mdLink, wikiLink);
+				}
+			}
+		}
+		return newMdText;
+	};
+
+	static convertLinks = (app: App, finalFormat: 'markdown' | 'wiki') => {
+		let mdFiles: TFile[] = app.vault.getMarkdownFiles();
+		mdFiles.forEach(async (mdFile) => {
+			let normalizedPath = normalizePath(mdFile.path);
+			let fileText = await app.vault.adapter.read(normalizedPath);
+			let newFileText =
+				finalFormat === 'markdown'
+					? WikiMarkdownHandler.convertWikiLinksToMarkdown(fileText)
+					: WikiMarkdownHandler.convertMarkdownLinksToWikiLinks(fileText);
+			await app.vault.adapter.write(normalizedPath, newFileText);
 		});
 	};
 }

@@ -1,5 +1,5 @@
 import { Plugin, TAbstractFile, TFile } from 'obsidian';
-import { ObsidianHelpers, WidgetHandler, ImageHandler } from './utils';
+import { ObsidianHelpers, WidgetHandler, ImageHandler, WikiMarkdownHandler } from './utils';
 import { check_line, check_lines } from './check-line';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './constants';
@@ -70,6 +70,22 @@ export default class OzanImagePlugin extends Plugin {
 				this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
 				this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
 				this.saveSettings();
+			},
+		});
+
+		this.addCommand({
+			id: 'convert-wikis-to-md-in-vault',
+			name: 'Convert all WikiLinks to Markdown Links in Vault (Experiment)',
+			callback: () => {
+				WikiMarkdownHandler.convertLinks(this.app, 'markdown');
+			},
+		});
+
+		this.addCommand({
+			id: 'convert-mdlinks-to-wiki-in-vault',
+			name: 'Convert all Markdown Links to WikiLinks in Vault (Experiment)',
+			callback: () => {
+				WikiMarkdownHandler.convertLinks(this.app, 'wiki');
 			},
 		});
 
