@@ -13,6 +13,12 @@ import {
 } from './utils';
 import Prism from 'prismjs';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
+import 'prismjs/components/prism-python.min';
+import 'prismjs/components/prism-typescript.min';
+import 'prismjs/components/prism-jsx.min';
+import 'prismjs/components/prism-tsx.min';
+import 'prismjs/components/prism-bash.min';
+import 'prismjs/components/prism-visual-basic.min';
 
 // Check Single Line
 export const check_line: any = async (
