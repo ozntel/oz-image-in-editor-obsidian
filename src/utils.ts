@@ -410,6 +410,7 @@ export class TransclusionHandler {
 }
 
 export class WikiMarkdownHandler {
+	// --> Converts links within given string from Wiki to MD
 	static convertWikiLinksToMarkdown = (md: string): string => {
 		let newMdText = md;
 		let wikiRegex = /\[\[.*\]\]/g;
@@ -429,6 +430,7 @@ export class WikiMarkdownHandler {
 		return newMdText;
 	};
 
+	// --> Converts links within given string from MD to Wiki
 	static convertMarkdownLinksToWikiLinks = (md: string): string => {
 		let newMdText = md;
 		let mdLinkRegex = /\[(^$|.*?)\]\((.*)\)/g;
@@ -450,16 +452,28 @@ export class WikiMarkdownHandler {
 		return newMdText;
 	};
 
-	static convertLinks = (app: App, finalFormat: 'markdown' | 'wiki') => {
+	// --> Converts single file to provided final format and save back in the file
+	static convertLinksAndSaveInSingleFile = async (mdFile: TFile, app: App, finalFormat: 'markdown' | 'wiki') => {
+		let normalizedPath = normalizePath(mdFile.path);
+		let fileText = await app.vault.adapter.read(normalizedPath);
+		let newFileText =
+			finalFormat === 'markdown'
+				? WikiMarkdownHandler.convertWikiLinksToMarkdown(fileText)
+				: WikiMarkdownHandler.convertMarkdownLinksToWikiLinks(fileText);
+		await app.vault.adapter.write(normalizedPath, newFileText);
+	};
+
+	// --> Command Function: Converts All Links and Saves in Current Active File
+	static convertLinksInActiveFile = async (app: App, finalFormat: 'markdown' | 'wiki') => {
+		let mdFile: TFile = app.workspace.getActiveFile();
+		await WikiMarkdownHandler.convertLinksAndSaveInSingleFile(mdFile, app, finalFormat);
+	};
+
+	// --> Command Function: Converts All Links in All Files in Vault and Save in Corresponding Files
+	static convertLinksInVault = (app: App, finalFormat: 'markdown' | 'wiki') => {
 		let mdFiles: TFile[] = app.vault.getMarkdownFiles();
 		mdFiles.forEach(async (mdFile) => {
-			let normalizedPath = normalizePath(mdFile.path);
-			let fileText = await app.vault.adapter.read(normalizedPath);
-			let newFileText =
-				finalFormat === 'markdown'
-					? WikiMarkdownHandler.convertWikiLinksToMarkdown(fileText)
-					: WikiMarkdownHandler.convertMarkdownLinksToWikiLinks(fileText);
-			await app.vault.adapter.write(normalizedPath, newFileText);
+			await WikiMarkdownHandler.convertLinksAndSaveInSingleFile(mdFile, app, finalFormat);
 		});
 	};
 }

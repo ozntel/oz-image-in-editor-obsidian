@@ -74,18 +74,34 @@ export default class OzanImagePlugin extends Plugin {
 		});
 
 		this.addCommand({
-			id: 'convert-wikis-to-md-in-vault',
-			name: 'Convert all WikiLinks to Markdown Links in Vault (Experiment)',
+			id: 'convert-wikis-to-md-in-active-file',
+			name: 'Active File: Convert WikiLinks to Markdown Links',
 			callback: () => {
-				WikiMarkdownHandler.convertLinks(this.app, 'markdown');
+				WikiMarkdownHandler.convertLinksInActiveFile(this.app, 'markdown');
+			},
+		});
+
+		this.addCommand({
+			id: 'convert-md-to-wikis-in-active-file',
+			name: 'Active File: Convert Markdown Links to WikiLinks',
+			callback: () => {
+				WikiMarkdownHandler.convertLinksInActiveFile(this.app, 'wiki');
+			},
+		});
+
+		this.addCommand({
+			id: 'convert-wikis-to-md-in-vault',
+			name: 'Vault: Convert WikiLinks to Markdown Links',
+			callback: () => {
+				WikiMarkdownHandler.convertLinksInVault(this.app, 'markdown');
 			},
 		});
 
 		this.addCommand({
 			id: 'convert-mdlinks-to-wiki-in-vault',
-			name: 'Convert all Markdown Links to WikiLinks in Vault (Experiment)',
+			name: 'Vault: Convert Markdown Links to WikiLinks',
 			callback: () => {
-				WikiMarkdownHandler.convertLinks(this.app, 'wiki');
+				WikiMarkdownHandler.convertLinksInVault(this.app, 'wiki');
 			},
 		});
 
