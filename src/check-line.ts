@@ -96,7 +96,7 @@ export const check_line: any = async (
 			// --> Render # Header Block
 			if (TransclusionHandler.lineIsWithHeading(line.text)) {
 				const header = TransclusionHandler.getHeader(line.text);
-				const blockHeading = cache.headings.find((h) => h.heading === header);
+				const blockHeading = cache.headings?.find((h) => h.heading === header);
 				if (blockHeading) {
 					// --> Start Num
 					let startNum = blockHeading.position.start.offset;
