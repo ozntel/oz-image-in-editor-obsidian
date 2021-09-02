@@ -59,9 +59,9 @@ To be able to use this functionality, you need to enable render in plugin settin
 
 Sample Views:
 
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusions-header.png" width="70%"/>
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusion-header.png" width="70%"/>
 
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusions-block.png" width="70%"/>
+<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusion-block.png" width="70%"/>
 
 ## 📕 Wikilink to Markdown & Markdown to Wikilink
 
