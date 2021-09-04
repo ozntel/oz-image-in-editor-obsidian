@@ -283,17 +283,19 @@ export class ObsidianHelpers {
 	};
 }
 
+// --> Line Id Regex ![[hello#^f76b62]]
+const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
+
+// --> Block Regex ![[hello#header1]]
+const transclusionBlockRegex = /!\[\[(.*)#((?!\^).*)\]\]/;
+
 export class TransclusionHandler {
 	static lineIsWithBlockId = (line: string) => {
-		// --> Line Id Regex ![[hello#^f76b62]]
-		const idRegex = /!\[\[(.*)#\^(.*)\]\]/;
-		return line.match(idRegex);
+		return line.match(transclusionWithBlockIdRegex);
 	};
 
 	static lineIsWithHeading = (line: string) => {
-		// --> Block Regex ![[hello#header1]]
-		const blockRegex = /!\[\[(.*)#((?!\^).*)\]\]/;
-		return line.match(blockRegex);
+		return line.match(transclusionBlockRegex);
 	};
 
 	static lineIsTransclusion = (line: string) => {
