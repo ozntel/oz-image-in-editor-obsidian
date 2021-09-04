@@ -41,7 +41,8 @@ div.oz-image-widget > img[alt$='#xx-small'] {
 
 /* Image Zoom */
 div.oz-image-widget img:active {
-	width: 100% !important;
+	width: auto;
+	max-height: 95vh;
 	cursor: zoom-out;
 }
 
