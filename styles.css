@@ -42,6 +42,7 @@ div.oz-image-widget > img[alt$='#xx-small'] {
 /* Image Zoom */
 div.oz-image-widget img:active {
 	width: 100% !important;
+	cursor: zoom-out;
 }
 
 /* Line Numbers In Editor CodeBlock Renders */
