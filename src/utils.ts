@@ -285,16 +285,12 @@ export class ObsidianHelpers {
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
-
 // --> Block Regex ![[hello#header1]]
 const transclusionBlockRegex = /!\[\[(.*)#((?!\^).*)\]\]/;
-
 // --> Get Block Id from Transclusion
 const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
-
 // --> Get Header from Transclusion
 const transclusionHeaderText = /(?<=#).*(?=]])/;
-
 // --> Get File Name from Transclusion
 const transclusionFileNameRegex = /(?<=!\[\[)(.*)(?=#)/;
 
@@ -325,8 +321,21 @@ export class TransclusionHandler {
 		return line.match(transclusionHeaderText)[0];
 	};
 
+	static clearExclamationFromTransclusion = (md: string): string => {
+		// To Allow Showdown to recognize as Link rather than img
+		let mdText = md;
+		let transclusions = md.match(
+			new RegExp(`(${transclusionWithBlockIdRegex.source})|(${transclusionBlockRegex.source})`, 'g')
+		);
+		transclusions?.forEach((tr) => (mdText = mdText.replace(tr, tr.substring(1))));
+		return mdText;
+	};
+
 	static clearMd = (md: string): string => {
-		let mdText = WikiMarkdownHandler.convertWikiLinksToMarkdown(md);
+		// --> Convert Inline Transclusions to Link
+		let mdText = TransclusionHandler.clearExclamationFromTransclusion(md);
+		// --> Convert Wikis to Markdown for later HTML render
+		mdText = WikiMarkdownHandler.convertWikiLinksToMarkdown(mdText);
 		return mdText;
 	};
 
@@ -408,16 +417,13 @@ export class TransclusionHandler {
 	static clearAnchorsInHtml = (html: HTMLElement, app: App) => {
 		let anchors = html.querySelectorAll('a');
 		anchors.forEach((a) => {
-			if (a.innerText === '') {
-				// If no link text, take href as link text
-				let href = a.getAttr('href');
-				a.innerText = href;
-				// If the link is a file, add class (which has event listener in main)
-				let file = app.metadataCache.getFirstLinkpathDest(decodeURI(href), '');
-				if (file) {
-					a.addClass('oz-obsidian-inner-link');
-				}
-			}
+			let href = a.getAttr('href');
+			// --> If no Alt Text, Add href as Link Text
+			if (a.innerText === '') a.innerText = decodeURI(href);
+			// If the link is a file, add class (which has event listener in main)
+			if (href.match(new RegExp('.*#.*'))) href = href.match(new RegExp('.*(?=#)'))[0];
+			let file = app.metadataCache.getFirstLinkpathDest(decodeURI(href), '');
+			if (file) a.addClass('oz-obsidian-inner-link');
 		});
 	};
 }
