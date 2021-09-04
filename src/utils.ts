@@ -420,10 +420,15 @@ export class TransclusionHandler {
 			let href = a.getAttr('href');
 			// --> If no Alt Text, Add href as Link Text
 			if (a.innerText === '') a.innerText = decodeURI(href);
-			// If the link is a file, add class (which has event listener in main)
+			// --> If link is a translucion, change the href to file name
 			if (href.match(new RegExp('.*#.*'))) href = href.match(new RegExp('.*(?=#)'))[0];
+			// --> If link is a file, add class (which has event listener in main)
+			// and decode href for obsidian
 			let file = app.metadataCache.getFirstLinkpathDest(decodeURI(href), '');
-			if (file) a.addClass('oz-obsidian-inner-link');
+			if (file) {
+				a.setAttr('href', decodeURI(href));
+				a.addClass('oz-obsidian-inner-link');
+			}
 		});
 	};
 }
