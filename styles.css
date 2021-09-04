@@ -1,5 +1,6 @@
-div.oz-image-widget > img {
+div.oz-image-widget img {
 	max-width: 100%;
+	cursor: zoom-in;
 }
 
 div.oz-image-widget > img[alt$='#small'] {
@@ -17,9 +18,9 @@ div.oz-image-widget > img[alt$='#xx-small'] {
 	min-width: 50pt !important;
 }
 
-.CodeMirror-linewidget > img {
-	margin-top: 5px !important;
-	margin-bottom: 5px !important;
+.CodeMirror-linewidget img {
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 .theme-dark img[alt$='#invert'],
@@ -36,6 +37,11 @@ div.oz-image-widget > img[alt$='#xx-small'] {
 .oz-coffee-div {
 	text-align: center;
 	margin-top: 20px;
+}
+
+/* Image Zoom */
+div.oz-image-widget img:active {
+	width: 100% !important;
 }
 
 /* Line Numbers In Editor CodeBlock Renders */
