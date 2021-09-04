@@ -289,6 +289,15 @@ const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
 // --> Block Regex ![[hello#header1]]
 const transclusionBlockRegex = /!\[\[(.*)#((?!\^).*)\]\]/;
 
+// --> Get Block Id from Transclusion
+const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
+
+// --> Get Header from Transclusion
+const transclusionHeaderText = /(?<=#).*(?=]])/;
+
+// --> Get File Name from Transclusion
+const transclusionFileNameRegex = /(?<=!\[\[)(.*)(?=#)/;
+
 export class TransclusionHandler {
 	static lineIsWithBlockId = (line: string) => {
 		return line.match(transclusionWithBlockIdRegex);
@@ -303,24 +312,26 @@ export class TransclusionHandler {
 	};
 
 	static getFile = (line: string, app: App, sourcePath: string): TFile | null => {
-		const fileRegex = /(?<=!\[\[)(.*)(?=#)/;
-		const match = line.match(fileRegex);
+		const match = line.match(transclusionFileNameRegex);
 		if (!match) return null;
 		return app.metadataCache.getFirstLinkpathDest(match[0], sourcePath);
 	};
 
 	static getBlockId = (line: string) => {
-		const blockIdRegex = /(?<=#\^).*(?=]])/;
-		return line.match(blockIdRegex)[0];
+		return line.match(transclusionBlockIdRegex)[0];
 	};
 
 	static getHeader = (line: string) => {
-		const headerRegex = /(?<=#).*(?=]])/;
-		return line.match(headerRegex)[0];
+		return line.match(transclusionHeaderText)[0];
+	};
+
+	static clearMd = (md: string): string => {
+		let mdText = WikiMarkdownHandler.convertWikiLinksToMarkdown(md);
+		return mdText;
 	};
 
 	static convertMdToHtml = (md: string) => {
-		let mdText = WikiMarkdownHandler.convertWikiLinksToMarkdown(md);
+		let mdText = TransclusionHandler.clearMd(md);
 		let converter = new showdown.Converter({
 			tables: true,
 			simpleLineBreaks: true,
