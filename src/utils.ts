@@ -331,9 +331,19 @@ export class TransclusionHandler {
 		return mdText;
 	};
 
+	static clearHashTags = (md: string): string => {
+		let reg = /^\#[^#\s]+/gm;
+		let mdText = md;
+		let hashtags = mdText.match(reg);
+		hashtags?.forEach((ht) => (mdText = mdText.replace(ht, `[${ht}](${ht})`)));
+		return mdText;
+	};
+
 	static clearMd = (md: string): string => {
+		// --> Hashtags as Link
+		let mdText = TransclusionHandler.clearHashTags(md);
 		// --> Convert Inline Transclusions to Link
-		let mdText = TransclusionHandler.clearExclamationFromTransclusion(md);
+		mdText = TransclusionHandler.clearExclamationFromTransclusion(mdText);
 		// --> Convert Wikis to Markdown for later HTML render
 		mdText = WikiMarkdownHandler.convertWikiLinksToMarkdown(mdText);
 		return mdText;
@@ -428,6 +438,10 @@ export class TransclusionHandler {
 			if (file) {
 				a.setAttr('href', decodeURI(href));
 				a.addClass('oz-obsidian-inner-link');
+			}
+			// --> Hashtag Class & Attributes
+			if (a.innerText.startsWith('#')) {
+				a.addClass('tag');
 			}
 		});
 	};
