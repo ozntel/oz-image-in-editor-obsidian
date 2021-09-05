@@ -332,9 +332,9 @@ export class TransclusionHandler {
 	};
 
 	static clearHashTags = (md: string): string => {
-		let reg = /^\#[^#\s]+/gm;
+		let hashtagRegex = /^\#[^#\s]+/gm;
 		let mdText = md;
-		let hashtags = mdText.match(reg);
+		let hashtags = mdText.match(hashtagRegex);
 		hashtags?.forEach((ht) => (mdText = mdText.replace(ht, `[${ht}](${ht})`)));
 		return mdText;
 	};
