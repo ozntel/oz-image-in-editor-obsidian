@@ -451,7 +451,7 @@ export class WikiMarkdownHandler {
 	// --> Converts links within given string from Wiki to MD
 	static convertWikiLinksToMarkdown = (md: string): string => {
 		let newMdText = md;
-		let wikiRegex = /\[\[.*\]\]/g;
+		let wikiRegex = /\[\[.*?\]\]/g;
 		let matches = newMdText.match(wikiRegex);
 		if (matches) {
 			let fileRegex = /(?<=\[\[).*?(?=(\]|\|))/;
@@ -471,11 +471,11 @@ export class WikiMarkdownHandler {
 	// --> Converts links within given string from MD to Wiki
 	static convertMarkdownLinksToWikiLinks = (md: string): string => {
 		let newMdText = md;
-		let mdLinkRegex = /\[(^$|.*?)\]\((.*)\)/g;
+		let mdLinkRegex = /\[(^$|.*?)\]\((.*?)\)/g;
 		let matches = newMdText.match(mdLinkRegex);
 		if (matches) {
 			let fileRegex = /(?<=\().*(?=\))/;
-			let altRegex = /(?<=\[)(^$|.*)(?=\])/;
+			let altRegex = /(?<=\[)(^$|.*?)(?=\])/;
 			for (let mdLink of matches) {
 				let fileMatch = mdLink.match(fileRegex);
 				if (fileMatch) {
