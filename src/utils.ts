@@ -281,6 +281,10 @@ export class ObsidianHelpers {
 	static openInternalLink = (event: MouseEvent, link: string, app: App) => {
 		app.workspace.openLinkText(link, '/', Keymap.isModifier(event, 'Mod') || 1 === event.button);
 	};
+
+	static clearSpecialCharacters = (str: string) => {
+		return str.replace(/\s|[0-9_]|\W|[#$%^&*()]/g, '');
+	};
 }
 
 // --> Line Id Regex ![[hello#^f76b62]]

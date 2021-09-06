@@ -21,7 +21,7 @@ import 'prismjs/components/prism-bash.min';
 import 'prismjs/components/prism-visual-basic.min';
 
 // Check Single Line
-export const check_line: any = async (
+export const checkLine: any = async (
 	cm: CodeMirror.Editor,
 	line_number: number,
 	targetFile: TFile,
@@ -96,7 +96,11 @@ export const check_line: any = async (
 			// --> Render # Header Block
 			if (TransclusionHandler.lineIsWithHeading(line.text)) {
 				const header = TransclusionHandler.getHeader(line.text);
-				const blockHeading = cache.headings?.find((h) => h.heading === header);
+				const blockHeading = cache.headings?.find(
+					(h) =>
+						ObsidianHelpers.clearSpecialCharacters(h.heading) ===
+						ObsidianHelpers.clearSpecialCharacters(header)
+				);
 				if (blockHeading) {
 					// --> Start Num
 					let startNum = blockHeading.position.start.offset;
@@ -291,7 +295,7 @@ export const check_line: any = async (
 };
 
 // Check All Lines Function
-export const check_lines: any = (
+export const checkLines: any = (
 	cm: CodeMirror.Editor,
 	from: number,
 	to: number,
@@ -301,6 +305,6 @@ export const check_lines: any = (
 	// Last Used Line Number in Code Mirror
 	var file = ObsidianHelpers.getFileCmBelongsTo(cm, plugin.app.workspace);
 	for (let i = from; i <= to; i++) {
-		check_line(cm, i, file, plugin, changedFilePath);
+		checkLine(cm, i, file, plugin, changedFilePath);
 	}
 };

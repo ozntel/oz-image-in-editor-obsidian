@@ -1,6 +1,6 @@
 import { Plugin, TAbstractFile, TFile } from 'obsidian';
 import { ObsidianHelpers, WidgetHandler, ImageHandler, WikiMarkdownHandler } from './utils';
-import { check_line, check_lines } from './check-line';
+import { checkLine, checkLines } from './checkLine';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './constants';
 import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
@@ -167,7 +167,7 @@ export default class OzanImagePlugin extends Plugin {
 
 	// Line Edit Changes
 	codemirrorLineChanges = (cm: any, change: any) => {
-		check_lines(cm, change.from.line, change.from.line + change.text.length - 1, this);
+		checkLines(cm, change.from.line, change.from.line + change.text.length - 1, this);
 	};
 
 	// Only Triggered during initial Load
@@ -175,7 +175,7 @@ export default class OzanImagePlugin extends Plugin {
 		var lastLine = cm.lastLine();
 		var file = ObsidianHelpers.getFileCmBelongsTo(cm, this.app.workspace);
 		for (let i = 0; i < lastLine + 1; i++) {
-			check_line(cm, i, file, this);
+			checkLine(cm, i, file, this);
 		}
 	};
 
@@ -205,7 +205,7 @@ export default class OzanImagePlugin extends Plugin {
 					WidgetHandler.clearTransclusionWidgets(line);
 				}
 			} else {
-				check_lines(cm, 0, cm.lastLine(), this);
+				checkLines(cm, 0, cm.lastLine(), this);
 			}
 		});
 	};
@@ -225,7 +225,7 @@ export default class OzanImagePlugin extends Plugin {
 		if (!ImageHandler.is_an_image(file.path)) return;
 		this.app.workspace.iterateCodeMirrors((cm) => {
 			var lastLine = cm.lastLine();
-			check_lines(cm, 0, lastLine, this, file.path);
+			checkLines(cm, 0, lastLine, this, file.path);
 		});
 	};
 
