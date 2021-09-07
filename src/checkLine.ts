@@ -1,16 +1,20 @@
 import { normalizePath, TFile } from 'obsidian';
 import OzanImagePlugin from './main';
 import pollUntil from 'pollUntil';
+import { ObsidianHelpers, IframeHandler, ExcalidrawHandler, TransclusionHandler } from './utils';
 import {
-	WidgetHandler,
-	LinkHandler,
-	ImageHandler,
-	ObsidianHelpers,
-	IframeHandler,
-	ExcalidrawHandler,
-	TransclusionHandler,
-} from './utils';
-import { getPdfInLine, getPdfName, getPdfPageNumber } from './util';
+	getPdfInLine,
+	getPdfName,
+	getPdfPageNumber,
+	getWidgets,
+	clearLineWidgets,
+	getLinkInline,
+	pathIsALink,
+	getImageInLine,
+	getImageFileNameAndAltText,
+	getBlobObject,
+	altWidthHeight,
+} from './util';
 import Prism from 'prismjs';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 import 'prismjs/components/prism-python.min';
@@ -33,11 +37,11 @@ export const checkLine: any = async (
 	if (line === null) return;
 
 	// Check if the line is an internet link
-	const link_in_line = LinkHandler.get_link_in_line(line.text);
-	const img_in_line = ImageHandler.get_image_in_line(line.text);
+	const link_in_line = getLinkInline(line.text);
+	const img_in_line = getImageInLine(line.text);
 
 	// Clear the widget if link was removed
-	var line_image_widget = WidgetHandler.getWidgets(line, 'oz-image-widget');
+	var line_image_widget = getWidgets(line, 'oz-image-widget');
 	if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0]?.clear();
 
 	// --> Source Path for finding best File Match for Links
@@ -54,7 +58,7 @@ export const checkLine: any = async (
 	if (plugin.settings && plugin.settings.renderTransclusion) {
 		let lineIsTransclusion = TransclusionHandler.lineIsTransclusion(line.text);
 		// Clear if there is a widget but reference is removed
-		var line_transclusion_widget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
+		var line_transclusion_widget = getWidgets(line, 'oz-transclusion-widget');
 		if (line_transclusion_widget && !lineIsTransclusion) {
 			line_transclusion_widget[0]?.clear();
 		}
@@ -70,7 +74,7 @@ export const checkLine: any = async (
 			// Get the file and text cache
 			let cache = plugin.app.metadataCache.getCache(file.path);
 			let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
-			WidgetHandler.clearLineWidgets(line);
+			clearLineWidgets(line);
 
 			// --> Handle #^ Block Id
 			if (TransclusionHandler.lineIsWithBlockId(line.text)) {
@@ -137,7 +141,7 @@ export const checkLine: any = async (
 		// If Regex Matches
 		if (iframe_in_line.result) {
 			// Clear the Line Widgets
-			WidgetHandler.clearLineWidgets(line);
+			clearLineWidgets(line);
 
 			// Create Iframe Node
 			var iframeNode = IframeHandler.create_iframe_node(iframe_in_line.result);
@@ -159,7 +163,7 @@ export const checkLine: any = async (
 		// If PDF Regex Matches
 		if (pdf_in_line.result) {
 			// Clear the Line Widgets
-			WidgetHandler.clearLineWidgets(line);
+			clearLineWidgets(line);
 
 			// Get Source Path
 			if (targetFile != null) sourcePath = targetFile.path;
@@ -170,7 +174,7 @@ export const checkLine: any = async (
 			// Create URL for Link and Local PDF
 			var pdf_path = '';
 
-			if (LinkHandler.path_is_a_link(pdf_name)) {
+			if (pathIsALink(pdf_name)) {
 				pdf_path = pdf_name;
 			} else {
 				// Get the PDF File Object
@@ -210,11 +214,11 @@ export const checkLine: any = async (
 
 		if (link_in_line.result) {
 			// linkType 3 and 4
-			filename = ImageHandler.getFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName;
-			alt = ImageHandler.getFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText;
+			filename = getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName;
+			alt = getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText;
 		} else if (img_in_line.result) {
-			filename = ImageHandler.getFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
-			alt = ImageHandler.getFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText;
+			filename = getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
+			alt = getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText;
 		}
 
 		// Create Image
@@ -253,7 +257,7 @@ export const checkLine: any = async (
 					if (line.handle.widgets) {
 						var currentImageNode = line.handle.widgets[0].node;
 						var blobLink = currentImageNode.currentSrc;
-						var existingBlop = await ImageHandler.getBlobObject(blobLink);
+						var existingBlop = await getBlobObject(blobLink);
 						if (existingBlop.size === image.size && currentImageNode.alt === alt) {
 							// Drawing hasn't changed
 							plugin.removeFromImagePromiseList(imageFile.path);
@@ -278,10 +282,10 @@ export const checkLine: any = async (
 		}
 
 		// Clear the image widgets if exists
-		WidgetHandler.clearLineWidgets(line);
+		clearLineWidgets(line);
 
 		// Image Properties
-		var altSizer = ImageHandler.altWidthHeight(alt);
+		var altSizer = altWidthHeight(alt);
 		if (altSizer) {
 			img.width = altSizer.width;
 			if (altSizer.height) img.height = altSizer.height;

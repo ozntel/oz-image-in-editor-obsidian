@@ -1,5 +1,6 @@
 import { Plugin, TAbstractFile, TFile } from 'obsidian';
-import { ObsidianHelpers, WidgetHandler, ImageHandler, WikiMarkdownHandler } from './utils';
+import { ObsidianHelpers, WikiMarkdownHandler } from './utils';
+import { pathIsAnImage, addContextMenu, clearAllWidgets, clearTransclusionWidgets } from 'src/util';
 import { checkLine, checkLines } from './checkLine';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './constants';
@@ -127,7 +128,7 @@ export default class OzanImagePlugin extends Plugin {
 	onunload() {
 		this.app.workspace.iterateCodeMirrors((cm) => {
 			cm.off('change', this.codemirrorLineChanges);
-			WidgetHandler.clearWidgets(cm);
+			clearAllWidgets(cm);
 		});
 		this.app.vault.off('modify', this.handleFileModify);
 		document.off(
@@ -155,7 +156,7 @@ export default class OzanImagePlugin extends Plugin {
 		if (!(file instanceof TFile)) return;
 		event.preventDefault();
 		event.stopPropagation();
-		ImageHandler.addContextMenu(event, this, file);
+		addContextMenu(event, this, file);
 		return false;
 	};
 
@@ -190,7 +191,7 @@ export default class OzanImagePlugin extends Plugin {
 		} else {
 			this.app.workspace.iterateCodeMirrors((cm) => {
 				cm.off('change', this.codemirrorLineChanges);
-				WidgetHandler.clearWidgets(cm);
+				clearAllWidgets(cm);
 			});
 			this.app.vault.off('modify', this.handleFileModify);
 		}
@@ -202,7 +203,7 @@ export default class OzanImagePlugin extends Plugin {
 			if (!newSetting) {
 				for (let i = 0; i <= cm.lastLine(); i++) {
 					let line = cm.lineInfo(i);
-					WidgetHandler.clearTransclusionWidgets(line);
+					clearTransclusionWidgets(line);
 				}
 			} else {
 				checkLines(cm, 0, cm.lastLine(), this);
@@ -222,7 +223,7 @@ export default class OzanImagePlugin extends Plugin {
 	// Handle File Changes to Refhres Images
 	handleFileModify = (file: TAbstractFile) => {
 		if (!(file instanceof TFile)) return;
-		if (!ImageHandler.is_an_image(file.path)) return;
+		if (!pathIsAnImage(file.path)) return;
 		this.app.workspace.iterateCodeMirrors((cm) => {
 			var lastLine = cm.lastLine();
 			checkLines(cm, 0, lastLine, this, file.path);
