@@ -4,13 +4,13 @@ import pollUntil from 'pollUntil';
 import {
 	WidgetHandler,
 	LinkHandler,
-	PDFHandler,
 	ImageHandler,
 	ObsidianHelpers,
 	IframeHandler,
 	ExcalidrawHandler,
 	TransclusionHandler,
 } from './utils';
+import { getPdfInLine, getPdfName, getPdfPageNumber } from './util';
 import Prism from 'prismjs';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 import 'prismjs/components/prism-python.min';
@@ -154,7 +154,7 @@ export const checkLine: any = async (
 
 	if (plugin.settings && plugin.settings.renderPDF) {
 		// Check if the line is a  PDF
-		const pdf_in_line = PDFHandler.get_pdf_in_line(line.text);
+		const pdf_in_line = getPdfInLine(line.text);
 
 		// If PDF Regex Matches
 		if (pdf_in_line.result) {
@@ -165,7 +165,7 @@ export const checkLine: any = async (
 			if (targetFile != null) sourcePath = targetFile.path;
 
 			// Get PDF File
-			var pdf_name = PDFHandler.get_pdf_name(pdf_in_line.linkType, pdf_in_line.result);
+			var pdf_name = getPdfName(pdf_in_line.linkType, pdf_in_line.result);
 
 			// Create URL for Link and Local PDF
 			var pdf_path = '';
@@ -181,7 +181,7 @@ export const checkLine: any = async (
 				var blob = new Blob([arr], { type: 'application/pdf' });
 				pdf_path = URL.createObjectURL(blob);
 				// Add Page Number
-				var pdf_page_nr = PDFHandler.get_pdf_page_number(pdf_in_line.result);
+				var pdf_page_nr = getPdfPageNumber(pdf_in_line.result);
 				if (pdf_page_nr) pdf_path = pdf_path + pdf_page_nr;
 			}
 
