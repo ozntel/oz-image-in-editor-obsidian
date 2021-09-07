@@ -1,10 +1,12 @@
 import { Plugin, TAbstractFile, TFile } from 'obsidian';
-import { ObsidianHelpers, WikiMarkdownHandler } from './utils';
-import { pathIsAnImage, addContextMenu, clearAllWidgets, clearTransclusionWidgets } from 'src/util';
 import { checkLine, checkLines } from './checkLine';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './constants';
 import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
+import * as ObsidianHelpers from 'src/util/obsidianHelper';
+import * as ImageHandler from 'src/util/imageHandler';
+import * as WidgetHandler from 'src/util/widgetHandler';
+import * as WikiMarkdownHandler from 'src/util/wikiMarkdownHandler';
 
 export default class OzanImagePlugin extends Plugin {
 	settings: OzanImagePluginSettings;
@@ -128,7 +130,7 @@ export default class OzanImagePlugin extends Plugin {
 	onunload() {
 		this.app.workspace.iterateCodeMirrors((cm) => {
 			cm.off('change', this.codemirrorLineChanges);
-			clearAllWidgets(cm);
+			WidgetHandler.clearAllWidgets(cm);
 		});
 		this.app.vault.off('modify', this.handleFileModify);
 		document.off(
@@ -156,7 +158,7 @@ export default class OzanImagePlugin extends Plugin {
 		if (!(file instanceof TFile)) return;
 		event.preventDefault();
 		event.stopPropagation();
-		addContextMenu(event, this, file);
+		ImageHandler.addContextMenu(event, this, file);
 		return false;
 	};
 
@@ -191,7 +193,7 @@ export default class OzanImagePlugin extends Plugin {
 		} else {
 			this.app.workspace.iterateCodeMirrors((cm) => {
 				cm.off('change', this.codemirrorLineChanges);
-				clearAllWidgets(cm);
+				WidgetHandler.clearAllWidgets(cm);
 			});
 			this.app.vault.off('modify', this.handleFileModify);
 		}
@@ -203,7 +205,7 @@ export default class OzanImagePlugin extends Plugin {
 			if (!newSetting) {
 				for (let i = 0; i <= cm.lastLine(); i++) {
 					let line = cm.lineInfo(i);
-					clearTransclusionWidgets(line);
+					WidgetHandler.clearTransclusionWidgets(line);
 				}
 			} else {
 				checkLines(cm, 0, cm.lastLine(), this);
@@ -223,7 +225,7 @@ export default class OzanImagePlugin extends Plugin {
 	// Handle File Changes to Refhres Images
 	handleFileModify = (file: TAbstractFile) => {
 		if (!(file instanceof TFile)) return;
-		if (!pathIsAnImage(file.path)) return;
+		if (!ImageHandler.pathIsAnImage(file.path)) return;
 		this.app.workspace.iterateCodeMirrors((cm) => {
 			var lastLine = cm.lastLine();
 			checkLines(cm, 0, lastLine, this, file.path);

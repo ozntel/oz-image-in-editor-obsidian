@@ -1,20 +1,14 @@
 import { normalizePath, TFile } from 'obsidian';
 import OzanImagePlugin from './main';
 import pollUntil from 'pollUntil';
-import { ObsidianHelpers, IframeHandler, ExcalidrawHandler, TransclusionHandler } from './utils';
-import {
-	getPdfInLine,
-	getPdfName,
-	getPdfPageNumber,
-	getWidgets,
-	clearLineWidgets,
-	getLinkInline,
-	pathIsALink,
-	getImageInLine,
-	getImageFileNameAndAltText,
-	getBlobObject,
-	altWidthHeight,
-} from './util';
+import * as PDFHandler from 'src/util/pdfHandler';
+import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
+import * as ObsidianHelper from 'src/util/obsidianHelper';
+import * as WidgetHandler from 'src/util/widgetHandler';
+import * as LinkHandler from 'src/util/linkHandler';
+import * as ImageHandler from 'src/util/imageHandler';
+import * as IframeHandler from 'src/util/iframeHandler';
+import * as TransclusionHandler from 'src/util/transclusionHandler';
 import Prism from 'prismjs';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 import 'prismjs/components/prism-python.min';
@@ -37,11 +31,11 @@ export const checkLine: any = async (
 	if (line === null) return;
 
 	// Check if the line is an internet link
-	const link_in_line = getLinkInline(line.text);
-	const img_in_line = getImageInLine(line.text);
+	const link_in_line = LinkHandler.getLinkInline(line.text);
+	const img_in_line = ImageHandler.getImageInLine(line.text);
 
 	// Clear the widget if link was removed
-	var line_image_widget = getWidgets(line, 'oz-image-widget');
+	var line_image_widget = WidgetHandler.getWidgets(line, 'oz-image-widget');
 	if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0]?.clear();
 
 	// --> Source Path for finding best File Match for Links
@@ -49,7 +43,7 @@ export const checkLine: any = async (
 	if (targetFile != null) {
 		sourcePath = targetFile.path;
 	} else {
-		let activeNoteFile = ObsidianHelpers.getActiveNoteFile(plugin.app.workspace);
+		let activeNoteFile = ObsidianHelper.getActiveNoteFile(plugin.app.workspace);
 		sourcePath = activeNoteFile ? activeNoteFile.path : '';
 	}
 
@@ -58,7 +52,7 @@ export const checkLine: any = async (
 	if (plugin.settings && plugin.settings.renderTransclusion) {
 		let lineIsTransclusion = TransclusionHandler.lineIsTransclusion(line.text);
 		// Clear if there is a widget but reference is removed
-		var line_transclusion_widget = getWidgets(line, 'oz-transclusion-widget');
+		var line_transclusion_widget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
 		if (line_transclusion_widget && !lineIsTransclusion) {
 			line_transclusion_widget[0]?.clear();
 		}
@@ -74,7 +68,7 @@ export const checkLine: any = async (
 			// Get the file and text cache
 			let cache = plugin.app.metadataCache.getCache(file.path);
 			let cachedReadOfTarget = await plugin.app.vault.cachedRead(file);
-			clearLineWidgets(line);
+			WidgetHandler.clearLineWidgets(line);
 
 			// --> Handle #^ Block Id
 			if (TransclusionHandler.lineIsWithBlockId(line.text)) {
@@ -102,8 +96,8 @@ export const checkLine: any = async (
 				const header = TransclusionHandler.getHeader(line.text);
 				const blockHeading = cache.headings?.find(
 					(h) =>
-						ObsidianHelpers.clearSpecialCharacters(h.heading) ===
-						ObsidianHelpers.clearSpecialCharacters(header)
+						ObsidianHelper.clearSpecialCharacters(h.heading) ===
+						ObsidianHelper.clearSpecialCharacters(header)
 				);
 				if (blockHeading) {
 					// --> Start Num
@@ -136,15 +130,15 @@ export const checkLine: any = async (
 
 	if (plugin.settings && plugin.settings.renderIframe) {
 		// Check if the line is a Iframe
-		const iframe_in_line = IframeHandler.get_iframe_in_line(line.text);
+		const iframe_in_line = IframeHandler.getIframeInLine(line.text);
 
 		// If Regex Matches
 		if (iframe_in_line.result) {
 			// Clear the Line Widgets
-			clearLineWidgets(line);
+			WidgetHandler.clearLineWidgets(line);
 
 			// Create Iframe Node
-			var iframeNode = IframeHandler.create_iframe_node(iframe_in_line.result);
+			var iframeNode = IframeHandler.createIframeNode(iframe_in_line.result);
 
 			// Add Widget in Line
 			cm.addLineWidget(line_number, iframeNode, { className: 'oz-image-widget', showIfHidden: false });
@@ -158,23 +152,23 @@ export const checkLine: any = async (
 
 	if (plugin.settings && plugin.settings.renderPDF) {
 		// Check if the line is a  PDF
-		const pdf_in_line = getPdfInLine(line.text);
+		const pdf_in_line = PDFHandler.getPdfInLine(line.text);
 
 		// If PDF Regex Matches
 		if (pdf_in_line.result) {
 			// Clear the Line Widgets
-			clearLineWidgets(line);
+			WidgetHandler.clearLineWidgets(line);
 
 			// Get Source Path
 			if (targetFile != null) sourcePath = targetFile.path;
 
 			// Get PDF File
-			var pdf_name = getPdfName(pdf_in_line.linkType, pdf_in_line.result);
+			var pdf_name = PDFHandler.getPdfName(pdf_in_line.linkType, pdf_in_line.result);
 
 			// Create URL for Link and Local PDF
 			var pdf_path = '';
 
-			if (pathIsALink(pdf_name)) {
+			if (LinkHandler.pathIsALink(pdf_name)) {
 				pdf_path = pdf_name;
 			} else {
 				// Get the PDF File Object
@@ -185,7 +179,7 @@ export const checkLine: any = async (
 				var blob = new Blob([arr], { type: 'application/pdf' });
 				pdf_path = URL.createObjectURL(blob);
 				// Add Page Number
-				var pdf_page_nr = getPdfPageNumber(pdf_in_line.result);
+				var pdf_page_nr = PDFHandler.getPdfPageNumber(pdf_in_line.result);
 				if (pdf_page_nr) pdf_path = pdf_path + pdf_page_nr;
 			}
 
@@ -214,11 +208,11 @@ export const checkLine: any = async (
 
 		if (link_in_line.result) {
 			// linkType 3 and 4
-			filename = getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName;
-			alt = getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText;
+			filename = ImageHandler.getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName;
+			alt = ImageHandler.getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText;
 		} else if (img_in_line.result) {
-			filename = getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
-			alt = getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText;
+			filename = ImageHandler.getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
+			alt = ImageHandler.getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText;
 		}
 
 		// Create Image
@@ -243,7 +237,7 @@ export const checkLine: any = async (
 
 			if (['md', 'excalidraw'].contains(imageFile.extension)) {
 				// md, excalidraw file check to be rendered
-				if (ExcalidrawHandler.pluginActive && ExcalidrawHandler.isDrawing(imageFile)) {
+				if (ExcalidrawHandler.excalidrawPluginIsLoaded && ExcalidrawHandler.isAnExcalidrawFile(imageFile)) {
 					// Do not render drawing if option turned off
 					if (!plugin.settings.renderExcalidraw) return;
 
@@ -251,13 +245,13 @@ export const checkLine: any = async (
 					if (plugin.imagePromiseList.contains(imageFile.path)) return;
 					plugin.addToImagePromiseList(imageFile.path);
 
-					var image = await ExcalidrawHandler.createPNG(imageFile);
+					var image = await ExcalidrawHandler.createPNGFromExcalidrawFile(imageFile);
 
 					// Check if Object or Alt Changed
 					if (line.handle.widgets) {
 						var currentImageNode = line.handle.widgets[0].node;
 						var blobLink = currentImageNode.currentSrc;
-						var existingBlop = await getBlobObject(blobLink);
+						var existingBlop = await ImageHandler.getBlobObject(blobLink);
 						if (existingBlop.size === image.size && currentImageNode.alt === alt) {
 							// Drawing hasn't changed
 							plugin.removeFromImagePromiseList(imageFile.path);
@@ -276,16 +270,16 @@ export const checkLine: any = async (
 			/* ------------------ ALL IMAGE RENDERS ------------------ */
 
 			if (['jpeg', 'jpg', 'png', 'gif', 'svg', 'bmp'].contains(imageFile.extension)) {
-				img.src = ObsidianHelpers.getPathOfImage(plugin.app.vault, imageFile);
+				img.src = ObsidianHelper.getPathOfImage(plugin.app.vault, imageFile);
 				img.setAttr('data-path', imageFile.path);
 			}
 		}
 
 		// Clear the image widgets if exists
-		clearLineWidgets(line);
+		WidgetHandler.clearLineWidgets(line);
 
 		// Image Properties
-		var altSizer = altWidthHeight(alt);
+		var altSizer = ImageHandler.altWidthHeight(alt);
 		if (altSizer) {
 			img.width = altSizer.width;
 			if (altSizer.height) img.height = altSizer.height;
@@ -307,7 +301,7 @@ export const checkLines: any = (
 	changedFilePath?: string
 ) => {
 	// Last Used Line Number in Code Mirror
-	var file = ObsidianHelpers.getFileCmBelongsTo(cm, plugin.app.workspace);
+	var file = ObsidianHelper.getFileCmBelongsTo(cm, plugin.app.workspace);
 	for (let i = from; i <= to; i++) {
 		checkLine(cm, i, file, plugin, changedFilePath);
 	}

@@ -1,5 +1,5 @@
-import OzanImagePlugin from 'src/main';
 import { Menu, TFile } from 'obsidian';
+import OzanImagePlugin from 'src/main';
 
 // General Image Regex
 const image_regex = /.*.(jpe?g|png|gif|svg|bmp|excalidraw|md)/;
