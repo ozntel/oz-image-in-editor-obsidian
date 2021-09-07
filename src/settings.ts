@@ -96,9 +96,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Render Admonition in Translucions')
-			.setDesc(
-				'You need to have Admonition plugin activated to be able to use this function. Only 1 color for all admonitions is available at the moment.'
-			)
+			.setDesc('You need to have Admonition plugin activated to be able to use this function. No icon available.')
 			.addToggle((toggle) =>
 				toggle.setValue(this.plugin.settings.renderAdmonition).onChange((value) => {
 					this.plugin.settings.renderAdmonition = value;
