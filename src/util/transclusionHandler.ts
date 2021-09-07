@@ -3,6 +3,7 @@ import showdown from 'showdown';
 import { getPathOfImage } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
+import OzanImagePlugin from 'src/main';
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
@@ -103,15 +104,15 @@ export const renderBlockCache = (blockCache: BlockCache, cachedReadOfTarget: str
 	return html;
 };
 
-export const clearHTML = (html: HTMLElement, app: App) => {
+export const clearHTML = (html: HTMLElement, plugin: OzanImagePlugin) => {
 	// --> Convert Code Blocks for Transclusion
 	clearCodeBlocksInHtml(html);
 	// --> Convert Image Links to Usable in Obsidian
-	clearImagesInHtml(html, app);
+	clearImagesInHtml(html, plugin.app);
 	// --> Convert Links to make Usable in Obsidian
-	clearAnchorsInHtml(html, app);
+	clearAnchorsInHtml(html, plugin.app);
 	// --> Convert Admonitions if enabled
-	if (admonitionPluginActive(app)) {
+	if (plugin.settings.renderAdmonition && admonitionPluginActive(plugin.app)) {
 		convertAdmonitions(html);
 	}
 };
@@ -168,6 +169,8 @@ const clearAnchorsInHtml = (html: HTMLElement, app: App) => {
 		}
 	});
 };
+
+/* ---- Admonition Helpers ---- */
 
 const convertAdmonitions = (html: HTMLElement) => {
 	let admonitionCodeElements = html.querySelectorAll('code[class*="language-ad-"]');

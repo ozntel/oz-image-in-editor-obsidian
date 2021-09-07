@@ -7,6 +7,7 @@ export interface OzanImagePluginSettings {
 	renderIframe: boolean;
 	renderExcalidraw: boolean;
 	renderTransclusion: boolean;
+	renderAdmonition: boolean;
 	refreshImagesAfterChange: boolean;
 	WYSIWYG: boolean;
 }
@@ -17,6 +18,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
 	renderIframe: false,
 	renderExcalidraw: false,
 	renderTransclusion: false,
+	renderAdmonition: false,
 	refreshImagesAfterChange: false,
 	WYSIWYG: false,
 };
@@ -79,13 +81,27 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 				})
 			);
 
+		this.containerEl.createEl('h2', { text: 'Transclusion Settings (Experimental)' });
+
 		new Setting(containerEl)
-			.setName('Render Transclusion in Editor (Experiment)')
+			.setName('Render Transclusion in Editor')
 			.setDesc('Turn on this option if you want transclusions to be rendered in Editor')
 			.addToggle((toggle) =>
 				toggle.setValue(this.plugin.settings.renderTransclusion).onChange((value) => {
 					this.plugin.settings.renderTransclusion = value;
 					this.plugin.handleTransclusionSetting(value);
+					this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Render Admonition in Translucions')
+			.setDesc(
+				'You need to have Admonition plugin activated to be able to use this function. Only 1 color for all admonitions is available at the moment.'
+			)
+			.addToggle((toggle) =>
+				toggle.setValue(this.plugin.settings.renderAdmonition).onChange((value) => {
+					this.plugin.settings.renderAdmonition = value;
 					this.plugin.saveSettings();
 				})
 			);

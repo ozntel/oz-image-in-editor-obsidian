@@ -80,7 +80,7 @@ export const checkLine: any = async (
 						const block = cache.blocks[blockId];
 						if (block) {
 							let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
-							TransclusionHandler.clearHTML(htmlElement, plugin.app);
+							TransclusionHandler.clearHTML(htmlElement, plugin);
 							cm.addLineWidget(line_number, htmlElement, {
 								className: 'oz-transclusion-widget',
 								showIfHidden: false,
@@ -113,7 +113,7 @@ export const checkLine: any = async (
 					}
 					// --> Get HTML Render and add as Widget
 					let htmlElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
-					TransclusionHandler.clearHTML(htmlElement, plugin.app);
+					TransclusionHandler.clearHTML(htmlElement, plugin);
 					cm.addLineWidget(line_number, htmlElement, {
 						className: 'oz-transclusion-widget',
 						showIfHidden: false,
