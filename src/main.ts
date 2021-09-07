@@ -108,12 +108,7 @@ export default class OzanImagePlugin extends Plugin {
 			},
 		});
 
-		document.on(
-			'contextmenu',
-			`div.CodeMirror-linewidget.oz-image-widget > img[data-path]`,
-			this.onImageMenu,
-			false
-		);
+		document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
 
 		document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
 
@@ -133,12 +128,7 @@ export default class OzanImagePlugin extends Plugin {
 			WidgetHandler.clearAllWidgets(cm);
 		});
 		this.app.vault.off('modify', this.handleFileModify);
-		document.off(
-			'contextmenu',
-			`div.CodeMirror-linewidget.oz-image-widget > img[data-path]`,
-			this.onImageMenu,
-			false
-		);
+		document.off('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
 		document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
 		this.unload_WYSIWYG_Styles();
 		console.log('Image in Editor Plugin is unloaded');

@@ -19,24 +19,18 @@ import 'prismjs/components/prism-bash.min';
 import 'prismjs/components/prism-visual-basic.min';
 
 // Check Single Line
-export const checkLine: any = async (
-	cm: CodeMirror.Editor,
-	line_number: number,
-	targetFile: TFile,
-	plugin: OzanImagePlugin,
-	changedFilePath?: string
-) => {
+export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
 	// Get the Line edited
-	const line = cm.lineInfo(line_number);
+	const line = cm.lineInfo(lineNumber);
 	if (line === null) return;
 
 	// Check if the line is an internet link
-	const link_in_line = LinkHandler.getLinkInline(line.text);
-	const img_in_line = ImageHandler.getImageInLine(line.text);
+	const linkInLine = LinkHandler.getLinkInline(line.text);
+	const imgInLine = ImageHandler.getImageInLine(line.text);
 
 	// Clear the widget if link was removed
-	var line_image_widget = WidgetHandler.getWidgets(line, 'oz-image-widget');
-	if (line_image_widget && !(img_in_line.result || link_in_line.result)) line_image_widget[0]?.clear();
+	var lineImageWidget = WidgetHandler.getWidgets(line, 'oz-image-widget');
+	if (lineImageWidget && !(imgInLine.result || linkInLine.result)) lineImageWidget[0]?.clear();
 
 	// --> Source Path for finding best File Match for Links
 	var sourcePath = '';
@@ -52,9 +46,9 @@ export const checkLine: any = async (
 	if (plugin.settings && plugin.settings.renderTransclusion) {
 		let lineIsTransclusion = TransclusionHandler.lineIsTransclusion(line.text);
 		// Clear if there is a widget but reference is removed
-		var line_transclusion_widget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
-		if (line_transclusion_widget && !lineIsTransclusion) {
-			line_transclusion_widget[0]?.clear();
+		var lineTransclusionWidget = WidgetHandler.getWidgets(line, 'oz-transclusion-widget');
+		if (lineTransclusionWidget && !lineIsTransclusion) {
+			lineTransclusionWidget[0]?.clear();
 		}
 
 		if (lineIsTransclusion) {
@@ -74,30 +68,26 @@ export const checkLine: any = async (
 			if (TransclusionHandler.lineIsWithBlockId(line.text)) {
 				const blockId = TransclusionHandler.getBlockId(line.text);
 				// --> Wait for Block Id Creation by Obsidian
-				await pollUntil(() => cache.blocks && cache.blocks[blockId], [cache.blocks], 3000, 100).then(
-					(result) => {
-						if (!result) return;
-						const block = cache.blocks[blockId];
-						if (block) {
-							let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
-							TransclusionHandler.clearHTML(htmlElement, plugin);
-							cm.addLineWidget(line_number, htmlElement, {
-								className: 'oz-transclusion-widget',
-								showIfHidden: false,
-							});
-							Prism.highlightAll();
-						}
+				await pollUntil(() => cache.blocks && cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
+					if (!result) return;
+					const block = cache.blocks[blockId];
+					if (block) {
+						let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+						TransclusionHandler.clearHTML(htmlElement, plugin);
+						cm.addLineWidget(lineNumber, htmlElement, {
+							className: 'oz-transclusion-widget',
+							showIfHidden: false,
+						});
+						Prism.highlightAll();
 					}
-				);
+				});
 			}
 
 			// --> Render # Header Block
 			if (TransclusionHandler.lineIsWithHeading(line.text)) {
 				const header = TransclusionHandler.getHeader(line.text);
 				const blockHeading = cache.headings?.find(
-					(h) =>
-						ObsidianHelper.clearSpecialCharacters(h.heading) ===
-						ObsidianHelper.clearSpecialCharacters(header)
+					(h) => ObsidianHelper.clearSpecialCharacters(h.heading) === ObsidianHelper.clearSpecialCharacters(header)
 				);
 				if (blockHeading) {
 					// --> Start Num
@@ -114,7 +104,7 @@ export const checkLine: any = async (
 					// --> Get HTML Render and add as Widget
 					let htmlElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
 					TransclusionHandler.clearHTML(htmlElement, plugin);
-					cm.addLineWidget(line_number, htmlElement, {
+					cm.addLineWidget(lineNumber, htmlElement, {
 						className: 'oz-transclusion-widget',
 						showIfHidden: false,
 					});
@@ -130,18 +120,18 @@ export const checkLine: any = async (
 
 	if (plugin.settings && plugin.settings.renderIframe) {
 		// Check if the line is a Iframe
-		const iframe_in_line = IframeHandler.getIframeInLine(line.text);
+		const iframeInLine = IframeHandler.getIframeInLine(line.text);
 
 		// If Regex Matches
-		if (iframe_in_line.result) {
+		if (iframeInLine.result) {
 			// Clear the Line Widgets
 			WidgetHandler.clearLineWidgets(line);
 
 			// Create Iframe Node
-			var iframeNode = IframeHandler.createIframeNode(iframe_in_line.result);
+			var iframeNode = IframeHandler.createIframeNode(iframeInLine.result);
 
 			// Add Widget in Line
-			cm.addLineWidget(line_number, iframeNode, { className: 'oz-image-widget', showIfHidden: false });
+			cm.addLineWidget(lineNumber, iframeNode, { className: 'oz-image-widget', showIfHidden: false });
 
 			// End Rendering of the line
 			return;
@@ -152,10 +142,10 @@ export const checkLine: any = async (
 
 	if (plugin.settings && plugin.settings.renderPDF) {
 		// Check if the line is a  PDF
-		const pdf_in_line = PDFHandler.getPdfInLine(line.text);
+		const pdfInLine = PDFHandler.getPdfInLine(line.text);
 
 		// If PDF Regex Matches
-		if (pdf_in_line.result) {
+		if (pdfInLine.result) {
 			// Clear the Line Widgets
 			WidgetHandler.clearLineWidgets(line);
 
@@ -163,35 +153,35 @@ export const checkLine: any = async (
 			if (targetFile != null) sourcePath = targetFile.path;
 
 			// Get PDF File
-			var pdf_name = PDFHandler.getPdfName(pdf_in_line.linkType, pdf_in_line.result);
+			var pdfName = PDFHandler.getPdfName(pdfInLine.linkType, pdfInLine.result);
 
 			// Create URL for Link and Local PDF
-			var pdf_path = '';
+			var pdfPath = '';
 
-			if (LinkHandler.pathIsALink(pdf_name)) {
-				pdf_path = pdf_name;
+			if (LinkHandler.pathIsALink(pdfName)) {
+				pdfPath = pdfName;
 			} else {
 				// Get the PDF File Object
-				var pdfFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdf_name), sourcePath);
+				var pdfFile = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfName), sourcePath);
 				// Create Object URL
 				var buffer = await plugin.app.vault.adapter.readBinary(normalizePath(pdfFile.path));
 				var arr = new Uint8Array(buffer);
 				var blob = new Blob([arr], { type: 'application/pdf' });
-				pdf_path = URL.createObjectURL(blob);
+				pdfPath = URL.createObjectURL(blob);
 				// Add Page Number
-				var pdf_page_nr = PDFHandler.getPdfPageNumber(pdf_in_line.result);
-				if (pdf_page_nr) pdf_path = pdf_path + pdf_page_nr;
+				var pdfPageNr = PDFHandler.getPdfPageNumber(pdfInLine.result);
+				if (pdfPageNr) pdfPath = pdfPath + pdfPageNr;
 			}
 
 			// Create the Widget
-			var pdf_widget = document.createElement('embed');
-			pdf_widget.src = pdf_path;
-			pdf_widget.type = 'application/pdf';
-			pdf_widget.width = '100%';
-			pdf_widget.height = '800px';
+			var pdfWidget = document.createElement('embed');
+			pdfWidget.src = pdfPath;
+			pdfWidget.type = 'application/pdf';
+			pdfWidget.width = '100%';
+			pdfWidget.height = '800px';
 
 			// Add Widget in Line
-			cm.addLineWidget(line_number, pdf_widget, { className: 'oz-image-widget', showIfHidden: false });
+			cm.addLineWidget(lineNumber, pdfWidget, { className: 'oz-image-widget', showIfHidden: false });
 
 			// End Rendering of the line
 			return;
@@ -201,18 +191,18 @@ export const checkLine: any = async (
 	/* ------------------ EXCALIDRAW & IMAGE RENDER ------------------ */
 
 	// If any of regex matches, it will add image widget
-	if (link_in_line.result || img_in_line.result) {
+	if (linkInLine.result || imgInLine.result) {
 		// Get the file name and alt text depending on format
 		var filename = '';
 		var alt = '';
 
-		if (link_in_line.result) {
+		if (linkInLine.result) {
 			// linkType 3 and 4
-			filename = ImageHandler.getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).fileName;
-			alt = ImageHandler.getImageFileNameAndAltText(link_in_line.linkType, link_in_line.result).altText;
-		} else if (img_in_line.result) {
-			filename = ImageHandler.getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).fileName;
-			alt = ImageHandler.getImageFileNameAndAltText(img_in_line.linkType, img_in_line.result).altText;
+			filename = ImageHandler.getImageFileNameAndAltText(linkInLine.linkType, linkInLine.result).fileName;
+			alt = ImageHandler.getImageFileNameAndAltText(linkInLine.linkType, linkInLine.result).altText;
+		} else if (imgInLine.result) {
+			filename = ImageHandler.getImageFileNameAndAltText(imgInLine.linkType, imgInLine.result).fileName;
+			alt = ImageHandler.getImageFileNameAndAltText(imgInLine.linkType, imgInLine.result).altText;
 		}
 
 		// Create Image
@@ -221,7 +211,7 @@ export const checkLine: any = async (
 		var image = null;
 
 		// Prepare the src for the Image
-		if (link_in_line.result) {
+		if (linkInLine.result) {
 			// Local File URL Correction (Outside of Vault)
 			if (filename.startsWith('file:///')) filename = filename.replace('file:///', 'app://local/');
 			img.src = decodeURI(filename);
@@ -288,18 +278,12 @@ export const checkLine: any = async (
 		img.alt = alt;
 
 		// Add Image widget under the Image Markdown
-		cm.addLineWidget(line_number, img, { className: 'oz-image-widget', showIfHidden: false });
+		cm.addLineWidget(lineNumber, img, { className: 'oz-image-widget', showIfHidden: false });
 	}
 };
 
 // Check All Lines Function
-export const checkLines: any = (
-	cm: CodeMirror.Editor,
-	from: number,
-	to: number,
-	plugin: OzanImagePlugin,
-	changedFilePath?: string
-) => {
+export const checkLines: any = (cm: CodeMirror.Editor, from: number, to: number, plugin: OzanImagePlugin, changedFilePath?: string) => {
 	// Last Used Line Number in Code Mirror
 	var file = ObsidianHelper.getFileCmBelongsTo(cm, plugin.app.workspace);
 	for (let i = from; i <= to; i++) {

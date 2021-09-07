@@ -45,9 +45,7 @@ export const getHeader = (line: string) => {
 const clearExclamationFromTransclusion = (md: string): string => {
 	// To Allow Showdown to recognize as Link rather than img
 	let mdText = md;
-	let transclusions = md.match(
-		new RegExp(`(${transclusionWithBlockIdRegex.source})|(${transclusionBlockRegex.source})`, 'g')
-	);
+	let transclusions = md.match(new RegExp(`(${transclusionWithBlockIdRegex.source})|(${transclusionBlockRegex.source})`, 'g'));
 	transclusions?.forEach((tr) => (mdText = mdText.replace(tr, tr.substring(1))));
 	return mdText;
 };
