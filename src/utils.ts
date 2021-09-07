@@ -395,6 +395,10 @@ export class TransclusionHandler {
 		TransclusionHandler.clearImagesInHtml(html, app);
 		// --> Convert Links to make Usable in Obsidian
 		TransclusionHandler.clearAnchorsInHtml(html, app);
+		// --> Convert Admonitions if enabled
+		if (TransclusionHandler.admonitionPluginActive(app)) {
+			TransclusionHandler.convertAdmonitions(html);
+		}
 	};
 
 	static clearCodeBlocksInHtml = (html: HTMLElement) => {
@@ -448,6 +452,43 @@ export class TransclusionHandler {
 				a.addClass('tag');
 			}
 		});
+	};
+
+	static convertAdmonitions = (html: HTMLElement) => {
+		let admonitionCodeElements = html.querySelectorAll('code[class*="language-ad-"]');
+		admonitionCodeElements?.forEach((adCodeEl) => {
+			let className = adCodeEl.className;
+			let titleRegex = /(?<=language-ad-).*?(?=\s)/;
+			let titleMatch = className.match(titleRegex);
+			let title: string = titleMatch ? titleMatch[0] : 'Note';
+			adCodeEl.parentElement.replaceWith(TransclusionHandler.createAdmonitionEl(title, adCodeEl.innerHTML));
+		});
+	};
+
+	static createAdmonitionEl = (title: string, content: string): HTMLElement => {
+		let adEl = document.createElement('div');
+		adEl.innerHTML = `
+        <div class="admonition admonition-plugin" style="--admonition-color: 68, 138, 255;">
+            <div class="admonition-title">
+                <div class="admonition-title-content">
+                    <div class="admonition-title-markdown" id="oz-admonition-title">
+                        ${title}
+                    </div>
+                </div>
+            </div>
+            <div class="admonition-content-holder">
+                <div class="admonition-content">
+                    <p>${TransclusionHandler.convertMdToHtml(content)}</p>
+                </div>
+            </div>
+        </div>
+        `;
+		return adEl;
+	};
+
+	static admonitionPluginActive = (app: App) => {
+		// @ts-ignore
+		return app.plugins.getPlugin('obsidian-admonition');
 	};
 }
 
