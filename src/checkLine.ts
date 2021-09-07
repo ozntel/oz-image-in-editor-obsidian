@@ -17,6 +17,7 @@ import 'prismjs/components/prism-jsx.min';
 import 'prismjs/components/prism-tsx.min';
 import 'prismjs/components/prism-bash.min';
 import 'prismjs/components/prism-visual-basic.min';
+import 'prismjs/components/prism-json.min';
 
 // Check Single Line
 export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
