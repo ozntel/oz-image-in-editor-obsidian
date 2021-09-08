@@ -1,7 +1,7 @@
 import { App, TFile, BlockCache } from 'obsidian';
 import OzanImagePlugin from 'src/main';
 import showdown from 'showdown';
-import { getPathOfImage } from 'src/util/obsidianHelper';
+import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
 
@@ -110,7 +110,7 @@ export const clearHTML = (html: HTMLElement, plugin: OzanImagePlugin) => {
 	// --> Convert Links to make Usable in Obsidian
 	clearAnchorsInHtml(html, plugin.app);
 	// --> Convert Admonitions if enabled
-	if (plugin.settings.renderAdmonition && admonitionPluginActive(plugin.app)) {
+	if (plugin.settings.renderAdmonition && pluginIsLoaded(plugin.app, 'obsidian-admonition')) {
 		convertAdmonitions(html);
 	}
 };
@@ -201,11 +201,6 @@ const createAdmonitionEl = (title: string, content: string): HTMLElement => {
     </div>
     `;
 	return adEl;
-};
-
-export const admonitionPluginActive = (app: App) => {
-	// @ts-ignore
-	return app.plugins.getPlugin('obsidian-admonition');
 };
 
 const admonitionColorMap: { [key: string]: string } = {
