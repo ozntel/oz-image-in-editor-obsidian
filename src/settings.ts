@@ -8,6 +8,7 @@ export interface OzanImagePluginSettings {
 	renderExcalidraw: boolean;
 	renderTransclusion: boolean;
 	renderAdmonition: boolean;
+	renderMermaid: boolean;
 	refreshImagesAfterChange: boolean;
 	WYSIWYG: boolean;
 }
@@ -19,6 +20,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
 	renderExcalidraw: false,
 	renderTransclusion: false,
 	renderAdmonition: false,
+	renderMermaid: false,
 	refreshImagesAfterChange: false,
 	WYSIWYG: false,
 };
@@ -100,6 +102,16 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 			.addToggle((toggle) =>
 				toggle.setValue(this.plugin.settings.renderAdmonition).onChange((value) => {
 					this.plugin.settings.renderAdmonition = value;
+					this.plugin.saveSettings();
+				})
+			);
+
+		new Setting(containerEl)
+			.setName('Render Mermaids in Translucions')
+			.setDesc('Turn on if you want mermaids to be rendered in translucions.')
+			.addToggle((toggle) =>
+				toggle.setValue(this.plugin.settings.renderMermaid).onChange((value) => {
+					this.plugin.settings.renderMermaid = value;
 					this.plugin.saveSettings();
 				})
 			);

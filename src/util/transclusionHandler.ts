@@ -4,6 +4,7 @@ import showdown from 'showdown';
 import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
+import mermaidAPI from 'mermaid';
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
@@ -109,6 +110,10 @@ export const clearHTML = (html: HTMLElement, plugin: OzanImagePlugin) => {
 	clearImagesInHtml(html, plugin.app);
 	// --> Convert Links to make Usable in Obsidian
 	clearAnchorsInHtml(html, plugin.app);
+	// --> Convert Mermaids
+	if (plugin.settings.renderMermaid) {
+		convertMermaids(html);
+	}
 	// --> Convert Admonitions if enabled
 	if (plugin.settings.renderAdmonition && pluginIsLoaded(plugin.app, 'obsidian-admonition')) {
 		convertAdmonitions(html);
@@ -170,7 +175,7 @@ const clearAnchorsInHtml = (html: HTMLElement, app: App) => {
 
 /* ------------------ Admonition Handlers  ------------------ */
 
-export const convertAdmonitions = (html: HTMLElement) => {
+const convertAdmonitions = (html: HTMLElement) => {
 	let admonitionCodeElements = html.querySelectorAll('code[class*="language-ad-"]');
 	admonitionCodeElements?.forEach((adCodeEl) => {
 		let className = adCodeEl.className;
@@ -230,4 +235,53 @@ const admonitionColorMap: { [key: string]: string } = {
 	summary: '0, 176, 255',
 	tip: '0, 191, 165',
 	todo: '0, 184, 212',
+};
+
+/* ------------------ Mermaid Handlers  ------------------ */
+
+const convertMermaids = (html: HTMLElement) => {
+	let mermaidCodeElements = html.querySelectorAll('code[class*="language-mermaid"]');
+	mermaidCodeElements?.forEach((mermaidCodeEl) => {
+		// Create Mermaid Div
+		let mermaidDiv = document.createElement('div');
+		let id = Math.floor(Math.random() * 999999);
+		mermaidDiv.id = `mermaid-${id}`;
+		mermaidDiv.innerHTML = mermaidCodeEl.innerHTML;
+		mermaidCodeEl.parentElement.replaceWith(mermaidDiv);
+		// Replace Mermaid with SVG
+		let graph = mermaidAPI.render(`mermaid-${id}`, decodeHTML(mermaidCodeEl.innerHTML));
+		mermaidDiv.innerHTML = graph;
+	});
+};
+
+const htmlEntities: any = {
+	nbsp: ' ',
+	cent: '¢',
+	pound: '£',
+	yen: '¥',
+	euro: '€',
+	copy: '©',
+	reg: '®',
+	lt: '<',
+	gt: '>',
+	quot: '"',
+	amp: '&',
+	apos: "'",
+};
+
+export const decodeHTML = (str: string) => {
+	return str.replace(/\&([^;]+);/g, function (entity, entityCode) {
+		var match;
+		if (entityCode in htmlEntities) {
+			return htmlEntities[entityCode];
+			/*eslint no-cond-assign: 0*/
+		} else if ((match = entityCode.match(/^#x([\da-fA-F]+)$/))) {
+			return String.fromCharCode(parseInt(match[1], 16));
+			/*eslint no-cond-assign: 0*/
+		} else if ((match = entityCode.match(/^#(\d+)$/))) {
+			return String.fromCharCode(~~match[1]);
+		} else {
+			return entity;
+		}
+	});
 };
