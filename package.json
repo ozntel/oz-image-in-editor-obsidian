@@ -4,7 +4,7 @@
 	"description": "View Images, Transclusions, iFrames and PDF Files within the Editor without a necessity to switch to Preview.",
 	"main": "main.js",
 	"scripts": {
-		"dev": "cross-env BUILD=dev obsidian-plugin dev src/main.ts",
+		"dev": "rollup --config rollup.config.js -w",
 		"build": "cross-env BUILD=production obsidian-plugin build src/main.ts"
 	},
 	"keywords": [],
