@@ -35,6 +35,8 @@ const convertMarkdownLinksToWikiLinks = (md: string): string => {
 		for (let mdLink of matches) {
 			let fileMatch = mdLink.match(fileRegex);
 			if (fileMatch) {
+				// Web links should stay with Markdown Format
+				if (fileMatch[0].startsWith('http')) continue;
 				let altMatch = mdLink.match(altRegex);
 				let wikiLink = createWikiLink(fileMatch[0], altMatch ? altMatch[0] : undefined);
 				newMdText = newMdText.replace(mdLink, wikiLink);
