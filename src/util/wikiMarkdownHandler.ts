@@ -12,12 +12,16 @@ export const convertWikiLinksToMarkdown = (md: string): string => {
 			let fileMatch = wiki.match(fileRegex);
 			if (fileMatch) {
 				let altMatch = wiki.match(altRegex);
-				let mdLink = `[${altMatch ? altMatch[0] : ''}](${encodeURI(fileMatch[0])})`;
+				let mdLink = createMarkdownLink(fileMatch[0], altMatch ? altMatch[0] : '');
 				newMdText = newMdText.replace(wiki, mdLink);
 			}
 		}
 	}
 	return newMdText;
+};
+
+const createMarkdownLink = (link: string, alt: string) => {
+	return `[${alt}](${encodeURI(link)})`;
 };
 
 // --> Converts links within given string from MD to Wiki
@@ -32,12 +36,16 @@ const convertMarkdownLinksToWikiLinks = (md: string): string => {
 			let fileMatch = mdLink.match(fileRegex);
 			if (fileMatch) {
 				let altMatch = mdLink.match(altRegex);
-				let wikiLink = `[[${decodeURI(fileMatch[0])}${altMatch && altMatch[0] !== '' ? '|' + altMatch[0] : ''}]]`;
+				let wikiLink = createWikiLink(fileMatch[0], altMatch ? altMatch[0] : undefined);
 				newMdText = newMdText.replace(mdLink, wikiLink);
 			}
 		}
 	}
 	return newMdText;
+};
+
+const createWikiLink = (link: string, alt?: string) => {
+	return `[[${decodeURI(link)}${alt && alt !== '' ? '|' + alt : ''}]]`;
 };
 
 // --> Converts single file to provided final format and save back in the file
