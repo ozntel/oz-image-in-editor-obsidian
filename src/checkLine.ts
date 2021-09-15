@@ -197,14 +197,12 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
 		var filename = '';
 		var alt = '';
 
-		if (linkInLine.result) {
-			// linkType 3 and 4
-			filename = ImageHandler.getImageFileNameAndAltText(linkInLine.linkType, linkInLine.result).fileName;
-			alt = ImageHandler.getImageFileNameAndAltText(linkInLine.linkType, linkInLine.result).altText;
-		} else if (imgInLine.result) {
-			filename = ImageHandler.getImageFileNameAndAltText(imgInLine.linkType, imgInLine.result).fileName;
-			alt = ImageHandler.getImageFileNameAndAltText(imgInLine.linkType, imgInLine.result).altText;
-		}
+        let resp = ImageHandler.getImageFileNameAndAltText(
+            linkInLine.result ? linkInLine.linkType : imgInLine.linkType,
+            linkInLine.result ? linkInLine.result : imgInLine.result
+        )
+        filename = resp.fileName;
+        alt = resp.altText;
 
 		// Create Image
 		const img = document.createElement('img');
