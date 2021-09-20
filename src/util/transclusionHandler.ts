@@ -5,6 +5,7 @@ import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
 import mermaidAPI from 'mermaid';
+import mermaid from 'mermaid';
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
@@ -241,16 +242,32 @@ const admonitionColorMap: { [key: string]: string } = {
 
 const convertMermaids = (html: HTMLElement) => {
 	let mermaidCodeElements = html.querySelectorAll('code[class*="language-mermaid"]');
+
+	// --> If there is no mermaid, do not initialize the mermaid
+	if (mermaidCodeElements.length === 0) return;
+
+	// @ts-ignore
+	mermaid.initialize(mermaidConfig);
+
 	mermaidCodeElements?.forEach((mermaidCodeEl) => {
 		// Create Mermaid Div
 		let mermaidDiv = document.createElement('div');
 		let id = Math.floor(Math.random() * 999999);
 		mermaidDiv.id = `mermaid-${id}`;
 		mermaidDiv.innerHTML = mermaidCodeEl.innerHTML;
-		mermaidCodeEl.parentElement.replaceWith(mermaidDiv);
-		// Replace Mermaid with SVG
-		let graph = mermaidAPI.render(`mermaid-${id}`, decodeHTML(mermaidCodeEl.innerHTML));
-		mermaidDiv.innerHTML = graph;
+		// --> If error happens with syntax, add an error text
+		try {
+			// @ts-ignore - Replace Mermaid with SVG
+			window.mermaid.mermaidAPI.render(`mermaid-${id}`, decodeHTML(mermaidCodeEl.innerHTML), (svg) => {
+				mermaidDiv.innerHTML = svg;
+			});
+			mermaidCodeEl.parentElement.replaceWith(mermaidDiv);
+		} catch (error) {
+			let errorP = document.createElement('p');
+			errorP.addClass('mermaid-error-information');
+			errorP.innerText = 'Syntax Error in Mermaid graph';
+			mermaidCodeEl.parentElement.prepend(errorP);
+		}
 	});
 };
 
@@ -284,4 +301,21 @@ export const decodeHTML = (str: string) => {
 			return entity;
 		}
 	});
+};
+
+export const mermaidLoaded = () => {
+	// @ts-ignore
+	return window.mermaid;
+};
+
+const mermaidConfig = {
+	startOnLoad: true,
+	flowchart: {
+		useMaxWidth: false,
+		htmlLabels: true,
+		curve: 'cardinal',
+	},
+	securityLevel: 'loose',
+	theme: 'forest',
+	logLevel: 5,
 };

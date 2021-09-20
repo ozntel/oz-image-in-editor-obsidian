@@ -87,3 +87,9 @@ pre[class*='language-'].line-numbers > code {
 #oz-admonition-title {
 	text-transform: capitalize;
 }
+
+.mermaid-error-information {
+	color: red;
+	font-size: 14px;
+	margin-bottom: 3px;
+}
