@@ -93,3 +93,12 @@ pre[class*='language-'].line-numbers > code {
 	font-size: 14px;
 	margin-bottom: 3px;
 }
+
+.oz-modal-center {
+	text-align: center;
+	margin: 20px 10px 20px 10px;
+}
+
+.oz-modal-title {
+	text-align: center;
+}

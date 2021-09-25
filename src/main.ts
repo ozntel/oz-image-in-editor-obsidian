@@ -7,6 +7,7 @@ import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as WidgetHandler from 'src/util/widgetHandler';
 import * as WikiMarkdownHandler from 'src/util/wikiMarkdownHandler';
+import { ConfirmationModal } from './modals';
 
 export default class OzanImagePlugin extends Plugin {
 	settings: OzanImagePluginSettings;
@@ -96,7 +97,9 @@ export default class OzanImagePlugin extends Plugin {
 			id: 'convert-wikis-to-md-in-vault',
 			name: 'Vault: Convert WikiLinks to Markdown Links',
 			callback: () => {
-				WikiMarkdownHandler.convertLinksInVault(this.app, 'markdown');
+				let infoText = 'Are you sure you want to convert all Wikilinks to Markdown Links?';
+				let modal = new ConfirmationModal(this.app, infoText, () => WikiMarkdownHandler.convertLinksInVault(this.app, 'markdown'));
+				modal.open();
 			},
 		});
 
@@ -104,7 +107,9 @@ export default class OzanImagePlugin extends Plugin {
 			id: 'convert-mdlinks-to-wiki-in-vault',
 			name: 'Vault: Convert Markdown Links to WikiLinks',
 			callback: () => {
-				WikiMarkdownHandler.convertLinksInVault(this.app, 'wiki');
+				let infoText = 'Are you sure you want to convert all Markdown Links to Wikilinks?';
+				let modal = new ConfirmationModal(this.app, infoText, () => WikiMarkdownHandler.convertLinksInVault(this.app, 'wiki'));
+				modal.open();
 			},
 		});
 
