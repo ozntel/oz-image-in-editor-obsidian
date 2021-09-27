@@ -6,6 +6,5 @@
 	"printWidth": 155,
 	"jsxBracketSameLine": true,
 	"bracketSpacing": true,
-	"useTabs": true,
 	"arrowParens": "always"
 }
