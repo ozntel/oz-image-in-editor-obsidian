@@ -9,6 +9,7 @@ export interface OzanImagePluginSettings {
     renderTransclusion: boolean;
     renderAdmonition: boolean;
     renderMermaid: boolean;
+    renderMathJax: boolean;
     refreshImagesAfterChange: boolean;
     WYSIWYG: boolean;
 }
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderTransclusion: false,
     renderAdmonition: false,
     renderMermaid: false,
+    renderMathJax: false,
     refreshImagesAfterChange: false,
     WYSIWYG: false,
 };
@@ -112,6 +114,16 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             .addToggle((toggle) =>
                 toggle.setValue(this.plugin.settings.renderMermaid).onChange((value) => {
                     this.plugin.settings.renderMermaid = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Render MathJax in Translucions')
+            .setDesc('Turn on if you want mathjaxs to be rendered in translucions.')
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.renderMathJax).onChange((value) => {
+                    this.plugin.settings.renderMathJax = value;
                     this.plugin.saveSettings();
                 })
             );

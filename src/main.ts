@@ -1,4 +1,4 @@
-import { Plugin, TAbstractFile, TFile } from 'obsidian';
+import { Plugin, TAbstractFile, TFile, loadMermaid, loadMathJax } from 'obsidian';
 import { checkLine, checkLines } from './checkLine';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './constants';
@@ -20,6 +20,13 @@ export default class OzanImagePlugin extends Plugin {
         this.addSettingTab(new OzanImagePluginSettingsTab(this.app, this));
 
         await this.loadSettings();
+
+        try {
+            loadMathJax();
+            loadMermaid();
+        } catch (err) {
+            console.log(err);
+        }
 
         // Register event for each change
 

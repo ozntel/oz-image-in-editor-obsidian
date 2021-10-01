@@ -4,8 +4,7 @@ import showdown from 'showdown';
 import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
-import mermaidAPI from 'mermaid';
-import mermaid from 'mermaid';
+import { stripIndents } from 'common-tags';
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
@@ -67,6 +66,8 @@ const clearMd = (md: string): string => {
     mdText = clearExclamationFromTransclusion(mdText);
     // --> Convert Wikis to Markdown for later HTML render
     mdText = convertWikiLinksToMarkdown(mdText);
+    // --> Wrap MathJax in Code Blocks
+    if (mathJaxLoaded()) mdText = wrapAllMathJaxsInCodeBlock(mdText);
     return mdText;
 };
 
@@ -112,8 +113,11 @@ export const clearHTML = (html: HTMLElement, plugin: OzanImagePlugin) => {
     // --> Convert Links to make Usable in Obsidian
     clearAnchorsInHtml(html, plugin.app);
     // --> Convert Mermaids
-    if (plugin.settings.renderMermaid) {
+    if (mermaidLoaded() && plugin.settings.renderMermaid) {
         convertMermaids(html);
+    }
+    if (mathJaxLoaded() && plugin.settings.renderMathJax) {
+        convertMathJaxElements(html);
     }
     // --> Convert Admonitions if enabled
     if (plugin.settings.renderAdmonition && pluginIsLoaded(plugin.app, 'obsidian-admonition')) {
@@ -246,8 +250,7 @@ const convertMermaids = (html: HTMLElement) => {
     // --> If there is no mermaid, do not initialize the mermaid
     if (mermaidCodeElements.length === 0) return;
 
-    // @ts-ignore
-    mermaid.initialize(mermaidConfig);
+    (window as any).mermaid.initialize(mermaidConfig);
 
     mermaidCodeElements?.forEach((mermaidCodeEl) => {
         // Create Mermaid Div
@@ -258,7 +261,7 @@ const convertMermaids = (html: HTMLElement) => {
         // --> If error happens with syntax, add an error text
         try {
             // @ts-ignore - Replace Mermaid with SVG
-            window.mermaid.mermaidAPI.render(`mermaid-${id}`, decodeHTML(mermaidCodeEl.innerHTML), (svg) => {
+            (window as any).mermaid.mermaidAPI.render(`mermaid-${id}`, decodeHTML(mermaidCodeEl.innerHTML), (svg) => {
                 mermaidDiv.innerHTML = svg;
             });
             mermaidCodeEl.parentElement.replaceWith(mermaidDiv);
@@ -304,8 +307,7 @@ export const decodeHTML = (str: string) => {
 };
 
 export const mermaidLoaded = () => {
-    // @ts-ignore
-    return window.mermaid;
+    return (window as any).mermaid;
 };
 
 const mermaidConfig = {
@@ -318,4 +320,97 @@ const mermaidConfig = {
     securityLevel: 'loose',
     theme: 'forest',
     logLevel: 5,
+};
+
+/* ------------------ MathJax Handlers  ------------------ */
+
+export const wrapAllMathJaxsInCodeBlock = (md: string): string => {
+    let newMd = md;
+
+    // --> If multiple line syntax
+    let multipleLineRegex = /\$\$.*?\$\$/gs;
+    let multipleLineMathJaxRegex = /(?<=\$\$).*?(?=\$\$)/s;
+    let multipleLines = md.match(multipleLineRegex);
+
+    if (multipleLines && multipleLines.length > 0) {
+        for (let multipleLine of multipleLines) {
+            let mathJaxMatch = multipleLine.match(multipleLineMathJaxRegex);
+            if (!mathJaxMatch) continue;
+            newMd = newMd.replace(multipleLine, createSingleMathJaxCodeBlock(mathJaxMatch[0], 'newline'));
+        }
+    }
+
+    // --> If single line syntax
+    let singleLineRegex = /\$[^\s].*[^\s]\$/g;
+    let singleLineMathJaxRegex = /(?<=\$).*?(?=\$)/;
+    let singleLines = md.match(singleLineRegex);
+
+    if (singleLines && singleLines.length > 0) {
+        for (let line of singleLines) {
+            let mathJaxMatch = line.match(singleLineMathJaxRegex);
+            if (mathJaxMatch) {
+                newMd = newMd.replace(line, createSingleMathJaxCodeBlock(mathJaxMatch[0], 'inline'));
+            }
+        }
+    }
+
+    return newMd;
+};
+
+let createSingleMathJaxCodeBlock = (mathJax: string, type: 'inline' | 'newline') => {
+    return stripIndents`
+        <pre class="language-mathjax">
+            <code class="language-mathjax ${type === 'inline' ? 'inline' : ''}">
+                ${mathJax}
+            </code>
+        </pre>
+    `;
+};
+
+// --> It takes <code> elements with "language-mathjax" class and converts to mathjax
+// If it is inline mathjax, there will be an additional class "inline" in <code> element
+const convertMathJaxElements = (html: HTMLElement) => {
+    let mathJaxElements = html.querySelectorAll('code.language-mathjax');
+    for (let i = 0; i < mathJaxElements.length; i++) {
+        let mathJaxEl = mathJaxElements[i];
+        let inline: boolean = mathJaxEl.classList.contains('inline');
+        if (inline) {
+            let previousSibling = mathJaxEl.parentElement.previousElementSibling;
+            if (previousSibling) {
+                previousSibling.classList.add('inline-block');
+            }
+        }
+        getMathJaxElement(mathJaxEl.innerHTML, inline ? 'inline' : 'newline').then((node) => {
+            mathJaxEl.parentElement.replaceWith(node);
+        });
+    }
+};
+
+// --> Converts MathJax String to Styled HTML Element
+// If inline returns <span>, if newline returns <div>
+const getMathJaxElement = async (content: string, type: 'inline' | 'newline'): Promise<Element> => {
+    // --> Create Wrapper - Span for Inline - Div for Newline
+    let newNode: Element;
+    if (type === 'inline') {
+        newNode = document.createElement('span');
+        newNode.classList.add('inline-mathjax-block');
+    } else if (type === 'newline') {
+        newNode = document.createElement('div');
+        newNode.classList.add('newline-mathjax-block');
+    }
+    // --> Decode from HTML Entities
+    let mathJaxText = decodeHTML(content);
+    // --> Convert Node to HTML and append to Wrapper
+    let node = await (window as any).MathJax.tex2chtmlPromise(mathJaxText, { display: type !== 'inline' });
+    const adaptor = (window as any).MathJax.startup.adaptor;
+    newNode.innerHTML = adaptor.outerHTML(node);
+    // --> Convert to Style append to Wrapper
+    let styleEl = document.createElement('style');
+    styleEl.innerHTML = adaptor.textContent((window as any).MathJax.chtmlStylesheet());
+    newNode.appendChild(styleEl);
+    return newNode;
+};
+
+const mathJaxLoaded = () => {
+    return (window as any).MathJax?.version;
 };
