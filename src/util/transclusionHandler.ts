@@ -52,7 +52,7 @@ const clearExclamationFromTransclusion = (md: string): string => {
 };
 
 const clearHashTags = (md: string): string => {
-    let hashtagRegex = /^\#[^#\s]+/gm;
+    let hashtagRegex = /#[^\s#]+/gm;
     let mdText = md;
     let hashtags = mdText.match(hashtagRegex);
     hashtags?.forEach((ht) => (mdText = mdText.replace(ht, `[${ht}](${ht})`)));
