@@ -228,12 +228,12 @@ export default class OzanImagePlugin extends Plugin {
     // Handle File Changes to Refhres Images
     handleFileModify = (file: TAbstractFile) => {
         if (!(file instanceof TFile)) return;
-        if (!ImageHandler.pathIsAnImage(file.path)) return;
-        if (file.extension === 'md' && !isAnExcalidrawFile(file)) return;
-        this.app.workspace.iterateCodeMirrors((cm) => {
-            var lastLine = cm.lastLine();
-            checkLines(cm, 0, lastLine, this, file.path);
-        });
+        if (ImageHandler.pathIsAnImage(file.path) || isAnExcalidrawFile(file)) {
+            this.app.workspace.iterateCodeMirrors((cm) => {
+                var lastLine = cm.lastLine();
+                checkLines(cm, 0, lastLine, this, file.path);
+            });
+        }
     };
 
     // Handle WYSIWYG Toggle

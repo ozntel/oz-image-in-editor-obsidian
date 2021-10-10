@@ -42,7 +42,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
         sourcePath = activeNoteFile ? activeNoteFile.path : '';
     }
 
-    /* ------------------ IMAGE & EXCALIDRAW RENDER ------------------ */
+    /* ------------------ IMAGE RENDER ------------------ */
 
     // If any of regex matches, it will add image widget
     if (linkInLine.result || imgInLine.result) {
@@ -60,8 +60,6 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
         // Create Image
         const img = document.createElement('img');
 
-        var image = null;
-
         // Prepare the src for the Image
         if (linkInLine.result) {
             // Local File URL Correction (Outside of Vault)
@@ -75,46 +73,8 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
             // Additional Check for Changed Files - helps updating only for changed image
             if (changedFilePath && imageFile && changedFilePath !== imageFile.path) return;
 
-            /* ------------------ EXCALIDRAW RENDER ------------------ */
-
-            if (['md', 'excalidraw'].contains(imageFile.extension)) {
-                // md, excalidraw file check to be rendered
-                if (ExcalidrawHandler.excalidrawPluginIsLoaded && ExcalidrawHandler.isAnExcalidrawFile(imageFile)) {
-                    // Do not render drawing if option turned off
-                    if (!plugin.settings.renderExcalidraw) return;
-
-                    // The file is an excalidraw drawing
-                    if (plugin.imagePromiseList.contains(imageFile.path)) return;
-                    plugin.addToImagePromiseList(imageFile.path);
-
-                    var image = await ExcalidrawHandler.createPNGFromExcalidrawFile(imageFile);
-
-                    // Check if Object or Alt Changed
-                    if (line.handle.widgets) {
-                        var currentImageNode = line.handle.widgets[0].node;
-                        var blobLink = currentImageNode.currentSrc;
-                        var existingBlop = await ImageHandler.getBlobObject(blobLink);
-                        if (existingBlop.size === image.size && currentImageNode.alt === alt) {
-                            // Drawing hasn't changed
-                            plugin.removeFromImagePromiseList(imageFile.path);
-                            return;
-                        }
-                    }
-
-                    // Generate New Link for new Drawing
-                    img.src = URL.createObjectURL(image);
-                    plugin.removeFromImagePromiseList(imageFile.path);
-                } else {
-                    return;
-                }
-            }
-
-            /* ------------------ ALL IMAGE RENDERS ------------------ */
-
-            if (['jpeg', 'jpg', 'png', 'gif', 'svg', 'bmp'].contains(imageFile.extension)) {
-                img.src = ObsidianHelper.getPathOfImage(plugin.app.vault, imageFile);
-                img.setAttr('data-path', imageFile.path);
-            }
+            img.src = ObsidianHelper.getPathOfImage(plugin.app.vault, imageFile);
+            img.setAttr('data-path', imageFile.path);
         }
 
         // Clear the image widgets if exists
@@ -133,6 +93,53 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
         cm.addLineWidget(lineNumber, img, { className: 'oz-image-widget', showIfHidden: false });
 
         return;
+    }
+
+    /* ------------------ EXCALIDRAW RENDER  ------------------ */
+
+    if (plugin.settings && plugin.settings.renderExcalidraw) {
+        if (ExcalidrawHandler.lineMightHaveExcalidraw(line.text)) {
+            let lineFile = ExcalidrawHandler.getFile(line.text, sourcePath, plugin);
+
+            if (lineFile && ExcalidrawHandler.isAnExcalidrawFile(lineFile)) {
+                // The file is an excalidraw drawing
+                if (plugin.imagePromiseList.contains(lineFile.path)) return;
+                plugin.addToImagePromiseList(lineFile.path);
+                let excalidrawImage = await ExcalidrawHandler.createPNGFromExcalidrawFile(lineFile);
+
+                // Check if Object or Alt Changed
+                if (line.handle.widgets) {
+                    var currentImageNode = line.handle.widgets[0].node;
+                    var blobLink = currentImageNode.currentSrc;
+                    var existingBlop = await ImageHandler.getBlobObject(blobLink);
+
+                    if (existingBlop.size === excalidrawImage.size && currentImageNode.alt === alt) {
+                        // Drawing hasn't changed
+                        plugin.removeFromImagePromiseList(lineFile.path);
+                        return;
+                    }
+                }
+
+                // Create an image element
+                let img = document.createElement('img');
+
+                // Image Properties
+                img.src = URL.createObjectURL(excalidrawImage);
+                let altText = ExcalidrawHandler.getAltText(line.text);
+                var altSizer = ImageHandler.altWidthHeight(altText);
+                if (altSizer) {
+                    img.width = altSizer.width;
+                    if (altSizer.height) img.height = altSizer.height;
+                }
+                img.alt = altText;
+                img.setAttr('data-path', excalidrawImage.path);
+
+                // Add Image widget under the Image Markdown
+                cm.addLineWidget(lineNumber, img, { className: 'oz-image-widget', showIfHidden: false });
+                plugin.removeFromImagePromiseList(lineFile.path);
+                return;
+            }
+        }
     }
 
     /* ------------------ IFRAME RENDER  ------------------ */

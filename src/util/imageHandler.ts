@@ -2,15 +2,15 @@ import { Menu, TFile } from 'obsidian';
 import OzanImagePlugin from 'src/main';
 
 // General Image Regex
-const image_regex = /.*.(jpe?g|png|gif|svg|bmp|excalidraw|md)/;
+const image_regex = /.*.(jpe?g|png|gif|svg|bmp)/;
 
 // Regex for [[ ]] format
-const image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp|excalidraw|md).*?\]\]/;
-const file_name_regex_1 = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp|excalidraw|md)/;
+const image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp).*?\]\]/;
+const file_name_regex_1 = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
 
 // Regex for ![ ]( ) format
-const image_line_regex_2 = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp|excalidraw|md)\)/;
-const file_name_regex_2 = /(?<=\().*(jpe?g|png|gif|svg|bmp|excalidraw|md)/;
+const image_line_regex_2 = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp)\)/;
+const file_name_regex_2 = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
 
 // Regex for Links
 const file_name_regex_3 = /(?<=\[\[).*(?=\|)|(?<=\[\[).*(?=\]\])/;
