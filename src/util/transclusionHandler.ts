@@ -5,6 +5,7 @@ import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
 import { stripIndents } from 'common-tags';
+import frontmatter from 'front-matter';
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
@@ -79,6 +80,8 @@ const clearMd = (md: string): string => {
     mdText = clearExclamationFromTransclusion(mdText);
     // --> Convert Wikis to Markdown for later HTML render
     mdText = convertWikiLinksToMarkdown(mdText);
+    // --> Clear FrontMatter
+    mdText = removeFrontMatter(mdText);
     // --> Wrap MathJax in Code Blocks
     if (mathJaxLoaded()) mdText = wrapAllMathJaxsInCodeBlock(mdText);
     return mdText;
@@ -189,6 +192,15 @@ const clearAnchorsInHtml = (html: HTMLElement, app: App) => {
             a.addClass('tag');
         }
     });
+};
+
+const removeFrontMatter = (md: string): string => {
+    try {
+        let splittedMd = frontmatter(md);
+        return splittedMd.body;
+    } catch (err) {
+        return md;
+    }
 };
 
 /* ------------------ Admonition Handlers  ------------------ */
