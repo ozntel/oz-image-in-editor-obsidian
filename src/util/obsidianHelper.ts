@@ -8,6 +8,7 @@ export const getActiveNoteFile = (workspace: Workspace) => {
 
 // Get Active Editor
 export const getCmEditor = (workspace: Workspace): CodeMirror.Editor => {
+    // @ts-ignore
     return workspace.getActiveViewOfType(MarkdownView)?.sourceMode?.cmEditor;
 };
 
