@@ -18,9 +18,19 @@ export const clearTransclusionWidgets = (line: any) => {
     clearWidgetsWithClass(['oz-transclusion-widget'], line);
 };
 
-const clearWidgetsWithClass = (classList: string[], line: any) => {
+export const clearWidgetsWithClass = (classList: string[], line: any) => {
     if (line.widgets) {
-        for (const wid of line.widgets) {
+        widgetLoop: for (const wid of line.widgets) {
+            let classNames = wid.className;
+            if (classNames !== '') {
+                let classArr: string[] = classNames.split(' ');
+                for (let c of classList) {
+                    if (classArr.contains(c)) {
+                        wid.clear();
+                        continue widgetLoop;
+                    }
+                }
+            }
             if (classList.contains(wid.className)) wid.clear();
         }
     }
@@ -28,5 +38,18 @@ const clearWidgetsWithClass = (classList: string[], line: any) => {
 
 // Returns widgets with classname or false if there is not any
 export const getWidgets = (line: any, className: string) => {
-    return line.widgets ? line.widgets.filter((wid: { className: string }) => wid.className === className) : false;
+    if (line.widgets) {
+        let lineWidgets = [];
+        for (let widget of line.widgets) {
+            let classNames = widget.className;
+            if (classNames !== '') {
+                let classArr = classNames.split(' ');
+                if (classArr.contains(className)) {
+                    lineWidgets.push(widget);
+                }
+            }
+        }
+        return lineWidgets.length > 0 ? lineWidgets : false;
+    }
+    return false;
 };

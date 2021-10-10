@@ -16,6 +16,9 @@ const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
 const transclusionHeaderText = /(?<=#).*(?=]])/;
 // --> Get File Name from Transclusion
 const transclusionFileNameRegex = /(?<=!\[\[)(.*)(?=#)/;
+// --> Whole File Transclusion
+const fileTransclusionRegex = /!\[\[.*?\]\]/;
+const fileTransclusionFileNameRegex = /(?<=\[\[).*?(?=\]\])/;
 
 export const lineIsWithBlockId = (line: string) => {
     return line.match(transclusionWithBlockIdRegex);
@@ -25,13 +28,23 @@ export const lineIsWithHeading = (line: string) => {
     return line.match(transclusionBlockRegex);
 };
 
+export const lineIsFileTransclusion = (line: string) => {
+    return fileTransclusionRegex.test(line);
+};
+
 export const lineIsTransclusion = (line: string) => {
-    return lineIsWithBlockId(line) || lineIsWithHeading(line);
+    return lineIsWithBlockId(line) || lineIsWithHeading(line) || lineIsFileTransclusion(line);
 };
 
 export const getFile = (line: string, app: App, sourcePath: string): TFile | null => {
-    const match = line.match(transclusionFileNameRegex);
+    let match: RegExpMatchArray;
+    if (lineIsWithBlockId(line) || lineIsWithHeading(line)) {
+        match = line.match(transclusionFileNameRegex);
+    } else if (lineIsFileTransclusion(line)) {
+        match = line.match(fileTransclusionFileNameRegex);
+    }
     if (!match) return null;
+    if (match[0] === '') return null;
     return app.metadataCache.getFirstLinkpathDest(match[0], sourcePath);
 };
 

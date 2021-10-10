@@ -8,6 +8,7 @@ import * as ImageHandler from 'src/util/imageHandler';
 import * as WidgetHandler from 'src/util/widgetHandler';
 import * as WikiMarkdownHandler from 'src/util/wikiMarkdownHandler';
 import { ConfirmationModal } from './modals';
+import { isAnExcalidrawFile } from 'src/util/excalidrawHandler';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
@@ -228,6 +229,7 @@ export default class OzanImagePlugin extends Plugin {
     handleFileModify = (file: TAbstractFile) => {
         if (!(file instanceof TFile)) return;
         if (!ImageHandler.pathIsAnImage(file.path)) return;
+        if (file.extension === 'md' && !isAnExcalidrawFile(file)) return;
         this.app.workspace.iterateCodeMirrors((cm) => {
             var lastLine = cm.lastLine();
             checkLines(cm, 0, lastLine, this, file.path);
