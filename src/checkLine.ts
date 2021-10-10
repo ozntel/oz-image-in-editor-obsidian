@@ -231,7 +231,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
                 if (lineTransclusionWidgets) WidgetHandler.clearWidgetsWithClass(['oz-transclusion-widget'], line);
             }
 
-            if (file && file.path.endsWith('.md') && !ExcalidrawHandler.isAnExcalidrawFile(file)) {
+            if (file && file.path.endsWith('.md')) {
                 // If a file changed, do not render the line again
                 if (changedFilePath !== undefined) return;
 
