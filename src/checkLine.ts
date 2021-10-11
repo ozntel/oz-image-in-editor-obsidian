@@ -101,7 +101,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
         if (ExcalidrawHandler.lineMightHaveExcalidraw(line.text)) {
             let lineFile = ExcalidrawHandler.getFile(line.text, sourcePath, plugin);
 
-            if (lineFile && ExcalidrawHandler.isAnExcalidrawFile(lineFile)) {
+            if (lineFile && ExcalidrawHandler.excalidrawPluginIsLoaded(plugin.app) && ExcalidrawHandler.isAnExcalidrawFile(lineFile)) {
                 // The file is an excalidraw drawing
                 if (plugin.imagePromiseList.contains(lineFile.path)) return;
                 plugin.addToImagePromiseList(lineFile.path);
