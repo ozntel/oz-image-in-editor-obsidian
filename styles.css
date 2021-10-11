@@ -105,3 +105,11 @@ pre[class*='language-'].line-numbers > code {
 .inline-mathjax-block {
     margin-left: 5px;
 }
+
+.oz-image-widget > img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
