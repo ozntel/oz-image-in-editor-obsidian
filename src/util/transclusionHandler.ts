@@ -43,9 +43,9 @@ export const getFile = (line: string, app: App, sourcePath: string): TFile | nul
         match = line.match(transclusionFileNameRegex);
     } else if (lineIsFileTransclusion(line)) {
         match = line.match(fileTransclusionFileNameRegex);
+        if (match[0] === '') return null;
     }
     if (!match) return null;
-    if (match[0] === '') return null;
     return app.metadataCache.getFirstLinkpathDest(match[0], sourcePath);
 };
 
