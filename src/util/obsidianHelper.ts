@@ -34,7 +34,7 @@ export const openInternalLink = (event: MouseEvent, link: string, app: App) => {
 };
 
 export const clearSpecialCharacters = (str: string) => {
-    return str.replace(/\s|[0-9_]|\W|[#$%^&*()]/g, '');
+    return str.replace(/\s|\W|[#$%^&*()]/g, '');
 };
 
 export const pluginIsLoaded = (app: App, pluginId: string) => {

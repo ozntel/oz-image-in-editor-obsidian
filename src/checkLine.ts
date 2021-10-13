@@ -290,7 +290,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
                     }
                 }
 
-                // --> Render Whole File Transclusion or Excalidraw
+                // --> Render Whole File Transclusion
                 else if (TransclusionHandler.lineIsFileTransclusion(line.text)) {
                     if (cachedReadOfTarget !== '') {
                         let fileEl = document.createElement('div');
