@@ -6,8 +6,6 @@ import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as WidgetHandler from 'src/util/widgetHandler';
-import * as WikiMarkdownHandler from 'src/util/wikiMarkdownHandler';
-import { ConfirmationModal } from './modals';
 import { isAnExcalidrawFile } from 'src/util/excalidrawHandler';
 
 export default class OzanImagePlugin extends Plugin {
@@ -82,42 +80,6 @@ export default class OzanImagePlugin extends Plugin {
                 this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
                 this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
                 this.saveSettings();
-            },
-        });
-
-        this.addCommand({
-            id: 'convert-wikis-to-md-in-active-file',
-            name: 'Active File: Convert WikiLinks to Markdown Links',
-            callback: () => {
-                WikiMarkdownHandler.convertLinksInActiveFile(this.app, 'markdown');
-            },
-        });
-
-        this.addCommand({
-            id: 'convert-md-to-wikis-in-active-file',
-            name: 'Active File: Convert Markdown Links to WikiLinks',
-            callback: () => {
-                WikiMarkdownHandler.convertLinksInActiveFile(this.app, 'wiki');
-            },
-        });
-
-        this.addCommand({
-            id: 'convert-wikis-to-md-in-vault',
-            name: 'Vault: Convert WikiLinks to Markdown Links',
-            callback: () => {
-                let infoText = 'Are you sure you want to convert all Wikilinks to Markdown Links?';
-                let modal = new ConfirmationModal(this.app, infoText, () => WikiMarkdownHandler.convertLinksInVault(this.app, 'markdown'));
-                modal.open();
-            },
-        });
-
-        this.addCommand({
-            id: 'convert-mdlinks-to-wiki-in-vault',
-            name: 'Vault: Convert Markdown Links to WikiLinks',
-            callback: () => {
-                let infoText = 'Are you sure you want to convert all Markdown Links to Wikilinks?';
-                let modal = new ConfirmationModal(this.app, infoText, () => WikiMarkdownHandler.convertLinksInVault(this.app, 'wiki'));
-                modal.open();
             },
         });
 
