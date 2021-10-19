@@ -5,9 +5,8 @@
 
 ## 📕 Brief Explanation
 
--   Plugin helps you to view `images`, `iframes`, `PDF Files` and `transclusions` directly under the Editor view without a necessity to switch to Preview mode.
--   After a nice collaboration with Zsolt, you can now view `excalidraw` drawings within the Editor, as well. Reference: <a href="https://github.com/zsviczian/obsidian-excalidraw-plugin">Excalidraw Plugin</a>
--   The plugin allows you to see both your local images and images from internet.
+-   Plugin helps you to view `images`, `iframes`, `PDF Files`, `excalidraw` drawings and `transclusions` directly under the Editor view without a necessity to switch to Preview mode.
+-   The plugin allows you to see both your `local images` and `images from internet`.
 -   Both `Markdown` and `Wikilinks` formats are supported as described below.
 -   You can resize the view of images using `ALT-TEXT` options provided below to ensure that they don't take too much place in your screen as long as it is not needed.
 
@@ -50,8 +49,9 @@ Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view 
 
 ## 📕 Transclusions Rendering
 
-The plugin now renders the Transclusions within the Editor. You can use both with `block id` and `header`:
+The plugin now renders the Transclusions within the Editor. You can use as `file` transclusion, `block id` and `header`:
 
+-   `![[myFile]]`
 -   `![[myFile#^316sd1]]`
 -   `![[myFile#Header2]]`
 
@@ -65,24 +65,21 @@ Sample Views:
 
 ## 📕 Wikilink to Markdown & Markdown to Wikilink
 
-The plugin now also has additional commands to convert:
-
--   All `Wikilinks` in Vault to `Markdown Links` and `Markdown Links` to `Wikilinks`
--   `Wikilinks` only in `active file` to `Markdown Links` and `Markdown Links` to `Wikilinks`
-
-Sample Video (How does it work?): [Wiki to Md & Md to Wiki](https://www.youtube.com/watch?v=edUSYWErErA)
+Plugin's link conversion functions are moved to [Obsidian Link Converter Plugin](https://github.com/ozntel/obsidian-link-converter) with many additional functionalities. You can download from Community Plugins.
 
 ## 📕 Excalidraw View
+
+After a nice collaboration with Zsolt, you can now view `excalidraw` drawings within the Editor, as well. Reference: <a href="https://github.com/zsviczian/obsidian-excalidraw-plugin">Excalidraw Plugin</a>
 
 Usage with `excalidraw` extension:
 
 -   `![[drawing.excalidraw|ALT-TEXT]]`
 -   `!(ALT-TEXT)[drawing.excalidraw]`
 
-Usage with `.md` extension:
+Usage with the new format (You don't need to add `.md` extension anymore):
 
--   `![[drawing.md|ALT-TEXT]]`
--   `!(ALT-TEXT)[drawing.md]`
+-   `![[drawing|ALT-TEXT]]`
+-   `!(ALT-TEXT)[drawing]`
 
 **Important:** If you are using `1.2.x` version of Excalidraw plugin, `Wikilinks` format needs to include `.md` extension, otherwise, drawing won't be rendered in Editor.
 
