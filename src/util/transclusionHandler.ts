@@ -3,9 +3,32 @@ import OzanImagePlugin from 'src/main';
 import showdown from 'showdown';
 import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
-import { convertWikiLinksToMarkdown } from 'src/util/wikiMarkdownHandler';
 import { stripIndents } from 'common-tags';
 import frontmatter from 'front-matter';
+
+// --> Converts links within given string from Wiki to MD
+const convertWikiLinksToMarkdown = (md: string): string => {
+    let newMdText = md;
+    let wikiRegex = /\[\[.*?\]\]/g;
+    let matches = newMdText.match(wikiRegex);
+    if (matches) {
+        let fileRegex = /(?<=\[\[).*?(?=(\]|\|))/;
+        let altRegex = /(?<=\|).*(?=]])/;
+        for (let wiki of matches) {
+            let fileMatch = wiki.match(fileRegex);
+            if (fileMatch) {
+                let altMatch = wiki.match(altRegex);
+                let mdLink = createMarkdownLink(fileMatch[0], altMatch ? altMatch[0] : '');
+                newMdText = newMdText.replace(wiki, mdLink);
+            }
+        }
+    }
+    return newMdText;
+};
+
+const createMarkdownLink = (link: string, alt: string) => {
+    return `[${alt}](${encodeURI(link)})`;
+};
 
 // --> Line Id Regex ![[hello#^f76b62]]
 const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
