@@ -3,6 +3,7 @@ import OzanImagePlugin from './main';
 
 export interface OzanImagePluginSettings {
     renderAll: boolean;
+    renderImages: boolean;
     renderPDF: boolean;
     renderIframe: boolean;
     renderExcalidraw: boolean;
@@ -16,6 +17,7 @@ export interface OzanImagePluginSettings {
 
 export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAll: true,
+    renderImages: true,
     renderPDF: false,
     renderIframe: false,
     renderExcalidraw: false,
@@ -40,8 +42,6 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
         containerEl.empty();
         containerEl.createEl('h2', { text: 'Image in Editor Settings' });
 
-        containerEl.createEl('h2', { text: 'Render Options' });
-
         new Setting(containerEl)
             .setName('Render Toggle')
             .setDesc(
@@ -51,6 +51,18 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 toggle.setValue(this.plugin.settings.renderAll).onChange((value) => {
                     this.plugin.handleToggleRenderAll(value);
                     this.plugin.settings.renderAll = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        containerEl.createEl('h2', { text: 'Render Options' });
+
+        new Setting(containerEl)
+            .setName('Render Images in Editor')
+            .setDesc('Turn on this option if you want Image files (jpeg, jpg, png, gif, svg, bmp) to be rendered in Editor')
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.renderImages).onChange((value) => {
+                    this.plugin.settings.renderImages = value;
                     this.plugin.saveSettings();
                 })
             );

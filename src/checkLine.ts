@@ -45,7 +45,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
     /* ------------------ IMAGE RENDER ------------------ */
 
     // If any of regex matches, it will add image widget
-    if (linkInLine.result || imgInLine.result) {
+    if (plugin.settings.renderImages && (linkInLine.result || imgInLine.result)) {
         // Get the file name and alt text depending on format
         var filename = '';
         var alt = '';

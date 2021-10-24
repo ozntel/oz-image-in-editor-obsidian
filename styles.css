@@ -117,3 +117,7 @@ pre[class*='language-'].line-numbers > code {
 div.oz-transclusion-widget pre {
     overflow-x: auto;
 }
+
+.oz-transclusion-widget > * {
+    user-select: text !important;
+}
