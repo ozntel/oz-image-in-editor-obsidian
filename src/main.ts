@@ -6,7 +6,7 @@ import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as WidgetHandler from 'src/util/widgetHandler';
-import { isAnExcalidrawFile } from 'src/util/excalidrawHandler';
+import { isAnExcalidrawFile, excalidrawPluginIsLoaded } from 'src/util/excalidrawHandler';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
@@ -190,7 +190,7 @@ export default class OzanImagePlugin extends Plugin {
     // Handle File Changes to Refhres Images
     handleFileModify = (file: TAbstractFile) => {
         if (!(file instanceof TFile)) return;
-        if (ImageHandler.pathIsAnImage(file.path) || isAnExcalidrawFile(file)) {
+        if (ImageHandler.pathIsAnImage(file.path) || (excalidrawPluginIsLoaded(this.app) && isAnExcalidrawFile(file))) {
             this.app.workspace.iterateCodeMirrors((cm) => {
                 var lastLine = cm.lastLine();
                 checkLines(cm, 0, lastLine, this, file.path);
