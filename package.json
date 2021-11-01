@@ -31,7 +31,7 @@
         "common-tags": "^1.8.0",
         "front-matter": "^4.0.2",
         "mermaid": "^8.12.1",
-        "pollUntil": "^1.0.3",
+        "poll-until-promise": "^3.6.1",
         "prismjs": "^1.24.1",
         "showdown": "^1.9.1"
     }

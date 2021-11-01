@@ -1,6 +1,5 @@
 import { normalizePath, TFile } from 'obsidian';
 import OzanImagePlugin from './main';
-import pollUntil from 'pollUntil';
 import * as PDFHandler from 'src/util/pdfHandler';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
 import * as ObsidianHelper from 'src/util/obsidianHelper';
@@ -18,6 +17,7 @@ import 'prismjs/components/prism-tsx.min';
 import 'prismjs/components/prism-bash.min';
 import 'prismjs/components/prism-visual-basic.min';
 import 'prismjs/components/prism-json.min';
+import { PollUntil } from 'poll-until-promise';
 
 // Check Single Line
 export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
@@ -244,20 +244,32 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
                 if (TransclusionHandler.lineIsWithBlockId(line.text)) {
                     const blockId = TransclusionHandler.getBlockId(line.text);
                     // --> Wait for Block Id Creation by Obsidian
-                    await pollUntil(() => cache.blocks && cache.blocks[blockId], [cache.blocks], 3000, 100).then((result) => {
-                        if (!result) return;
-                        const block = cache.blocks[blockId];
-                        if (block) {
-                            let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
-                            TransclusionHandler.clearHTML(htmlElement, plugin);
-                            if (lineTransclusionWidgets) WidgetHandler.clearWidgetsWithClass(['oz-transclusion-widget'], line);
-                            cm.addLineWidget(lineNumber, htmlElement, {
-                                className: 'oz-transclusion-widget oz-block-id-transclusion',
-                                showIfHidden: false,
+                    let pollUntil = new PollUntil();
+                    pollUntil
+                        .stopAfter(5 * 1000)
+                        .tryEvery(1000)
+                        .execute(() => {
+                            return new Promise((resolve, reject) => {
+                                cache = plugin.app.metadataCache.getCache(file.path);
+                                if (cache.blocks && cache.blocks[blockId]) {
+                                    const block = cache.blocks[blockId];
+                                    if (block) {
+                                        let htmlElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+                                        TransclusionHandler.clearHTML(htmlElement, plugin);
+                                        if (lineTransclusionWidgets) WidgetHandler.clearWidgetsWithClass(['oz-transclusion-widget'], line);
+                                        cm.addLineWidget(lineNumber, htmlElement, {
+                                            className: 'oz-transclusion-widget oz-block-id-transclusion',
+                                            showIfHidden: false,
+                                        });
+                                        Prism.highlightAll();
+                                    }
+                                    return resolve(true);
+                                }
+                                reject(false);
                             });
-                            Prism.highlightAll();
-                        }
-                    });
+                        })
+                        .then((value: any) => {})
+                        .catch((err: any) => {});
                 }
 
                 // --> Render # Header Block
