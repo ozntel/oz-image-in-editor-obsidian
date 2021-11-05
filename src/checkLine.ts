@@ -8,6 +8,7 @@ import * as LinkHandler from 'src/util/linkHandler';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as IframeHandler from 'src/util/iframeHandler';
 import * as TransclusionHandler from 'src/util/transclusionHandler';
+import * as RichLinkHandler from './util/richLink';
 import Prism from 'prismjs';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 import 'prismjs/components/prism-python.min';
@@ -317,6 +318,27 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
                     }
                 }
 
+                return;
+            }
+        }
+    }
+
+    /* ------------------ RICH LINK RENDER  ------------------ */
+
+    if (plugin.settings.renderRichLink) {
+        let links = RichLinkHandler.getLinksInLine(line.text);
+        let richlinkWidgets = WidgetHandler.getWidgets(line, 'oz-richlink-widget');
+
+        // Clear widgets if references are removed
+        if (richlinkWidgets && links.length === 0) {
+            WidgetHandler.clearWidgetsWithClass(['oz-richlink-widget'], line);
+        }
+
+        if (links.length > 0) {
+            WidgetHandler.clearWidgetsWithClass(['oz-richlink-widget'], line);
+            let htmlEl = await RichLinkHandler.createRichLinkElement(links[0].link);
+            if (htmlEl) {
+                cm.addLineWidget(lineNumber, htmlEl, { className: 'oz-richlink-widget' });
                 return;
             }
         }

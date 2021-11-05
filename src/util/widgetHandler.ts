@@ -1,6 +1,6 @@
 // Clear Single Line Widget
 export const clearLineWidgets = (line: any) => {
-    let classes = ['oz-image-widget', 'oz-transclusion-widget'];
+    let classes = ['oz-image-widget', 'oz-transclusion-widget', 'oz-richlink-widget'];
     clearWidgetsWithClass(classes, line);
 };
 

@@ -7,6 +7,7 @@ export interface OzanImagePluginSettings {
     renderPDF: boolean;
     renderIframe: boolean;
     renderExcalidraw: boolean;
+    renderRichLink: boolean;
     renderTransclusion: boolean;
     renderAdmonition: boolean;
     renderMermaid: boolean;
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderPDF: false,
     renderIframe: false,
     renderExcalidraw: false,
+    renderRichLink: false,
     renderTransclusion: false,
     renderAdmonition: false,
     renderMermaid: false,
@@ -93,6 +95,16 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             .addToggle((toggle) =>
                 toggle.setValue(this.plugin.settings.renderExcalidraw).onChange((value) => {
                     this.plugin.settings.renderExcalidraw = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Rich Link Widget for External Links')
+            .setDesc('Turn on this option if you want rich link widget to be visible within a line, where you have an external link')
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.renderRichLink).onChange((value) => {
+                    this.plugin.settings.renderRichLink = value;
                     this.plugin.saveSettings();
                 })
             );
