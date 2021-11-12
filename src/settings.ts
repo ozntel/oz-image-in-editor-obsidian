@@ -12,6 +12,7 @@ export interface OzanImagePluginSettings {
     renderAdmonition: boolean;
     renderMermaid: boolean;
     renderMathJax: boolean;
+    previewOnHoverInternalLink: boolean;
     refreshImagesAfterChange: boolean;
     WYSIWYG: boolean;
 }
@@ -27,6 +28,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAdmonition: false,
     renderMermaid: false,
     renderMathJax: false,
+    previewOnHoverInternalLink: false,
     refreshImagesAfterChange: false,
     WYSIWYG: false,
 };
@@ -149,6 +151,21 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 toggle.setValue(this.plugin.settings.renderMathJax).onChange((value) => {
                     this.plugin.settings.renderMathJax = value;
                     this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Preview on Hover for File Links')
+            .setDesc('Turn on if you want to trigger preview when you hover on internal links within the rendered transclusion')
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.previewOnHoverInternalLink).onChange((value) => {
+                    this.plugin.settings.previewOnHoverInternalLink = value;
+                    this.plugin.saveSettings();
+                    if (value) {
+                        document.on('mouseover', '.oz-obsidian-inner-link', this.plugin.filePreviewOnHover);
+                    } else {
+                        document.off('mouseover', '.oz-obsidian-inner-link', this.plugin.filePreviewOnHover);
+                    }
                 })
             );
 

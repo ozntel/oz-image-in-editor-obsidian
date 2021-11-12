@@ -87,6 +87,10 @@ export default class OzanImagePlugin extends Plugin {
 
         document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
 
+        if (this.settings.previewOnHoverInternalLink) {
+            document.on('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
+        }
+
         if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
         if (!this.settings.renderAll) return;
         this.registerCodeMirror((cm: CodeMirror.Editor) => {
@@ -105,6 +109,7 @@ export default class OzanImagePlugin extends Plugin {
         this.app.vault.off('modify', this.handleFileModify);
         document.off('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
         document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
+        document.off('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
         this.unload_WYSIWYG_Styles();
         console.log('Image in Editor Plugin is unloaded');
     }
@@ -131,6 +136,10 @@ export default class OzanImagePlugin extends Plugin {
         event.preventDefault();
         event.stopPropagation();
         ObsidianHelpers.openInternalLink(event, target.getAttr('href'), this.app);
+    };
+
+    filePreviewOnHover = (event: MouseEvent, target: HTMLElement) => {
+        this.app.workspace.trigger('link-hover', {}, event.target, target.getAttr('href'), target.getAttr('href'));
     };
 
     // Line Edit Changes
