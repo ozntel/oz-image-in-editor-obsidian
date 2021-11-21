@@ -113,61 +113,86 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 
         this.containerEl.createEl('h2', { text: 'Transclusion Settings (Experimental)' });
 
+        const transclusionConditionalClass = 'oz-image-editor-transclusion-additional-settings';
+
         new Setting(containerEl)
             .setName('Render Transclusion in Editor')
-            .setDesc('Turn on this option if you want transclusions to be rendered in Editor')
+            .setDesc(
+                'Turn on this option if you want transclusions to be rendered in Editor. Once this is enabled, you will have custom options for transclusions below.'
+            )
             .addToggle((toggle) =>
                 toggle.setValue(this.plugin.settings.renderTransclusion).onChange((value) => {
                     this.plugin.settings.renderTransclusion = value;
                     this.plugin.handleTransclusionSetting(value);
                     this.plugin.saveSettings();
-                })
-            );
-
-        new Setting(containerEl)
-            .setName('Render Admonition in Translucions')
-            .setDesc('You need to have Admonition plugin activated to be able to use this function. No icon available.')
-            .addToggle((toggle) =>
-                toggle.setValue(this.plugin.settings.renderAdmonition).onChange((value) => {
-                    this.plugin.settings.renderAdmonition = value;
-                    this.plugin.saveSettings();
-                })
-            );
-
-        new Setting(containerEl)
-            .setName('Render Mermaids in Translucions')
-            .setDesc('Turn on if you want mermaids to be rendered in translucions.')
-            .addToggle((toggle) =>
-                toggle.setValue(this.plugin.settings.renderMermaid).onChange((value) => {
-                    this.plugin.settings.renderMermaid = value;
-                    this.plugin.saveSettings();
-                })
-            );
-
-        new Setting(containerEl)
-            .setName('Render MathJax in Translucions')
-            .setDesc('Turn on if you want mathjaxs to be rendered in translucions.')
-            .addToggle((toggle) =>
-                toggle.setValue(this.plugin.settings.renderMathJax).onChange((value) => {
-                    this.plugin.settings.renderMathJax = value;
-                    this.plugin.saveSettings();
-                })
-            );
-
-        new Setting(containerEl)
-            .setName('Preview on Hover for File Links')
-            .setDesc('Turn on if you want to trigger preview when you hover on internal links within the rendered transclusion')
-            .addToggle((toggle) =>
-                toggle.setValue(this.plugin.settings.previewOnHoverInternalLink).onChange((value) => {
-                    this.plugin.settings.previewOnHoverInternalLink = value;
-                    this.plugin.saveSettings();
                     if (value) {
-                        document.on('mouseover', '.oz-obsidian-inner-link', this.plugin.filePreviewOnHover);
+                        this.hide();
+                        this.display();
                     } else {
-                        document.off('mouseover', '.oz-obsidian-inner-link', this.plugin.filePreviewOnHover);
+                        let els = document.querySelectorAll(`.${transclusionConditionalClass}`);
+                        for (let i = 0; i < els.length; i++) {
+                            els[i].remove();
+                        }
                     }
                 })
             );
+
+        if (this.plugin.settings.renderTransclusion) {
+            this.containerEl.createEl('h4', { text: 'Transclusion Customization', cls: transclusionConditionalClass });
+
+            let transclusionAdmonition = new Setting(containerEl)
+                .setName('Render Admonition in Translucions')
+                .setDesc('You need to have Admonition plugin activated to be able to use this function. No icon available.')
+                .addToggle((toggle) =>
+                    toggle.setValue(this.plugin.settings.renderAdmonition).onChange((value) => {
+                        this.plugin.settings.renderAdmonition = value;
+                        this.plugin.saveSettings();
+                    })
+                );
+
+            transclusionAdmonition.settingEl.addClass(transclusionConditionalClass);
+
+            let transclusionMermaid = new Setting(containerEl)
+                .setName('Render Mermaids in Translusions')
+                .setDesc('Turn on if you want mermaids to be rendered in translucions.')
+                .addToggle((toggle) =>
+                    toggle.setValue(this.plugin.settings.renderMermaid).onChange((value) => {
+                        this.plugin.settings.renderMermaid = value;
+                        this.plugin.saveSettings();
+                    })
+                );
+
+            transclusionMermaid.settingEl.addClass(transclusionConditionalClass);
+
+            let transclusionMathJax = new Setting(containerEl)
+                .setName('Render MathJax in Translucions')
+                .setDesc('Turn on if you want mathjaxs to be rendered in translucions.')
+                .addToggle((toggle) =>
+                    toggle.setValue(this.plugin.settings.renderMathJax).onChange((value) => {
+                        this.plugin.settings.renderMathJax = value;
+                        this.plugin.saveSettings();
+                    })
+                );
+
+            transclusionMathJax.settingEl.addClass(transclusionConditionalClass);
+
+            let transclusionHoverLink = new Setting(containerEl)
+                .setName('Preview on Hover for File Links')
+                .setDesc('Turn on if you want to trigger preview when you hover on internal links within the rendered transclusion')
+                .addToggle((toggle) =>
+                    toggle.setValue(this.plugin.settings.previewOnHoverInternalLink).onChange((value) => {
+                        this.plugin.settings.previewOnHoverInternalLink = value;
+                        this.plugin.saveSettings();
+                        if (value) {
+                            document.on('mouseover', '.oz-obsidian-inner-link', this.plugin.filePreviewOnHover);
+                        } else {
+                            document.off('mouseover', '.oz-obsidian-inner-link', this.plugin.filePreviewOnHover);
+                        }
+                    })
+                );
+
+            transclusionHoverLink.settingEl.addClass(transclusionConditionalClass);
+        }
 
         this.containerEl.createEl('h2', { text: 'Alternative Settings' });
 
