@@ -30,7 +30,12 @@ div.oz-image-widget > img[alt$='#xx-small'] {
 
 .oz-transclusion-widget {
     padding: 3px 3px 3px 19px;
-    border-left: 2px solid var(--text-muted);
+    border: 0.7px solid var(--text-muted);
+    max-height: 600px;
+    overflow: auto;
+    border-radius: 7px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .oz-coffee-div {
