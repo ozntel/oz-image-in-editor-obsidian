@@ -34,7 +34,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     refreshImagesAfterChange: false,
     WYSIWYG: false,
     // CM6 Settings
-    cm6RenderAll: true,
+    cm6RenderAll: false,
 };
 
 export class OzanImagePluginSettingsTab extends PluginSettingTab {
