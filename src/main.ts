@@ -1,13 +1,14 @@
 import { Plugin, TAbstractFile, TFile, loadMermaid, loadMathJax } from 'obsidian';
-import { checkLine, checkLines } from './checkLine';
+import { checkLine, checkLines } from './cm5/checkLine';
 import { OzanImagePluginSettingsTab } from './settings';
-import { WYSIWYG_Style } from './constants';
+import { WYSIWYG_Style } from './cm5/constants';
 import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
-import * as WidgetHandler from 'src/util/widgetHandler';
+import * as WidgetHandler from 'src/cm5/widgetHandler';
 import { isAnExcalidrawFile, excalidrawPluginIsLoaded } from 'src/util/excalidrawHandler';
 import { buildExtension } from 'src/cm6/builder';
+import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
@@ -155,7 +156,7 @@ export default class OzanImagePlugin extends Plugin {
     // Only Triggered during initial Load
     handleInitialLoad = (cm: CodeMirror.Editor) => {
         var lastLine = cm.lastLine();
-        var file = ObsidianHelpers.getFileCmBelongsTo(cm, this.app.workspace);
+        var file = getFileCmBelongsTo(cm, this.app.workspace);
         for (let i = 0; i < lastLine + 1; i++) {
             checkLine(cm, i, file, this);
         }

@@ -1,14 +1,14 @@
 import { normalizePath, TFile } from 'obsidian';
-import OzanImagePlugin from './main';
+import OzanImagePlugin from '../main';
 import * as PDFHandler from 'src/util/pdfHandler';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
 import * as ObsidianHelper from 'src/util/obsidianHelper';
-import * as WidgetHandler from 'src/util/widgetHandler';
+import * as WidgetHandler from 'src/cm5/widgetHandler';
 import * as LinkHandler from 'src/util/linkHandler';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as IframeHandler from 'src/util/iframeHandler';
 import * as TransclusionHandler from 'src/util/transclusionHandler';
-import * as RichLinkHandler from './util/richLink';
+import * as RichLinkHandler from '../util/richLink';
 import Prism from 'prismjs';
 import 'prismjs/plugins/line-numbers/prism-line-numbers.min';
 import 'prismjs/components/prism-python.min';
@@ -19,6 +19,7 @@ import 'prismjs/components/prism-bash.min';
 import 'prismjs/components/prism-visual-basic.min';
 import 'prismjs/components/prism-json.min';
 import { PollUntil } from 'poll-until-promise';
+import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
 
 // Check Single Line
 export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
@@ -350,7 +351,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
 // Check All Lines Function
 export const checkLines: any = (cm: CodeMirror.Editor, from: number, to: number, plugin: OzanImagePlugin, changedFilePath?: string) => {
     // Last Used Line Number in Code Mirror
-    var file = ObsidianHelper.getFileCmBelongsTo(cm, plugin.app.workspace);
+    var file = getFileCmBelongsTo(cm, plugin.app.workspace);
     for (let i = from; i <= to; i++) {
         checkLine(cm, i, file, plugin, changedFilePath);
     }
