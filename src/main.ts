@@ -1,4 +1,4 @@
-import { Plugin, TAbstractFile, TFile, loadMermaid, loadMathJax } from 'obsidian';
+import { Plugin, TAbstractFile, TFile, loadMermaid, loadMathJax, Platform } from 'obsidian';
 import { checkLine, checkLines } from './cm5/checkLine';
 import { OzanImagePluginSettingsTab } from './settings';
 import { WYSIWYG_Style } from './cm5/constants';
@@ -22,13 +22,6 @@ export default class OzanImagePlugin extends Plugin {
 
         await this.loadSettings();
 
-        // --> New Editor (CM6)
-        if (this.settings.cm6RenderAll) {
-            const extension = buildExtension({ plugin: this });
-            this.registerEditorExtension(extension);
-        }
-
-        // --> Legacy Editor (CM5)
         try {
             loadMathJax();
             loadMermaid();
@@ -36,90 +29,100 @@ export default class OzanImagePlugin extends Plugin {
             console.log(err);
         }
 
-        // Register event for each change
-
-        this.addCommand({
-            id: 'toggle-render-all',
-            name: 'Legacy Editor: Toggle Render All',
-            callback: () => {
-                this.handleToggleRenderAll(!this.settings.renderAll);
-                this.settings.renderAll = !this.settings.renderAll;
-                this.saveSettings();
-            },
-        });
-
-        this.addCommand({
-            id: 'toggle-WYSIWYG',
-            name: 'Legacy Editor: Toggle WYSIWYG',
-            callback: () => {
-                this.handleWYSIWYG(!this.settings.WYSIWYG);
-                this.settings.WYSIWYG = !this.settings.WYSIWYG;
-                this.saveSettings();
-            },
-        });
-
-        this.addCommand({
-            id: 'toggle-render-pdf',
-            name: 'Legacy Editor: Toggle Render PDF',
-            callback: () => {
-                this.settings.renderPDF = !this.settings.renderPDF;
-                this.app.workspace.iterateCodeMirrors((cm) => {
-                    this.handleInitialLoad(cm);
-                });
-                this.saveSettings();
-            },
-        });
-
-        this.addCommand({
-            id: 'toggle-render-iframe',
-            name: 'Legacy Editor: Toggle Render Iframe',
-            callback: () => {
-                this.settings.renderIframe = !this.settings.renderIframe;
-                this.app.workspace.iterateCodeMirrors((cm) => {
-                    this.handleInitialLoad(cm);
-                });
-                this.saveSettings();
-            },
-        });
-
-        this.addCommand({
-            id: 'toggle-refresh-images-after-changes',
-            name: 'Legacy Editor: Toggle Refresh Images After Changes',
-            callback: () => {
-                this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
-                this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
-                this.saveSettings();
-            },
-        });
-
-        document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
-
-        document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
-
-        if (this.settings.previewOnHoverInternalLink) {
-            document.on('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
+        // --> New Editor (CM6)
+        if (this.settings.cm6RenderAll) {
+            const extension = buildExtension({ plugin: this });
+            this.registerEditorExtension(extension);
         }
 
-        if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
-        if (!this.settings.renderAll) return;
-        this.registerCodeMirror((cm: CodeMirror.Editor) => {
-            cm.on('change', this.codemirrorLineChanges);
-            this.handleInitialLoad(cm);
-        });
-        if (!this.settings.refreshImagesAfterChange) return;
-        this.app.vault.on('modify', this.handleFileModify);
+        // --> Legacy Editor (CM5) - Events only to be loaded on Desktop
+        if (!Platform.isMobile) {
+            this.addCommand({
+                id: 'toggle-render-all',
+                name: 'Legacy Editor: Toggle Render All',
+                callback: () => {
+                    this.handleToggleRenderAll(!this.settings.renderAll);
+                    this.settings.renderAll = !this.settings.renderAll;
+                    this.saveSettings();
+                },
+            });
+
+            this.addCommand({
+                id: 'toggle-WYSIWYG',
+                name: 'Legacy Editor: Toggle WYSIWYG',
+                callback: () => {
+                    this.handleWYSIWYG(!this.settings.WYSIWYG);
+                    this.settings.WYSIWYG = !this.settings.WYSIWYG;
+                    this.saveSettings();
+                },
+            });
+
+            this.addCommand({
+                id: 'toggle-render-pdf',
+                name: 'Legacy Editor: Toggle Render PDF',
+                callback: () => {
+                    this.settings.renderPDF = !this.settings.renderPDF;
+                    this.app.workspace.iterateCodeMirrors((cm) => {
+                        this.handleInitialLoad(cm);
+                    });
+                    this.saveSettings();
+                },
+            });
+
+            this.addCommand({
+                id: 'toggle-render-iframe',
+                name: 'Legacy Editor: Toggle Render Iframe',
+                callback: () => {
+                    this.settings.renderIframe = !this.settings.renderIframe;
+                    this.app.workspace.iterateCodeMirrors((cm) => {
+                        this.handleInitialLoad(cm);
+                    });
+                    this.saveSettings();
+                },
+            });
+
+            this.addCommand({
+                id: 'toggle-refresh-images-after-changes',
+                name: 'Legacy Editor: Toggle Refresh Images After Changes',
+                callback: () => {
+                    this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
+                    this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
+                    this.saveSettings();
+                },
+            });
+
+            document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
+
+            document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
+
+            if (this.settings.previewOnHoverInternalLink) {
+                document.on('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
+            }
+
+            if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
+            if (!this.settings.renderAll) return;
+            this.registerCodeMirror((cm: CodeMirror.Editor) => {
+                cm.on('change', this.codemirrorLineChanges);
+                this.handleInitialLoad(cm);
+            });
+            if (!this.settings.refreshImagesAfterChange) return;
+            this.app.vault.on('modify', this.handleFileModify);
+        }
     }
 
     onunload() {
-        this.app.workspace.iterateCodeMirrors((cm) => {
-            cm.off('change', this.codemirrorLineChanges);
-            WidgetHandler.clearAllWidgets(cm);
-        });
-        this.app.vault.off('modify', this.handleFileModify);
-        document.off('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
-        document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
-        document.off('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
-        this.unload_WYSIWYG_Styles();
+        // Unload CM5 Handlers
+        if (!Platform.isMobile) {
+            this.app.workspace.iterateCodeMirrors((cm) => {
+                cm.off('change', this.codemirrorLineChanges);
+                WidgetHandler.clearAllWidgets(cm);
+            });
+            this.app.vault.off('modify', this.handleFileModify);
+            document.off('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
+            document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
+            document.off('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
+            this.unload_WYSIWYG_Styles();
+        }
         console.log('Image in Editor Plugin is unloaded');
     }
 

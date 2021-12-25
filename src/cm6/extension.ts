@@ -6,8 +6,8 @@ import { detectLink } from 'src/cm6/linkDetector';
 import OzanImagePlugin from 'src/main';
 import { getPathOfImage } from 'src/util/obsidianHelper';
 
-export const images = (props: { plugin: OzanImagePlugin }): Extension => {
-    const { plugin } = props;
+export const images = (params: { plugin: OzanImagePlugin }): Extension => {
+    const { plugin } = params;
 
     const imageDecoration = (imageWidgetParams: ImageWidgetParams) =>
         Decoration.widget({
@@ -16,14 +16,16 @@ export const images = (props: { plugin: OzanImagePlugin }): Extension => {
             block: true,
         });
 
-    const decorate = (state: EditorState, newDoc: Text) => {
+    const decorate = (params: { state: EditorState; newDoc: Text }) => {
+        const { newDoc } = params;
+
         let rangeBuilder = new RangeSetBuilder<Decoration>();
 
         // Check lenght of new document if bigger than 0 since 'newDoc.lines' always returns 1 or more and it will cause a search for not existing line
         if (newDoc.length > 0) {
             for (let i = 1; i < newDoc.lines + 1; i++) {
                 const line = newDoc.line(i);
-                const linkResult = detectLink(line.text, plugin);
+                const linkResult = detectLink({ lineText: line.text, plugin: plugin });
 
                 let url: string = null;
                 let altText: string = null;
@@ -60,12 +62,12 @@ export const images = (props: { plugin: OzanImagePlugin }): Extension => {
 
     const imagesField = StateField.define<DecorationSet>({
         create: (state: EditorState) => {
-            return decorate(state, state.doc);
+            return decorate({ state: state, newDoc: state.doc });
         },
 
         update: (effects: DecorationSet, transaction: Transaction) => {
             transaction.newDoc;
-            if (transaction.docChanged) return decorate(transaction.state, transaction.newDoc);
+            if (transaction.docChanged) return decorate({ state: transaction.state, newDoc: transaction.newDoc });
             return effects.map(transaction.changes);
         },
 

@@ -13,7 +13,9 @@ interface LinkMatch {
     file?: TFile;
 }
 
-export const detectLink = (lineText: string, plugin: OzanImagePlugin): LinkMatch | null => {
+export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }): LinkMatch | null => {
+    const { lineText, plugin } = params;
+
     // --> A. External Image Links
     const httpLinkRegex = /(http[s]?:\/\/)([^\/\s]+\/)(.*)/;
     const imageHttpMarkdownRegex = /!\[[^)]*\]\([a-z][a-z0-9+\-.]+:\/[^)]*\)/;

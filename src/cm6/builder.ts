@@ -1,7 +1,7 @@
 import { images } from 'src/cm6/extension';
 import OzanImagePlugin from 'src/main';
 
-export const buildExtension = (props: { plugin: OzanImagePlugin }) => {
-    const { plugin } = props;
+export const buildExtension = (params: { plugin: OzanImagePlugin }) => {
+    const { plugin } = params;
     return [images({ plugin })];
 };
