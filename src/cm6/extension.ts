@@ -1,7 +1,7 @@
 import { RangeSetBuilder } from '@codemirror/rangeset';
 import { EditorState, Extension, StateField, Text, Transaction } from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView } from '@codemirror/view';
-import { ImageWidget, ImageWidgetParams } from 'src/cm6/widget';
+import { ImageWidget, ImageWidgetParams, PDFWidget, PDFWidgetParams } from 'src/cm6/widget';
 import { detectLink } from 'src/cm6/linkDetector';
 import OzanImagePlugin from 'src/main';
 import { getPathOfImage } from 'src/util/obsidianHelper';
@@ -12,6 +12,13 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const imageDecoration = (imageWidgetParams: ImageWidgetParams) =>
         Decoration.widget({
             widget: new ImageWidget(imageWidgetParams),
+            side: 0,
+            block: true,
+        });
+
+    const PDFDecoration = (pdfWidgetParams: PDFWidgetParams) =>
+        Decoration.widget({
+            widget: new PDFWidget(pdfWidgetParams),
             side: 0,
             block: true,
         });
@@ -27,32 +34,31 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                 const line = newDoc.line(i);
                 const linkResult = detectLink({ lineText: line.text, plugin: plugin });
 
-                let url: string = null;
-                let altText: string = null;
-                let filePath: string = null;
-
                 // --> External Link Render
                 if (linkResult && linkResult.type === 'external-image') {
-                    url = linkResult.linkText;
-                    altText = linkResult.altText;
-                    filePath = url;
+                    rangeBuilder.add(
+                        line.from,
+                        line.from,
+                        imageDecoration({ url: linkResult.linkText, altText: linkResult.altText, filePath: linkResult.linkText })
+                    );
                 }
 
                 // --> Vault Image Render
                 else if (linkResult && linkResult.type === 'vault-image') {
-                    let file = plugin.app.metadataCache.getFirstLinkpathDest(linkResult.linkText, ''); // Q: Is there a way to get back to the source file from EditorView?
+                    let file = plugin.app.metadataCache.getFirstLinkpathDest(linkResult.linkText, ''); // @todo - Is there a way to get back to the source file from EditorView?
                     if (file) {
                         let imagePath = getPathOfImage(plugin.app.vault, file);
-                        url = imagePath;
-                        altText = linkResult.altText;
-                        filePath = file.path;
+                        rangeBuilder.add(line.from, line.from, imageDecoration({ url: imagePath, altText: linkResult.altText, filePath: file.path }));
                     }
                 }
 
-                // --> Create Widget if there is a match above
-                if (url !== null && altText !== null && filePath !== '') {
-                    let imageWidget = imageDecoration({ url, altText, filePath, plugin });
-                    rangeBuilder.add(line.from, line.from, imageWidget);
+                // --> External PDF Link Render
+                else if (linkResult && linkResult.type === 'pdf-link') {
+                    rangeBuilder.add(
+                        line.from,
+                        line.from,
+                        PDFDecoration({ url: linkResult.linkText + linkResult.blockRef, filePath: linkResult.linkText + linkResult.blockRef })
+                    );
                 }
             }
         }
