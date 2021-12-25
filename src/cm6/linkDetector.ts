@@ -2,7 +2,15 @@ import { TFile } from 'obsidian';
 import OzanImagePlugin from 'src/main';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
 
-type LinkType = 'vault-image' | 'external-image' | 'excalidraw' | 'file-transclusion' | 'header-transclusion' | 'blockid-transclusion';
+type LinkType =
+    | 'vault-image'
+    | 'external-image'
+    | 'excalidraw'
+    | 'file-transclusion'
+    | 'header-transclusion'
+    | 'blockid-transclusion'
+    | 'pdf-link'
+    | 'pdf-file';
 
 interface LinkMatch {
     type: LinkType;
@@ -16,28 +24,7 @@ interface LinkMatch {
 export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }): LinkMatch | null => {
     const { lineText, plugin } = params;
 
-    // --> A. External Image Links
-    const httpLinkRegex = /(http[s]?:\/\/)([^\/\s]+\/)(.*)/;
-    const imageHttpMarkdownRegex = /!\[[^)]*\]\([a-z][a-z0-9+\-.]+:\/[^)]*\)/;
-
-    const imageHttpMarkdownResult = lineText.match(imageHttpMarkdownRegex);
-    if (imageHttpMarkdownResult) {
-        const fileNameRegex = /(?<=\().*(?=\))/;
-        const fileMatch = imageHttpMarkdownResult[0].match(fileNameRegex);
-        if (fileMatch && fileMatch[0].match(httpLinkRegex)) {
-            const altRegex = /(?<=\[)(^$|.*)(?=\])/;
-            const altMatch = imageHttpMarkdownResult[0].match(altRegex);
-            return {
-                type: 'external-image',
-                match: imageHttpMarkdownResult[0],
-                linkText: fileMatch[0],
-                altText: altMatch ? altMatch[0] : '',
-                blockRef: '',
-            };
-        }
-    }
-
-    // --> B. Internal Image Links
+    // --> A. Internal Image Links
     // 1. [[ ]] format
     const internalImageWikiRegex = /!\[\[.*?(jpe?g|png|gif|svg|bmp).*?\]\]/;
     const internalImageWikiMatch = lineText.match(internalImageWikiRegex);
@@ -51,6 +38,89 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             return {
                 type: 'vault-image',
                 match: internalImageWikiMatch[0],
+                linkText: fileMatch[0],
+                altText: altMatch ? altMatch[0] : '',
+                blockRef: '',
+            };
+        }
+    }
+
+    // --> B. PDF Files
+    // 1. Pdf Wiki [[ ]] format
+    const pdfWikiRegex = /!\[\[.*(pdf)(.*)?\]\]/;
+    const pdfWikiMatch = lineText.match(pdfWikiRegex);
+
+    if (pdfWikiMatch) {
+        const pdfWikiFileNameRegex = /(?<=\[\[).*.pdf/;
+        const pdfWikiFileNameMatch = pdfWikiMatch[0].match(pdfWikiFileNameRegex);
+        if (pdfWikiFileNameMatch) {
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfWikiFileNameMatch[0]), '');
+            if (file) {
+                const pdfPageNumberRegex = new RegExp('#page=[0-9]+');
+                const pdfPageNumberMatch = pdfWikiMatch[0].match(pdfPageNumberRegex);
+                return {
+                    type: 'pdf-file',
+                    match: pdfWikiMatch[0],
+                    linkText: file.path,
+                    altText: '',
+                    blockRef: pdfPageNumberMatch ? pdfPageNumberMatch[0] : '',
+                    file: file,
+                };
+            }
+        }
+    }
+
+    // 2. Pdf Md ![ ]( ) format
+    const pdfMdRegex = /!\[(^$|.*)\]\(.*(pdf)(.*)?\)/;
+    const pdfMdMatch = lineText.match(pdfMdRegex);
+
+    if (pdfMdMatch) {
+        const pdfMdFileNameRegex = /(?<=\().*.pdf/;
+        const pdfMdFileNameMatch = pdfMdMatch[0].match(pdfMdFileNameRegex);
+        if (pdfMdFileNameMatch) {
+            const httpLinkRegex = /(http[s]?:\/\/)([^\/\s]+\/)(.*)/;
+            const pdfPageNumberRegex = new RegExp('#page=[0-9]+');
+            const pdfPageNumberMatch = pdfMdMatch[0].match(pdfPageNumberRegex);
+
+            if (httpLinkRegex.test(pdfMdFileNameMatch[0])) {
+                return {
+                    type: 'pdf-link',
+                    match: pdfMdMatch[0],
+                    linkText: pdfMdFileNameMatch[0],
+                    altText: '',
+                    blockRef: pdfPageNumberMatch ? pdfPageNumberMatch[0] : '',
+                };
+            } else {
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfMdFileNameMatch[0]), '');
+
+                if (file) {
+                    return {
+                        type: 'pdf-file',
+                        match: pdfMdMatch[0],
+                        linkText: file.path,
+                        altText: '',
+                        blockRef: pdfPageNumberMatch ? pdfPageNumberMatch[0] : '',
+                        file: file,
+                    };
+                }
+            }
+        }
+    }
+
+    // --> C. External Image Links
+    const httpLinkRegex = /(http[s]?:\/\/)([^\/\s]+\/)(.*)/;
+    const imageHttpMarkdownRegex = /!\[[^)]*\]\([a-z][a-z0-9+\-.]+:\/[^)]*\)/;
+
+    const imageHttpMarkdownResult = lineText.match(imageHttpMarkdownRegex);
+    if (imageHttpMarkdownResult) {
+        const fileNameRegex = /(?<=\().*(?=\))/;
+        const fileMatch = imageHttpMarkdownResult[0].match(fileNameRegex);
+        if (fileMatch && fileMatch[0].match(httpLinkRegex)) {
+            const altRegex = /(?<=\[)(^$|.*)(?=\])/;
+            const altMatch = imageHttpMarkdownResult[0].match(altRegex);
+            return {
+                type: 'external-image',
+                match: imageHttpMarkdownResult[0],
                 linkText: fileMatch[0],
                 altText: altMatch ? altMatch[0] : '',
                 blockRef: '',
@@ -78,7 +148,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
         }
     }
 
-    // --> C. Transclusion and Excalidraw
+    // --> D. Transclusion and Excalidraw
     const mdRegex = /!\[(^$|.*?)\]\(.*?\)/;
     const wikiRegex = /!\[\[.*?\]\]/;
 
@@ -119,7 +189,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             const transclusionBlockIdMatch = lineText.match(transclusionBlockIdRegex);
             if (transclusionBlockIdMatch) {
                 const fileNameMatch = transclusionBlockIdMatch[0].match(transclusionIdAndHeaderFileNameRegex);
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(fileNameMatch[0], ''); // @todo
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), ''); // @todo
                 if (file) {
                     const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
                     return {
@@ -138,7 +208,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             const transclusionHeaderMatch = lineText.match(transclusionHeaderRegex);
             if (transclusionHeaderMatch) {
                 const fileNameMatch = transclusionHeaderMatch[0].match(transclusionIdAndHeaderFileNameRegex);
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(fileNameMatch[0], '');
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), '');
                 if (file) {
                     const transclusionHeaderTextRegex = /(?<=#).*(?=]])/;
                     return {
@@ -155,7 +225,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             // --> Whole File Transclusion
             const fileTransclusionFileNameRegex = /(?<=\[\[).*?(?=\]\])/;
             const fileNameMatch = lineText.match(fileTransclusionFileNameRegex);
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(fileNameMatch[0], ''); // @todo
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), ''); // @todo
             if (file) {
                 return {
                     type: 'file-transclusion',
