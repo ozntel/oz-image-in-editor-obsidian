@@ -7,6 +7,7 @@ import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as WidgetHandler from 'src/util/widgetHandler';
 import { isAnExcalidrawFile, excalidrawPluginIsLoaded } from 'src/util/excalidrawHandler';
+import { buildExtension } from 'src/cm6/builder';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
@@ -99,6 +100,10 @@ export default class OzanImagePlugin extends Plugin {
         });
         if (!this.settings.refreshImagesAfterChange) return;
         this.app.vault.on('modify', this.handleFileModify);
+
+        // CM6 Editor Extension Register
+        const extension = buildExtension({ plugin: this });
+        this.registerEditorExtension(extension);
     }
 
     onunload() {
