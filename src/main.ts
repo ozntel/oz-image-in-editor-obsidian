@@ -22,6 +22,13 @@ export default class OzanImagePlugin extends Plugin {
 
         await this.loadSettings();
 
+        // --> New Editor (CM6)
+        if (this.settings.cm6RenderAll) {
+            const extension = buildExtension({ plugin: this });
+            this.registerEditorExtension(extension);
+        }
+
+        // --> Legacy Editor (CM5)
         try {
             loadMathJax();
             loadMermaid();
@@ -33,7 +40,7 @@ export default class OzanImagePlugin extends Plugin {
 
         this.addCommand({
             id: 'toggle-render-all',
-            name: 'Toggle Render All',
+            name: 'Legacy Editor: Toggle Render All',
             callback: () => {
                 this.handleToggleRenderAll(!this.settings.renderAll);
                 this.settings.renderAll = !this.settings.renderAll;
@@ -43,7 +50,7 @@ export default class OzanImagePlugin extends Plugin {
 
         this.addCommand({
             id: 'toggle-WYSIWYG',
-            name: 'Toggle WYSIWYG',
+            name: 'Legacy Editor: Toggle WYSIWYG',
             callback: () => {
                 this.handleWYSIWYG(!this.settings.WYSIWYG);
                 this.settings.WYSIWYG = !this.settings.WYSIWYG;
@@ -53,7 +60,7 @@ export default class OzanImagePlugin extends Plugin {
 
         this.addCommand({
             id: 'toggle-render-pdf',
-            name: 'Toggle Render PDF',
+            name: 'Legacy Editor: Toggle Render PDF',
             callback: () => {
                 this.settings.renderPDF = !this.settings.renderPDF;
                 this.app.workspace.iterateCodeMirrors((cm) => {
@@ -65,7 +72,7 @@ export default class OzanImagePlugin extends Plugin {
 
         this.addCommand({
             id: 'toggle-render-iframe',
-            name: 'Toggle Render Iframe',
+            name: 'Legacy Editor: Toggle Render Iframe',
             callback: () => {
                 this.settings.renderIframe = !this.settings.renderIframe;
                 this.app.workspace.iterateCodeMirrors((cm) => {
@@ -77,7 +84,7 @@ export default class OzanImagePlugin extends Plugin {
 
         this.addCommand({
             id: 'toggle-refresh-images-after-changes',
-            name: 'Toggle Refresh Images After Changes',
+            name: 'Legacy Editor: Toggle Refresh Images After Changes',
             callback: () => {
                 this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
                 this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
@@ -101,10 +108,6 @@ export default class OzanImagePlugin extends Plugin {
         });
         if (!this.settings.refreshImagesAfterChange) return;
         this.app.vault.on('modify', this.handleFileModify);
-
-        // CM6 Editor Extension Register
-        const extension = buildExtension({ plugin: this });
-        this.registerEditorExtension(extension);
     }
 
     onunload() {

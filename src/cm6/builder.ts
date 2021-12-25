@@ -3,5 +3,5 @@ import OzanImagePlugin from 'src/main';
 
 export const buildExtension = (props: { plugin: OzanImagePlugin }) => {
     const { plugin } = props;
-    return images({ plugin });
+    return [images({ plugin })];
 };

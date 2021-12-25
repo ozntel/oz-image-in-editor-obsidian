@@ -15,6 +15,8 @@ export interface OzanImagePluginSettings {
     previewOnHoverInternalLink: boolean;
     refreshImagesAfterChange: boolean;
     WYSIWYG: boolean;
+    // CM6 Settings
+    cm6RenderAll: boolean;
 }
 
 export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
@@ -31,6 +33,8 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     previewOnHoverInternalLink: false,
     refreshImagesAfterChange: false,
     WYSIWYG: false,
+    // CM6 Settings
+    cm6RenderAll: true,
 };
 
 export class OzanImagePluginSettingsTab extends PluginSettingTab {
@@ -44,7 +48,41 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
     display(): void {
         let { containerEl } = this;
         containerEl.empty();
-        containerEl.createEl('h2', { text: 'Image in Editor Settings' });
+        let mainHeader = containerEl.createEl('h1', { text: 'Image in Editor Settings' });
+        mainHeader.addClass('image-in-editor-settings-main-header');
+
+        const coffeeDiv = containerEl.createDiv('coffee');
+        coffeeDiv.addClass('oz-coffee-div');
+        const coffeeLink = coffeeDiv.createEl('a', { href: 'https://ko-fi.com/L3L356V6Q' });
+        const coffeeImg = coffeeLink.createEl('img', {
+            attr: {
+                src: 'https://cdn.ko-fi.com/cdn/kofi2.png?v=3',
+            },
+        });
+        coffeeImg.height = 45;
+
+        let newEditorHeader = containerEl.createEl('h2', { text: 'New Editor Settings' });
+        newEditorHeader.addClass('image-in-editor-editor-header');
+        let cm6Header = containerEl.createEl('h2', { text: '(CodeMirror 6)' });
+        cm6Header.addClass('image-in-editor-cm-header');
+        containerEl.createEl('p', {
+            text: 'If you are using New Editor with Live Preview editing mode, this plugin will duplicate the images you already have in your editor. However, it will be useful if you want to use the Source Mode of the new Editor mode',
+        });
+
+        new Setting(containerEl)
+            .setName('Render in New Editor')
+            .setDesc('Turn off this option if you want to stop rendering images in the new editor view. Disabling requires vault reload.')
+            .addToggle((toggle) => {
+                toggle.setValue(this.plugin.settings.cm6RenderAll).onChange((value) => {
+                    this.plugin.settings.cm6RenderAll = value;
+                    this.plugin.saveSettings();
+                });
+            });
+
+        let oldEditorHeader = containerEl.createEl('h2', { text: 'Legacy Editor Settings' });
+        oldEditorHeader.addClass('image-in-editor-editor-header');
+        let cm5Header = containerEl.createEl('h2', { text: '(CodeMirror 5)' });
+        cm5Header.addClass('image-in-editor-cm-header');
 
         new Setting(containerEl)
             .setName('Render Toggle')
@@ -59,7 +97,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 })
             );
 
-        containerEl.createEl('h2', { text: 'Render Options' });
+        containerEl.createEl('h4', { text: 'Render Options' });
 
         new Setting(containerEl)
             .setName('Render Images in Editor')
@@ -111,7 +149,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                 })
             );
 
-        this.containerEl.createEl('h2', { text: 'Transclusion Settings (Experimental)' });
+        this.containerEl.createEl('h4', { text: 'Transclusion Settings (Experimental)' });
 
         const transclusionConditionalClass = 'oz-image-editor-transclusion-additional-settings';
 
@@ -194,7 +232,7 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             transclusionHoverLink.settingEl.addClass(transclusionConditionalClass);
         }
 
-        this.containerEl.createEl('h2', { text: 'Alternative Settings' });
+        this.containerEl.createEl('h4', { text: 'Alternative Settings' });
 
         new Setting(containerEl)
             .setName('Refresh Images after Changes')
@@ -217,15 +255,5 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                     this.plugin.saveSettings();
                 })
             );
-
-        const coffeeDiv = containerEl.createDiv('coffee');
-        coffeeDiv.addClass('oz-coffee-div');
-        const coffeeLink = coffeeDiv.createEl('a', { href: 'https://ko-fi.com/L3L356V6Q' });
-        const coffeeImg = coffeeLink.createEl('img', {
-            attr: {
-                src: 'https://cdn.ko-fi.com/cdn/kofi2.png?v=3',
-            },
-        });
-        coffeeImg.height = 45;
     }
 }

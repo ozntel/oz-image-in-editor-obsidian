@@ -194,3 +194,16 @@ div.oz-transclusion-widget pre {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+.image-in-editor-settings-main-header {
+    text-align: center !important;
+    margin-bottom: 20px;
+}
+
+.image-in-editor-cm-header {
+    margin-top: 0px;
+}
+
+.image-in-editor-editor-header {
+    margin-bottom: 5px;
+}
