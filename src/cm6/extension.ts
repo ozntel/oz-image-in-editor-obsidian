@@ -1,5 +1,4 @@
-import { editorEditorField } from 'obsidian';
-import { Range, RangeSet, RangeSetBuilder } from '@codemirror/rangeset';
+import { RangeSetBuilder } from '@codemirror/rangeset';
 import { EditorState, Extension, StateField, Text, Transaction } from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView } from '@codemirror/view';
 import { ImageWidget, ImageWidgetParams } from 'src/cm6/widget';
@@ -24,25 +23,33 @@ export const images = (props: { plugin: OzanImagePlugin }): Extension => {
         if (newDoc.length > 0) {
             for (let i = 1; i < newDoc.lines + 1; i++) {
                 const line = newDoc.line(i);
-                const linkResult = detectLink(line.text);
+                const linkResult = detectLink(line.text, plugin);
 
                 let url: string = null;
                 let altText: string = null;
+                let filePath: string = null;
 
-                if (linkResult && ['external-mdlink', 'external-wikilink'].contains(linkResult.type)) {
+                // --> External Link Render
+                if (linkResult && linkResult.type === 'external-image') {
                     url = linkResult.linkText;
                     altText = linkResult.altText;
-                } else if (linkResult && ['vault-image-md', 'vault-image-wiki'].contains(linkResult.type)) {
+                    filePath = url;
+                }
+
+                // --> Vault Image Render
+                else if (linkResult && linkResult.type === 'vault-image') {
                     let file = plugin.app.metadataCache.getFirstLinkpathDest(linkResult.linkText, ''); // Q: Is there a way to get back to the source file from EditorView?
                     if (file) {
                         let imagePath = getPathOfImage(plugin.app.vault, file);
                         url = imagePath;
                         altText = linkResult.altText;
+                        filePath = file.path;
                     }
                 }
 
-                if (url !== null && altText !== null) {
-                    let imageWidget = imageDecoration({ url, altText });
+                // --> Create Widget if there is a match above
+                if (url !== null && altText !== null && filePath !== '') {
+                    let imageWidget = imageDecoration({ url, altText, filePath, plugin });
                     rangeBuilder.add(line.from, line.from, imageWidget);
                 }
             }
@@ -52,11 +59,11 @@ export const images = (props: { plugin: OzanImagePlugin }): Extension => {
     };
 
     const imagesField = StateField.define<DecorationSet>({
-        create(state: EditorState) {
+        create: (state: EditorState) => {
             return decorate(state, state.doc);
         },
 
-        update(effects: DecorationSet, transaction: Transaction) {
+        update: (effects: DecorationSet, transaction: Transaction) => {
             transaction.newDoc;
             if (transaction.docChanged) return decorate(transaction.state, transaction.newDoc);
             return effects.map(transaction.changes);
