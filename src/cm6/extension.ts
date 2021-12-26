@@ -56,11 +56,8 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
 
                 // --> Vault Image Render
                 else if (linkResult && linkResult.type === 'vault-image') {
-                    let file = plugin.app.metadataCache.getFirstLinkpathDest(linkResult.linkText, sourceFile.path);
-                    if (file) {
-                        let imagePath = getPathOfImage(plugin.app.vault, file);
-                        rangeBuilder.add(line.to, line.to, ImageDecoration({ url: imagePath, altText: linkResult.altText, filePath: file.path }));
-                    }
+                    let imagePath = getPathOfImage(plugin.app.vault, linkResult.file);
+                    rangeBuilder.add(line.to, line.to, ImageDecoration({ url: imagePath, altText: linkResult.altText, filePath: linkResult.file.path }));
                 }
 
                 // --> External PDF Link Render

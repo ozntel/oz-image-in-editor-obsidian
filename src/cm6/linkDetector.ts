@@ -34,15 +34,19 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
         const fileNameRegex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
         const fileMatch = internalImageWikiMatch[0].match(fileNameRegex);
         if (fileMatch) {
-            const altRegex = /(?<=\|).*(?=]])/;
-            const altMatch = internalImageWikiMatch[0].match(altRegex);
-            return {
-                type: 'vault-image',
-                match: internalImageWikiMatch[0],
-                linkText: fileMatch[0],
-                altText: altMatch ? altMatch[0] : '',
-                blockRef: '',
-            };
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatch[0]), sourceFile.path);
+            if (file) {
+                const altRegex = /(?<=\|).*(?=]])/;
+                const altMatch = internalImageWikiMatch[0].match(altRegex);
+                return {
+                    type: 'vault-image',
+                    match: internalImageWikiMatch[0],
+                    linkText: fileMatch[0],
+                    altText: altMatch ? altMatch[0] : '',
+                    blockRef: '',
+                    file: file,
+                };
+            }
         }
     }
 
