@@ -10,24 +10,21 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const { plugin } = params;
 
     const ImageDecoration = (imageWidgetParams: ImageWidgetParams) =>
-        Decoration.widget({
+        Decoration.replace({
             widget: new ImageWidget(imageWidgetParams),
-            side: 0,
-            block: true,
+            inclusive: false,
         });
 
     const PDFDecoration = (pdfWidgetParams: PDFWidgetParams) =>
-        Decoration.widget({
+        Decoration.replace({
             widget: new PDFWidget(pdfWidgetParams),
-            side: 0,
-            block: true,
+            inclusive: false,
         });
 
     const CustomHTMLDecoration = (customHtmlWidgetParams: CustomHTMLWidgetParams) =>
-        Decoration.widget({
+        Decoration.replace({
             widget: new CustomHTMLWidget(customHtmlWidgetParams),
-            side: 0,
-            block: true,
+            inclusive: false,
         });
 
     const decorate = (params: { state: EditorState; newDoc: Text }) => {
@@ -44,8 +41,8 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                 // --> External Link Render
                 if (linkResult && linkResult.type === 'external-image') {
                     rangeBuilder.add(
-                        line.from,
-                        line.from,
+                        line.to,
+                        line.to,
                         ImageDecoration({ url: linkResult.linkText, altText: linkResult.altText, filePath: linkResult.linkText })
                     );
                 }
@@ -55,22 +52,22 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                     let file = plugin.app.metadataCache.getFirstLinkpathDest(linkResult.linkText, ''); // @todo - Is there a way to get back to the source file from EditorView?
                     if (file) {
                         let imagePath = getPathOfImage(plugin.app.vault, file);
-                        rangeBuilder.add(line.from, line.from, ImageDecoration({ url: imagePath, altText: linkResult.altText, filePath: file.path }));
+                        rangeBuilder.add(line.to, line.to, ImageDecoration({ url: imagePath, altText: linkResult.altText, filePath: file.path }));
                     }
                 }
 
                 // --> External PDF Link Render
                 else if (linkResult && linkResult.type === 'pdf-link') {
                     rangeBuilder.add(
-                        line.from,
-                        line.from,
+                        line.to,
+                        line.to,
                         PDFDecoration({ url: linkResult.linkText + linkResult.blockRef, filePath: linkResult.linkText + linkResult.blockRef })
                     );
                 }
 
                 // --> Iframe Render
                 else if (linkResult && linkResult.type === 'iframe') {
-                    rangeBuilder.add(line.from, line.from, CustomHTMLDecoration({ htmlText: linkResult.match }));
+                    rangeBuilder.add(line.to, line.to, CustomHTMLDecoration({ htmlText: linkResult.match }));
                 }
             }
         }

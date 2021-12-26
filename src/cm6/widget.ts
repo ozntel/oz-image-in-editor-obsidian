@@ -27,7 +27,7 @@ export class ImageWidget extends WidgetType {
 
     toDOM() {
         const container = document.createElement('div');
-        container.addClass('oz-image-widget');
+        container.addClass('oz-image-widget-cm6');
         const image = container.createEl('img');
         image.src = this.url;
         let altSizer = ImageHandler.altWidthHeight(this.altText);
@@ -63,6 +63,7 @@ export class PDFWidget extends WidgetType {
 
     toDOM() {
         const container = document.createElement('div');
+        container.addClass('oz-pdf-widget-cm6');
         let pdfEmbed = container.createEl('embed');
         pdfEmbed.src = this.url;
         pdfEmbed.type = 'application/pdf';
@@ -97,6 +98,7 @@ export class CustomHTMLWidget extends WidgetType {
 
     toDOM() {
         let divNode = document.createElement('div');
+        divNode.addClass('oz-custom-html-widget-cm6');
         divNode.innerHTML = this.htmlText.trim();
         return divNode;
     }
