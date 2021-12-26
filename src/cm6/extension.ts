@@ -72,7 +72,6 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
         },
 
         update: (effects: DecorationSet, transaction: Transaction) => {
-            transaction.newDoc;
             if (transaction.docChanged) return decorate({ state: transaction.state, newDoc: transaction.newDoc });
             return effects.map(transaction.changes);
         },
