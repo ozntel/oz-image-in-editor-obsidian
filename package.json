@@ -1,6 +1,6 @@
 {
     "name": "oz-image-plugin",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "View Images, Transclusions, iFrames and PDF Files within the Editor without a necessity to switch to Preview.",
     "main": "main.js",
     "scripts": {
