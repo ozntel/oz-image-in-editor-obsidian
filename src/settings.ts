@@ -66,8 +66,9 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
         let cm6Header = containerEl.createEl('h2', { text: '(CodeMirror 6)' });
         cm6Header.addClass('image-in-editor-cm-header');
         containerEl.createEl('p', {
-            text: `Information: If you are using New Editor with Live Preview editing mode, this plugin will duplicate the images you already have in your editor. 
-            However, it will be useful if you want to use the Source Mode of the new Editor. For the moment, only Image render is available`,
+            text: `Information: The plugin will add image preview within the "Source Mode" of new Editor view. 
+            In case you have Live Preview enabled, the plugin will automatically detect this and won't render additionally to avoid duplication. 
+            For the moment only available renders in new editor: External and Vault Images, iFrames, External PDF files.`,
         });
 
         new Setting(containerEl)
