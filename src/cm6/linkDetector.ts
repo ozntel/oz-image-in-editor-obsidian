@@ -22,8 +22,8 @@ interface LinkMatch {
     file?: TFile;
 }
 
-export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }): LinkMatch | null => {
-    const { lineText, plugin } = params;
+export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin: OzanImagePlugin }): LinkMatch | null => {
+    const { lineText, plugin, sourceFile } = params;
 
     // --> A. Internal Image Links
     // 1. [[ ]] format
@@ -55,7 +55,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
         const pdfWikiFileNameRegex = /(?<=\[\[).*.pdf/;
         const pdfWikiFileNameMatch = pdfWikiMatch[0].match(pdfWikiFileNameRegex);
         if (pdfWikiFileNameMatch) {
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfWikiFileNameMatch[0]), '');
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfWikiFileNameMatch[0]), sourceFile.path);
             if (file) {
                 const pdfPageNumberRegex = new RegExp('#page=[0-9]+');
                 const pdfPageNumberMatch = pdfWikiMatch[0].match(pdfPageNumberRegex);
@@ -92,7 +92,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
                     blockRef: pdfPageNumberMatch ? pdfPageNumberMatch[0] : '',
                 };
             } else {
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfMdFileNameMatch[0]), '');
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfMdFileNameMatch[0]), sourceFile.path);
 
                 if (file) {
                     return {
@@ -163,7 +163,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
         // 1. Check Excalidraw
         let fileNameMatch = lineText.match(mdTransclusionMatch ? mdFileNameRegex : wikiFileNameRegex);
         if (fileNameMatch) {
-            let file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), ''); // @todo - Get Source file path from editor
+            let file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
             if (file && ExcalidrawHandler.excalidrawPluginIsLoaded(plugin.app) && ExcalidrawHandler.isAnExcalidrawFile(file)) {
                 const mdAltRegex = /(?<=\[)(^$|.*)(?=\])/;
                 const wikiAltRegex = /(?<=\|).*(?=]])/;
@@ -190,7 +190,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             const transclusionBlockIdMatch = lineText.match(transclusionBlockIdRegex);
             if (transclusionBlockIdMatch) {
                 const fileNameMatch = transclusionBlockIdMatch[0].match(transclusionIdAndHeaderFileNameRegex);
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), ''); // @todo
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
                 if (file) {
                     const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
                     return {
@@ -209,7 +209,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             const transclusionHeaderMatch = lineText.match(transclusionHeaderRegex);
             if (transclusionHeaderMatch) {
                 const fileNameMatch = transclusionHeaderMatch[0].match(transclusionIdAndHeaderFileNameRegex);
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), '');
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
                 if (file) {
                     const transclusionHeaderTextRegex = /(?<=#).*(?=]])/;
                     return {
@@ -226,7 +226,7 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
             // --> Whole File Transclusion
             const fileTransclusionFileNameRegex = /(?<=\[\[).*?(?=\]\])/;
             const fileNameMatch = lineText.match(fileTransclusionFileNameRegex);
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), ''); // @todo
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
             if (file) {
                 return {
                     type: 'file-transclusion',
