@@ -9,7 +9,7 @@ import { getPathOfImage } from 'src/util/obsidianHelper';
 export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const { plugin } = params;
 
-    const imageDecoration = (imageWidgetParams: ImageWidgetParams) =>
+    const ImageDecoration = (imageWidgetParams: ImageWidgetParams) =>
         Decoration.widget({
             widget: new ImageWidget(imageWidgetParams),
             side: 0,
@@ -46,7 +46,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                     rangeBuilder.add(
                         line.from,
                         line.from,
-                        imageDecoration({ url: linkResult.linkText, altText: linkResult.altText, filePath: linkResult.linkText })
+                        ImageDecoration({ url: linkResult.linkText, altText: linkResult.altText, filePath: linkResult.linkText })
                     );
                 }
 
@@ -55,7 +55,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                     let file = plugin.app.metadataCache.getFirstLinkpathDest(linkResult.linkText, ''); // @todo - Is there a way to get back to the source file from EditorView?
                     if (file) {
                         let imagePath = getPathOfImage(plugin.app.vault, file);
-                        rangeBuilder.add(line.from, line.from, imageDecoration({ url: imagePath, altText: linkResult.altText, filePath: file.path }));
+                        rangeBuilder.add(line.from, line.from, ImageDecoration({ url: imagePath, altText: linkResult.altText, filePath: file.path }));
                     }
                 }
 
