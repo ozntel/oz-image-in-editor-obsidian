@@ -75,13 +75,24 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
         return rangeBuilder.finish();
     };
 
+    const livePreviewActive = (): boolean => {
+        // @ts-ignore
+        return plugin.app.vault.getConfig('livePreview');
+    };
+
     const imagesField = StateField.define<DecorationSet>({
         create: (state: EditorState) => {
-            return decorate({ state: state, newDoc: state.doc });
+            if (!livePreviewActive()) {
+                return decorate({ state: state, newDoc: state.doc });
+            } else {
+                return Decoration.none;
+            }
         },
 
         update: (effects: DecorationSet, transaction: Transaction) => {
-            if (transaction.docChanged) return decorate({ state: transaction.state, newDoc: transaction.newDoc });
+            if (transaction.docChanged && !livePreviewActive()) {
+                return decorate({ state: transaction.state, newDoc: transaction.newDoc });
+            }
             return effects.map(transaction.changes);
         },
 
