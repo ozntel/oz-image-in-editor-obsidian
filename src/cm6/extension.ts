@@ -111,8 +111,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     };
 
     const livePreviewActive = (): boolean => {
-        // @ts-ignore
-        return plugin.app.vault.getConfig('livePreview');
+        return (plugin.app.vault as any).config?.livePreview;
     };
 
     const imagesField = StateField.define<DecorationSet>({
