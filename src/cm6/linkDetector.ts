@@ -3,6 +3,7 @@ import OzanImagePlugin from 'src/main';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
 
 type LinkType =
+    | 'iframe'
     | 'vault-image'
     | 'external-image'
     | 'excalidraw'
@@ -237,6 +238,20 @@ export const detectLink = (params: { lineText: string; plugin: OzanImagePlugin }
                 };
             }
         }
+    }
+
+    // --> E: Iframe Render
+    const iframeRegex = /(?:<iframe[^>]*)(?:(?:\/>)|(?:>.*?<\/iframe>))/;
+    const iframeMatch = lineText.match(iframeRegex);
+
+    if (iframeMatch) {
+        return {
+            type: 'iframe',
+            match: iframeMatch[0],
+            linkText: '',
+            altText: '',
+            blockRef: '',
+        };
     }
 
     // --> END: If there is no Match

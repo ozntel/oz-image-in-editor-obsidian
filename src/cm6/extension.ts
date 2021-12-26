@@ -1,7 +1,7 @@
 import { RangeSetBuilder } from '@codemirror/rangeset';
 import { EditorState, Extension, StateField, Text, Transaction } from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView } from '@codemirror/view';
-import { ImageWidget, ImageWidgetParams, PDFWidget, PDFWidgetParams } from 'src/cm6/widget';
+import { ImageWidget, ImageWidgetParams, PDFWidget, PDFWidgetParams, CustomHTMLWidget, CustomHTMLWidgetParams } from 'src/cm6/widget';
 import { detectLink } from 'src/cm6/linkDetector';
 import OzanImagePlugin from 'src/main';
 import { getPathOfImage } from 'src/util/obsidianHelper';
@@ -19,6 +19,13 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const PDFDecoration = (pdfWidgetParams: PDFWidgetParams) =>
         Decoration.widget({
             widget: new PDFWidget(pdfWidgetParams),
+            side: 0,
+            block: true,
+        });
+
+    const CustomHTMLDecoration = (customHtmlWidgetParams: CustomHTMLWidgetParams) =>
+        Decoration.widget({
+            widget: new CustomHTMLWidget(customHtmlWidgetParams),
             side: 0,
             block: true,
         });
@@ -59,6 +66,11 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                         line.from,
                         PDFDecoration({ url: linkResult.linkText + linkResult.blockRef, filePath: linkResult.linkText + linkResult.blockRef })
                     );
+                }
+
+                // --> Iframe Render
+                else if (linkResult && linkResult.type === 'iframe') {
+                    rangeBuilder.add(line.from, line.from, CustomHTMLDecoration({ htmlText: linkResult.match }));
                 }
             }
         }

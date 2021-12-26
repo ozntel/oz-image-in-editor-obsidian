@@ -80,3 +80,32 @@ export class PDFWidget extends WidgetType {
         return true;
     }
 }
+
+/* ------------------ Custom HTML WIDGET ------------------ */
+
+export interface CustomHTMLWidgetParams {
+    htmlText: string;
+}
+
+export class CustomHTMLWidget extends WidgetType {
+    readonly htmlText: string;
+
+    constructor({ htmlText }: CustomHTMLWidgetParams) {
+        super();
+        this.htmlText = htmlText;
+    }
+
+    toDOM() {
+        let divNode = document.createElement('div');
+        divNode.innerHTML = this.htmlText.trim();
+        return divNode;
+    }
+
+    eq(customHtmlWidget: CustomHTMLWidget) {
+        return customHtmlWidget.htmlText === this.htmlText;
+    }
+
+    ignoreEvent() {
+        return true;
+    }
+}
