@@ -1,4 +1,5 @@
 import { Decoration, WidgetType } from '@codemirror/view';
+import { TransclusionType } from 'src/cm6/linkDetector';
 import * as ImageHandler from 'src/util/imageHandler';
 
 /* ------------------ EXPORTED DECORATIONS ------------------ */
@@ -18,6 +19,12 @@ export const PDFDecoration = (pdfWidgetParams: PDFWidgetParams) =>
 export const CustomHTMLDecoration = (customHtmlWidgetParams: CustomHTMLWidgetParams) =>
     Decoration.replace({
         widget: new CustomHTMLWidget(customHtmlWidgetParams),
+        inclusive: false,
+    });
+
+export const TransclusionDecoration = (translucionWidgetParams: TransclusionWidgetParams) =>
+    Decoration.replace({
+        widget: new TransclusionWidget(translucionWidgetParams),
         inclusive: false,
     });
 
@@ -125,6 +132,45 @@ class CustomHTMLWidget extends WidgetType {
 
     eq(customHtmlWidget: CustomHTMLWidget) {
         return customHtmlWidget.htmlText === this.htmlText;
+    }
+
+    ignoreEvent() {
+        return true;
+    }
+}
+
+/* ------------------ Transclusion Widget ------------------ */
+
+interface TransclusionWidgetParams {
+    htmlDivElement: HTMLDivElement;
+    type: TransclusionType;
+    filePath: string;
+    blockRef: string;
+}
+
+class TransclusionWidget extends WidgetType {
+    readonly htmlDivElement: HTMLDivElement;
+    readonly type: TransclusionType;
+    readonly filePath: string;
+    readonly blockRef: string;
+
+    constructor({ type, htmlDivElement, filePath, blockRef }: TransclusionWidgetParams) {
+        super();
+        this.type = type;
+        this.htmlDivElement = htmlDivElement;
+        this.filePath = filePath;
+        this.blockRef = blockRef;
+    }
+
+    toDOM() {
+        let divNode = document.createElement('div');
+        divNode.addClasses(['oz-transclusion-widget-cm6', this.type]);
+        divNode.appendChild(this.htmlDivElement);
+        return divNode;
+    }
+
+    eq(transclusionWidget: TransclusionWidget) {
+        return transclusionWidget.filePath + transclusionWidget.blockRef === this.filePath + this.blockRef;
     }
 
     ignoreEvent() {

@@ -1,13 +1,14 @@
 import { RangeSetBuilder } from '@codemirror/rangeset';
 import { EditorState, Extension, StateEffect, StateField, Text, Transaction } from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView } from '@codemirror/view';
-import { ImageDecoration, PDFDecoration, CustomHTMLDecoration } from 'src/cm6/widget';
+import { ImageDecoration, PDFDecoration, CustomHTMLDecoration, TransclusionDecoration } from 'src/cm6/widget';
 import { detectLink } from 'src/cm6/linkDetector';
 import OzanImagePlugin from 'src/main';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import { editorEditorField, editorViewField, normalizePath, TFile } from 'obsidian';
 import * as CM6Helpers from 'src/cm6/cm6Helper';
 import { createPNGFromExcalidrawFile } from 'src/util/excalidrawHandler';
+import * as TransclusionHandler from 'src/util/transclusionHandler';
 
 export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const { plugin } = params;
@@ -58,6 +59,40 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                     const arr = new Uint8Array(buffer);
                     const blob = new Blob([arr], { type: 'application/pdf' });
                     newDeco = PDFDecoration({ url: URL.createObjectURL(blob) + linkResult.blockRef, filePath: linkResult.file.path });
+                }
+
+                // --> Transclusion Render
+                else if (linkResult && ['file-transclusion', 'header-transclusion', 'blockid-transclusion'].contains(linkResult.type)) {
+                    let cache = plugin.app.metadataCache.getCache(linkResult.file.path);
+                    let cachedReadOfTarget = await plugin.app.vault.cachedRead(linkResult.file);
+
+                    if (linkResult.type === 'header-transclusion') {
+                        const blockHeading = cache.headings?.find(
+                            (h) => ObsidianHelpers.clearSpecialCharacters(h.heading) === ObsidianHelpers.clearSpecialCharacters(linkResult.blockRef)
+                        );
+                        if (blockHeading) {
+                            // --> Start Num
+                            let startNum = blockHeading.position.start.offset;
+                            // --> End Num
+                            const blockHeadingIndex = cache.headings.indexOf(blockHeading);
+                            let endNum = cachedReadOfTarget.length;
+                            for (let h of cache.headings.slice(blockHeadingIndex + 1)) {
+                                if (h.level <= blockHeading.level) {
+                                    endNum = h.position.start.offset;
+                                    break;
+                                }
+                            }
+                            // --> Get HTML Render and add as Widget
+                            let htmlDivElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
+                            TransclusionHandler.clearHTML(htmlDivElement, plugin);
+                            newDeco = TransclusionDecoration({
+                                htmlDivElement,
+                                type: linkResult.type,
+                                filePath: linkResult.file.path,
+                                blockRef: linkResult.blockRef,
+                            });
+                        }
+                    }
                 }
 
                 // --> Iframe Render
