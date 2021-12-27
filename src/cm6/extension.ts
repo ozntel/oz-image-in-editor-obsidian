@@ -13,13 +13,13 @@ import * as TransclusionHandler from 'src/util/transclusionHandler';
 export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const { plugin } = params;
 
-    const getDecorationsForLines = async (params: { lineNrs: number[]; state: EditorState; newDoc: Text }) => {
-        const { newDoc, state, lineNrs } = params;
+    const getDecorationsForLines = async (params: { lineNrs: number[]; view: EditorView; newDoc: Text }) => {
+        const { newDoc, view, lineNrs } = params;
 
         let rangeBuilder = new RangeSetBuilder<Decoration>();
 
         // --> Get Source File
-        const mdView = state.field(editorViewField);
+        const mdView = view.state.field(editorViewField);
         const sourceFile: TFile = mdView.file;
 
         // --> Loop Through Lines Found
@@ -125,7 +125,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
 
     // --> State Effects for Plugin
     interface OperationStarted {
-        state: EditorState;
+        view: EditorView;
         newDoc: Text;
     }
 
@@ -141,11 +141,11 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
             .filter((effect) => effect.is(operationStarted))
             //  Get Decorations for the Editor and Return to Operation End Effect
             .map(async (effect) => {
-                let state = effect.value.state;
+                let view = effect.value.view;
                 let newDoc = effect.value.newDoc;
-                let lineNrs = CM6Helpers.getLinesToCheckForRender(state, newDoc);
+                let lineNrs = CM6Helpers.getLinesToCheckForRender(view.state, newDoc);
                 if (lineNrs.length > 0) {
-                    const decorationSet = await getDecorationsForLines({ state, newDoc, lineNrs });
+                    const decorationSet = await getDecorationsForLines({ view, newDoc, lineNrs });
                     editorView.dispatch({ effects: [operationEnded.of(decorationSet)] });
                 }
             });
@@ -156,8 +156,8 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
     const imagesField = StateField.define<DecorationSet>({
         create: (state: EditorState) => {
             if (!ObsidianHelpers.livePreviewActive(plugin.app)) {
-                const editorView = state.field(editorEditorField);
-                editorView.dispatch({ effects: [operationStarted.of({ state, newDoc: state.doc })] });
+                const view = state.field(editorEditorField);
+                view.dispatch({ effects: [operationStarted.of({ view, newDoc: state.doc })] });
             }
             return Decoration.none;
         },
@@ -178,10 +178,9 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
 
                 // --> If it is a new transaction, trigger decoration update
                 if (isNewTransaction && transaction.docChanged) {
-                    const editorView = transaction.state.field(editorEditorField);
-                    const state = transaction.state;
+                    const view = transaction.state.field(editorEditorField);
                     const newDoc = transaction.newDoc;
-                    editorView.dispatch({ effects: [operationStarted.of({ state, newDoc })] });
+                    view.dispatch({ effects: [operationStarted.of({ view, newDoc })] });
                 }
             }
 
