@@ -2,7 +2,7 @@ import { RangeSetBuilder } from '@codemirror/rangeset';
 import { EditorState, Extension, StateEffect, StateField, Text, Transaction } from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView } from '@codemirror/view';
 import { ImageDecoration, PDFDecoration, CustomHTMLDecoration, TransclusionDecoration } from 'src/cm6/widget';
-import { detectLink } from 'src/cm6/linkDetector';
+import { detectLink, transclusionTypes } from 'src/cm6/linkDetector';
 import OzanImagePlugin from 'src/main';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import { editorEditorField, editorViewField, normalizePath, TFile } from 'obsidian';
@@ -32,29 +32,29 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                 const linkResult = detectLink({ lineText: line.text, plugin: plugin, sourceFile: sourceFile });
 
                 // --> External Link Render
-                if (linkResult && linkResult.type === 'external-image') {
+                if (linkResult && linkResult.type === 'external-image' && plugin.settings.renderImages) {
                     newDeco = ImageDecoration({ url: linkResult.linkText, altText: linkResult.altText, filePath: linkResult.linkText });
                 }
 
                 // --> Vault Image Render
-                else if (linkResult && linkResult.type === 'vault-image') {
+                else if (linkResult && linkResult.type === 'vault-image' && plugin.settings.renderImages) {
                     let imagePath = ObsidianHelpers.getPathOfImage(plugin.app.vault, linkResult.file);
                     newDeco = ImageDecoration({ url: imagePath, altText: linkResult.altText, filePath: linkResult.file.path });
                 }
 
                 // --> Excalidraw Drawing
-                else if (linkResult && linkResult.type === 'excalidraw') {
+                else if (linkResult && linkResult.type === 'excalidraw' && plugin.settings.renderExcalidraw) {
                     let excalidrawImage = await createPNGFromExcalidrawFile(linkResult.file);
                     newDeco = ImageDecoration({ url: URL.createObjectURL(excalidrawImage), altText: linkResult.altText, filePath: linkResult.file.path });
                 }
 
                 // --> External PDF Link Render
-                else if (linkResult && linkResult.type === 'pdf-link') {
+                else if (linkResult && linkResult.type === 'pdf-link' && plugin.settings.renderPDF) {
                     newDeco = PDFDecoration({ url: linkResult.linkText + linkResult.blockRef, filePath: linkResult.linkText + linkResult.blockRef });
                 }
 
                 // --> Internal PDF File
-                else if (linkResult && linkResult.type === 'pdf-file') {
+                else if (linkResult && linkResult.type === 'pdf-file' && plugin.settings.renderPDF) {
                     const buffer = await plugin.app.vault.adapter.readBinary(normalizePath(linkResult.file.path));
                     const arr = new Uint8Array(buffer);
                     const blob = new Blob([arr], { type: 'application/pdf' });
@@ -62,7 +62,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                 }
 
                 // --> Transclusion Render
-                else if (linkResult && ['file-transclusion', 'header-transclusion', 'blockid-transclusion'].contains(linkResult.type)) {
+                else if (linkResult && transclusionTypes.contains(linkResult.type) && plugin.settings.renderTransclusion) {
                     let cache = plugin.app.metadataCache.getCache(linkResult.file.path);
                     let cachedReadOfTarget = await plugin.app.vault.cachedRead(linkResult.file);
 
@@ -131,7 +131,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                 }
 
                 // --> Iframe Render
-                else if (linkResult && linkResult.type === 'iframe') {
+                else if (linkResult && linkResult.type === 'iframe' && plugin.settings.renderIframe) {
                     newDeco = CustomHTMLDecoration({ htmlText: linkResult.match });
                 }
 

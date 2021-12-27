@@ -2,6 +2,8 @@ import { TFile } from 'obsidian';
 import OzanImagePlugin from 'src/main';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
 
+export const transclusionTypes = ['file-transclusion', 'header-transclusion', 'blockid-transclusion'];
+
 export type TransclusionType = 'file-transclusion' | 'header-transclusion' | 'blockid-transclusion';
 export type ImageType = 'vault-image' | 'external-image' | 'excalidraw';
 export type PdfType = 'pdf-link' | 'pdf-file';

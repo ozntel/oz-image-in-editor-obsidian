@@ -151,17 +151,12 @@ export const clearHTML = (html: HTMLElement, plugin: OzanImagePlugin) => {
     clearImagesInHtml(html, plugin.app);
     // --> Convert Links to make Usable in Obsidian
     clearAnchorsInHtml(html, plugin.app);
-    // --> Convert Mermaids
-    if (mermaidLoaded() && plugin.settings.renderMermaid) {
-        convertMermaids(html);
-    }
-    if (mathJaxLoaded() && plugin.settings.renderMathJax) {
-        convertMathJaxElements(html);
-    }
+    // --> Convert Mermaids if Mermaid Lib is Loaded
+    if (mermaidLoaded()) convertMermaids(html);
+    // --> Convert Mathjax if MathJax Lib is Loaded
+    if (mathJaxLoaded()) convertMathJaxElements(html);
     // --> Convert Admonitions if enabled
-    if (plugin.settings.renderAdmonition && pluginIsLoaded(plugin.app, 'obsidian-admonition')) {
-        convertAdmonitions(html);
-    }
+    if (pluginIsLoaded(plugin.app, 'obsidian-admonition')) convertAdmonitions(html);
 };
 
 const clearCodeBlocksInHtml = (html: HTMLElement) => {
