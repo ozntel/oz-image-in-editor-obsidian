@@ -66,7 +66,7 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
                 return {
                     type: 'pdf-file',
                     match: pdfWikiMatch[0],
-                    linkText: file.path,
+                    linkText: '',
                     altText: '',
                     blockRef: pdfPageNumberMatch ? pdfPageNumberMatch[0] : '',
                     file: file,

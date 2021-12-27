@@ -1,15 +1,35 @@
-import { WidgetType } from '@codemirror/view';
+import { Decoration, WidgetType } from '@codemirror/view';
 import * as ImageHandler from 'src/util/imageHandler';
+
+/* ------------------ EXPORTED DECORATIONS ------------------ */
+
+export const ImageDecoration = (imageWidgetParams: ImageWidgetParams) =>
+    Decoration.replace({
+        widget: new ImageWidget(imageWidgetParams),
+        inclusive: false,
+    });
+
+export const PDFDecoration = (pdfWidgetParams: PDFWidgetParams) =>
+    Decoration.replace({
+        widget: new PDFWidget(pdfWidgetParams),
+        inclusive: false,
+    });
+
+export const CustomHTMLDecoration = (customHtmlWidgetParams: CustomHTMLWidgetParams) =>
+    Decoration.replace({
+        widget: new CustomHTMLWidget(customHtmlWidgetParams),
+        inclusive: false,
+    });
 
 /* ------------------ IMAGE WIDGET ------------------ */
 
-export interface ImageWidgetParams {
+interface ImageWidgetParams {
     url: string;
     altText: string;
     filePath: string;
 }
 
-export class ImageWidget extends WidgetType {
+class ImageWidget extends WidgetType {
     readonly url: string;
     readonly altText: string;
     readonly filePath: string; // For Reload Check
@@ -46,12 +66,12 @@ export class ImageWidget extends WidgetType {
 
 /* ------------------ PDF WIDGET ------------------ */
 
-export interface PDFWidgetParams {
+interface PDFWidgetParams {
     url: string;
     filePath: string;
 }
 
-export class PDFWidget extends WidgetType {
+class PDFWidget extends WidgetType {
     readonly url: string;
     readonly filePath: string; // For Reload Check
 
@@ -84,11 +104,11 @@ export class PDFWidget extends WidgetType {
 
 /* ------------------ Custom HTML WIDGET ------------------ */
 
-export interface CustomHTMLWidgetParams {
+interface CustomHTMLWidgetParams {
     htmlText: string;
 }
 
-export class CustomHTMLWidget extends WidgetType {
+class CustomHTMLWidget extends WidgetType {
     readonly htmlText: string;
 
     constructor({ htmlText }: CustomHTMLWidgetParams) {

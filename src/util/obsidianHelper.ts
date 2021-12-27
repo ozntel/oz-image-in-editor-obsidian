@@ -23,3 +23,7 @@ export const pluginIsLoaded = (app: App, pluginId: string) => {
     // @ts-ignore
     return app.plugins.getPlugin(pluginId);
 };
+
+export const livePreviewActive = (app: App): boolean => {
+    return (app.vault as any).config?.livePreview;
+};
