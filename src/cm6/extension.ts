@@ -125,7 +125,8 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
 
     // --> State Effects for Plugin
     interface OperationStarted {
-        view: EditorView;
+        view?: EditorView;
+        state?: EditorState;
         newDoc: Text;
     }
 
@@ -143,7 +144,10 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
             .map(async (effect) => {
                 let view = effect.value.view;
                 let newDoc = effect.value.newDoc;
-                let lineNrs = CM6Helpers.getLinesToCheckForRender(view.state, newDoc);
+                let state = effect.value.state;
+                // --> During initial load view has a problem with bringing the state
+                // updates should use state from view due to async functions
+                let lineNrs = CM6Helpers.getLinesToCheckForRender(state ? state : view.state, newDoc);
                 if (lineNrs.length > 0) {
                     const decorationSet = await getDecorationsForLines({ view, newDoc, lineNrs });
                     editorView.dispatch({ effects: [operationEnded.of(decorationSet)] });
@@ -157,7 +161,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
         create: (state: EditorState) => {
             if (!ObsidianHelpers.livePreviewActive(plugin.app)) {
                 const view = state.field(editorEditorField);
-                view.dispatch({ effects: [operationStarted.of({ view, newDoc: state.doc })] });
+                view.dispatch({ effects: [operationStarted.of({ view, state, newDoc: state.doc })] });
             }
             return Decoration.none;
         },
