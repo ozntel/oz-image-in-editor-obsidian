@@ -129,7 +129,7 @@ export const renderHeader = (startNum: number, endNum: number, cachedReadOfTarge
     return html;
 };
 
-export const renderBlockCache = (blockCache: BlockCache, cachedReadOfTarget: string): HTMLElement => {
+export const renderBlockCache = (blockCache: BlockCache, cachedReadOfTarget: string): HTMLDivElement => {
     let html = document.createElement('div');
     let blockStart = blockCache.position.start.offset;
     let blockEnd = blockCache.position.end.offset;

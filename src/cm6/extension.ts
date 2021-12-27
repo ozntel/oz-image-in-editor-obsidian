@@ -66,8 +66,27 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                     let cache = plugin.app.metadataCache.getCache(linkResult.file.path);
                     let cachedReadOfTarget = await plugin.app.vault.cachedRead(linkResult.file);
 
+                    // Block Id Transclusion
+                    if (linkResult.type === 'blockid-transclusion') {
+                        const blockId = linkResult.blockRef;
+                        cache = plugin.app.metadataCache.getCache(linkResult.file.path);
+                        if (cache.blocks && cache.blocks[blockId]) {
+                            const block = cache.blocks[blockId];
+                            if (block) {
+                                let htmlDivElement = TransclusionHandler.renderBlockCache(block, cachedReadOfTarget);
+                                TransclusionHandler.clearHTML(htmlDivElement, plugin);
+                                newDeco = TransclusionDecoration({
+                                    htmlDivElement,
+                                    type: linkResult.type,
+                                    filePath: linkResult.file.path,
+                                    blockRef: linkResult.blockRef,
+                                });
+                            }
+                        }
+                    }
+
                     // Header Transclusion
-                    if (linkResult.type === 'header-transclusion') {
+                    else if (linkResult.type === 'header-transclusion') {
                         const blockHeading = cache.headings?.find(
                             (h) => ObsidianHelpers.clearSpecialCharacters(h.heading) === ObsidianHelpers.clearSpecialCharacters(linkResult.blockRef)
                         );
