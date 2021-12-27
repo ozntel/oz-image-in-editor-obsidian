@@ -2,7 +2,17 @@ import { syntaxTree } from '@codemirror/language';
 import { EditorState, Text } from '@codemirror/state';
 import { tokenClassNodeProp } from '@codemirror/stream-parser';
 
+// --> Temporary Solution
 export const getLinesToCheckForRender = (state: EditorState, newDoc: Text): number[] => {
+    let lines: number[] = [];
+    if (newDoc.length > 0) {
+        lines = Array.from({ length: newDoc.lines }, (_, i) => i + 1);
+    }
+    return lines;
+};
+
+// --> It only iterates through visible lines, if line with image is out of scope, it won't bring the number
+const getLinesToCheckForRenderAlt = (state: EditorState, newDoc: Text): number[] => {
     const lines: number[] = [];
 
     if (newDoc.length > 0) {
