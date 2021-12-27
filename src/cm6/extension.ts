@@ -66,6 +66,7 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                     let cache = plugin.app.metadataCache.getCache(linkResult.file.path);
                     let cachedReadOfTarget = await plugin.app.vault.cachedRead(linkResult.file);
 
+                    // Header Transclusion
                     if (linkResult.type === 'header-transclusion') {
                         const blockHeading = cache.headings?.find(
                             (h) => ObsidianHelpers.clearSpecialCharacters(h.heading) === ObsidianHelpers.clearSpecialCharacters(linkResult.blockRef)
@@ -84,6 +85,21 @@ export const images = (params: { plugin: OzanImagePlugin }): Extension => {
                             }
                             // --> Get HTML Render and add as Widget
                             let htmlDivElement = TransclusionHandler.renderHeader(startNum, endNum, cachedReadOfTarget);
+                            TransclusionHandler.clearHTML(htmlDivElement, plugin);
+                            newDeco = TransclusionDecoration({
+                                htmlDivElement,
+                                type: linkResult.type,
+                                filePath: linkResult.file.path,
+                                blockRef: linkResult.blockRef,
+                            });
+                        }
+                    }
+
+                    // File Transclusion
+                    else if (linkResult.type === 'file-transclusion') {
+                        if (cachedReadOfTarget !== '') {
+                            let htmlDivElement = document.createElement('div');
+                            htmlDivElement.innerHTML = TransclusionHandler.convertMdToHtml(cachedReadOfTarget);
                             TransclusionHandler.clearHTML(htmlDivElement, plugin);
                             newDeco = TransclusionDecoration({
                                 htmlDivElement,
