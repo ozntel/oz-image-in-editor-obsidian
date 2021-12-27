@@ -42,7 +42,7 @@ class ImageWidget extends WidgetType {
     }
 
     eq(imageWidget: ImageWidget) {
-        return imageWidget.url === this.url && imageWidget.altText === this.altText && imageWidget.filePath === this.filePath;
+        return imageWidget.altText === this.altText && imageWidget.filePath === this.filePath;
     }
 
     toDOM() {
@@ -94,7 +94,7 @@ class PDFWidget extends WidgetType {
     }
 
     eq(pdfWidget: PDFWidget) {
-        return pdfWidget.url === this.url && pdfWidget.filePath === this.filePath;
+        return pdfWidget.filePath === this.filePath || pdfWidget.url === this.url;
     }
 
     ignoreEvent(): boolean {
