@@ -220,3 +220,13 @@ div.oz-custom-html-widget-cm6 + br,
 div.oz-pdf-widget-cm6 + br {
     display: none;
 }
+
+.cm-line div.oz-transclusion-widget-cm6 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.cm-line div.oz-transclusion-widget-cm6 * {
+    margin-block-start: 0px !important;
+    margin-block-end: 0px !important;
+}
