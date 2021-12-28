@@ -191,7 +191,7 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
             if (transclusionBlockIdMatch) {
                 const fileNameMatch = transclusionBlockIdMatch[0].match(transclusionIdAndHeaderFileNameRegex);
                 const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
-                if (file) {
+                if (file && file.extension === 'md') {
                     const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
                     return {
                         type: 'blockid-transclusion',
@@ -210,7 +210,7 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
             if (transclusionHeaderMatch) {
                 const fileNameMatch = transclusionHeaderMatch[0].match(transclusionIdAndHeaderFileNameRegex);
                 const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
-                if (file) {
+                if (file && file.extension === 'md') {
                     const transclusionHeaderTextRegex = /(?<=#).*(?=]])/;
                     return {
                         type: 'header-transclusion',
@@ -227,7 +227,7 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
             const fileTransclusionFileNameRegex = /(?<=\[\[).*?(?=\]\])/;
             const fileNameMatch = lineText.match(fileTransclusionFileNameRegex);
             const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
-            if (file) {
+            if (file && fileNameMatch[0] !== '' && file.extension === 'md') {
                 return {
                     type: 'file-transclusion',
                     match: wikiTransclusionMatch[0],
