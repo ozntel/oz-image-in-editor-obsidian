@@ -7,7 +7,7 @@ import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
 import * as WidgetHandler from 'src/cm5/widgetHandler';
 import { isAnExcalidrawFile, excalidrawPluginIsLoaded } from 'src/util/excalidrawHandler';
-import { buildExtension } from 'src/cm6/builder';
+import { buildExtension } from 'src/cm6/extension';
 import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
 
 export default class OzanImagePlugin extends Plugin {
