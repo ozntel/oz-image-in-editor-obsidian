@@ -89,11 +89,21 @@ const clearExclamationFromTransclusion = (md: string): string => {
 };
 
 const clearHashTags = (md: string): string => {
-    let hashtagRegex = /(?<=\s)#[^\s#]+/gm;
+    let hashtagRegex = /(?<=\s)#[^\s#]+|^#[^\s#]+/gm; // Make sure that first tag without space is also detected
+    let hashtags = md.match(hashtagRegex);
+    if (!hashtags) return md;
     let mdText = md;
-    let hashtags = mdText.match(hashtagRegex);
-    hashtags?.forEach((ht) => (mdText = mdText.replace(ht, `[${ht}](${ht})`)));
+    for (let ht of hashtags) {
+        // --> // Doesn't start with > (prevent double span) (Re-clear issue solution)
+        let htRegex = new RegExp('(?<!\\>)' + escapeRegExp(ht), 'gm');
+        mdText = mdText.replace(htRegex, `<span class="hashtag">${ht}</span>`);
+    }
     return mdText;
+};
+
+const escapeRegExp = (string: string) => {
+    // $& means the whole matched string
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
 const clearMd = (md: string): string => {
