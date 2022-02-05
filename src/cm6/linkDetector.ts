@@ -137,15 +137,19 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
         const fileNameRegex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
         const fileMatch = internalImageMdMatch[0].match(fileNameRegex);
         if (fileMatch) {
-            const altRegex = /(?<=\[)(^$|.*)(?=\])/;
-            const altMatch = internalImageMdMatch[0].match(altRegex);
-            return {
-                type: 'vault-image',
-                match: internalImageMdMatch[0],
-                linkText: fileMatch[0],
-                altText: altMatch ? altMatch[0] : '',
-                blockRef: '',
-            };
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatch[0]), sourceFile.path);
+            if (file) {
+                const altRegex = /(?<=\[)(^$|.*)(?=\])/;
+                const altMatch = internalImageMdMatch[0].match(altRegex);
+                return {
+                    type: 'vault-image',
+                    match: internalImageMdMatch[0],
+                    linkText: fileMatch[0],
+                    altText: altMatch ? altMatch[0] : '',
+                    blockRef: '',
+                    file: file,
+                };
+            }
         }
     }
 
