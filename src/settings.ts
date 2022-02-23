@@ -17,7 +17,7 @@ export interface OzanImagePluginSettings {
 
 export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderAll: true,
-    cm6RenderAll: false,
+    cm6RenderAll: true,
     renderImages: true,
     renderPDF: true,
     renderIframe: false,
