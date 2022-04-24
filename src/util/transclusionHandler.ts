@@ -1,7 +1,7 @@
 import { App, TFile, BlockCache } from 'obsidian';
 import OzanImagePlugin from 'src/main';
 import showdown from 'showdown';
-import { getPathOfImage, pluginIsLoaded } from 'src/util/obsidianHelper';
+import { getPathOfImage } from 'src/util/obsidianHelper';
 import { altWidthHeight } from 'src/util/imageHandler';
 import { stripIndents } from 'common-tags';
 import frontmatter from 'front-matter';
@@ -161,12 +161,12 @@ export const clearHTML = (html: HTMLElement, plugin: OzanImagePlugin) => {
     clearImagesInHtml(html, plugin.app);
     // --> Convert Links to make Usable in Obsidian
     clearAnchorsInHtml(html, plugin.app);
+    // --> Convert Admonitions if enabled
+    convertAdmonitions(html);
     // --> Convert Mermaids if Mermaid Lib is Loaded
     if (mermaidLoaded()) convertMermaids(html);
     // --> Convert Mathjax if MathJax Lib is Loaded
     if (mathJaxLoaded()) convertMathJaxElements(html);
-    // --> Convert Admonitions if enabled
-    if (pluginIsLoaded(plugin.app, 'obsidian-admonition')) convertAdmonitions(html);
 };
 
 const clearCodeBlocksInHtml = (html: HTMLElement) => {
@@ -240,30 +240,36 @@ const convertAdmonitions = (html: HTMLElement) => {
         let titleRegex = /(?<=language-ad-).*?(?=\s)/;
         let titleMatch = className.match(titleRegex);
         let title: string = titleMatch ? titleMatch[0] : 'Note';
-        adCodeEl.parentElement.replaceWith(createAdmonitionEl(title, adCodeEl.innerHTML));
+        let adElement = createAdmonitionEl(title, adCodeEl.innerHTML);
+        adCodeEl.parentElement.replaceWith(adElement);
     });
 };
 
 const createAdmonitionEl = (title: string, content: string): HTMLElement => {
-    let adEl = document.createElement('div');
     let colors = admonitionColorMap[title] ? admonitionColorMap[title] : '68, 138, 255';
-    adEl.innerHTML = `
-    <div class="admonition admonition-plugin" style="--admonition-color: ${colors};">
-        <div class="admonition-title">
-            <div class="admonition-title-content">
-                <div class="admonition-title-markdown" id="oz-admonition-title">
-                    ${title}
-                </div>
-            </div>
-        </div>
-        <div class="admonition-content-holder">
-            <div class="admonition-content">
-                <p>${convertMdToHtml(content)}</p>
-            </div>
-        </div>
-    </div>
-    `;
-    return adEl;
+    let admonitionEl = document.createElement('div');
+
+    // Admonition
+    admonitionEl.addClass('oz-admonition');
+    admonitionEl.style.cssText = `--oz-admonition-color: ${colors};`;
+
+    // Title
+    let admonitionTitle = admonitionEl.createEl('div');
+    admonitionTitle.addClass('oz-admonition-title');
+    let admonitionTitleContent = admonitionTitle.createEl('div');
+    admonitionTitleContent.addClass('oz-admonition-title-content');
+    let admonitionTitleContentMarkdown = admonitionTitleContent.createEl('div');
+    admonitionTitleContentMarkdown.addClass('oz-admonition-title-markdown');
+    admonitionTitleContentMarkdown.innerText = title;
+
+    // Content
+    let admonitionContentHolder = admonitionEl.createEl('div');
+    admonitionContentHolder.addClass('oz-admonition-content-holder');
+    let admonitionContent = admonitionContentHolder.createEl('div');
+    admonitionContent.addClass('oz-admonition-content');
+    admonitionContent.innerHTML = convertMdToHtml(content);
+
+    return admonitionEl;
 };
 
 const admonitionColorMap: { [key: string]: string } = {

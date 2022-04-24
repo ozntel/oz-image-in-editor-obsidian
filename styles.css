@@ -61,11 +61,6 @@ pre[class*='language-'].line-numbers > code {
     text-align: right;
 }
 
-/* Admonition */
-#oz-admonition-title {
-    text-transform: capitalize;
-}
-
 .mermaid-error-information {
     color: red;
     font-size: 14px;
@@ -229,4 +224,47 @@ div.oz-pdf-widget-cm6 + br {
 .cm-line div.oz-transclusion-widget-cm6 * {
     margin-block-start: 0px !important;
     margin-block-end: 0px !important;
+}
+
+/* Legacy Admonition */
+
+.oz-admonition {
+    margin: 1.5em 0;
+    padding: 0;
+    overflow: hidden;
+    page-break-inside: avoid;
+    border-left: 0.3rem solid rgb(var(--oz-admonition-color));
+    border-radius: 0.1rem;
+    box-shadow: 0 0.2rem 0.5rem rgb(44, 43, 43);
+}
+
+.oz-admonition-title {
+    position: relative;
+    padding: 15px 5px 15px 15px;
+    font-weight: 700;
+    background-color: rgba(var(--oz-admonition-color), 0.1);
+}
+
+.oz-admonition-title-content {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.oz-admonition-content-holder {
+    position: relative;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.oz-admonition-content {
+    margin: 10px 15px;
+    position: relative;
+    overflow-x: auto;
+}
+
+.oz-admonition-title-markdown {
+    text-transform: capitalize;
+    display: block;
 }
