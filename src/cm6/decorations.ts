@@ -1,7 +1,7 @@
 import OzanImagePlugin from 'src/main';
 import { debounce, editorViewField, normalizePath, TFile } from 'obsidian';
 import { EditorState, Text } from '@codemirror/state';
-import { RangeSetBuilder } from '@codemirror/rangeset';
+import { RangeSetBuilder } from '@codemirror/state';
 import { Decoration, EditorView } from '@codemirror/view';
 import { createPNGFromExcalidrawFile } from 'src/util/excalidrawHandler';
 import * as TransclusionHandler from 'src/util/transclusionHandler';
@@ -38,6 +38,7 @@ export class StatefulDecorationSet {
         let rangeBuilder = new RangeSetBuilder<Decoration>();
 
         // --> Get Source File
+        // @ts-ignore
         const mdView = view.state.field(editorViewField);
         const sourceFile: TFile = mdView.file;
 

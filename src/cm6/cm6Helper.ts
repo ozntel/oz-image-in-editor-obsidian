@@ -1,6 +1,5 @@
-import { syntaxTree } from '@codemirror/language';
+import { syntaxTree, tokenClassNodeProp } from '@codemirror/language';
 import { EditorState, Text } from '@codemirror/state';
-import { tokenClassNodeProp } from '@codemirror/stream-parser';
 
 // --> Temporary Solution
 export const getLinesToCheckForRender = (state: EditorState, newDoc: Text): number[] => {
@@ -19,7 +18,8 @@ const getLinesToCheckForRenderAlt = (state: EditorState, newDoc: Text): number[]
         syntaxTree(state).iterate({
             from: 1,
             to: newDoc.length,
-            enter: (type, from, to) => {
+            enter: (obj: { type: any; from: any; to: any }) => {
+                let { type, from, to } = obj;
                 const typeProps = type.prop(tokenClassNodeProp);
                 if (typeProps) {
                     const props = new Set(typeProps.split(' '));
