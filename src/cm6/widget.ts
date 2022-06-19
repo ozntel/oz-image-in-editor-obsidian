@@ -57,6 +57,7 @@ class ImageWidget extends WidgetType {
         container.addClass('oz-image-widget-cm6');
         const image = container.createEl('img');
         image.src = this.url;
+        image.setAttr('data-path', this.filePath);
         let altSizer = ImageHandler.altWidthHeight(this.altText);
         if (altSizer) {
             image.width = altSizer.width;

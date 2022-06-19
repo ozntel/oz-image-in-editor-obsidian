@@ -20,6 +20,7 @@ import 'prismjs/components/prism-visual-basic.min';
 import 'prismjs/components/prism-json.min';
 import { PollUntil } from 'poll-until-promise';
 import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
+import { addToImagePromiseList, imagePromiseList, removeFromImagePromiseList } from 'src/cm5/removedFunctions';
 
 // Check Single Line
 export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, targetFile: TFile, plugin: OzanImagePlugin, changedFilePath?: string) => {
@@ -105,8 +106,8 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
 
             if (lineFile && ExcalidrawHandler.excalidrawPluginIsLoaded(plugin.app) && ExcalidrawHandler.isAnExcalidrawFile(lineFile)) {
                 // The file is an excalidraw drawing
-                if (plugin.imagePromiseList.contains(lineFile.path)) return;
-                plugin.addToImagePromiseList(lineFile.path);
+                if (imagePromiseList.contains(lineFile.path)) return;
+                addToImagePromiseList(plugin, lineFile.path);
                 let excalidrawImage = await ExcalidrawHandler.createPNGFromExcalidrawFile(lineFile);
 
                 // Check if Object or Alt Changed
@@ -117,7 +118,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
 
                     if (existingBlop.size === excalidrawImage.size && currentImageNode.alt === alt) {
                         // Drawing hasn't changed
-                        plugin.removeFromImagePromiseList(lineFile.path);
+                        removeFromImagePromiseList(plugin, lineFile.path);
                         return;
                     }
                 }
@@ -138,7 +139,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
 
                 // Add Image widget under the Image Markdown
                 cm.addLineWidget(lineNumber, img, { className: 'oz-image-widget', showIfHidden: false });
-                plugin.removeFromImagePromiseList(lineFile.path);
+                removeFromImagePromiseList(plugin, lineFile.path);
                 return;
             }
         }

@@ -1,19 +1,12 @@
-import { Plugin, TAbstractFile, TFile, loadMermaid, loadMathJax, Platform } from 'obsidian';
-import { checkLine, checkLines } from './cm5/checkLine';
+import { Plugin, TFile, loadMermaid, loadMathJax } from 'obsidian';
 import { OzanImagePluginSettingsTab } from './settings';
-import { WYSIWYG_Style } from './cm5/constants';
 import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
-import * as WidgetHandler from 'src/cm5/widgetHandler';
-import { isAnExcalidrawFile, excalidrawPluginIsLoaded } from 'src/util/excalidrawHandler';
 import { buildExtension } from 'src/cm6';
-import { getFileCmBelongsTo } from 'src/cm5/cm5Helper';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
-    loadedStyles: Array<HTMLStyleElement>;
-    imagePromiseList: Array<string> = [];
 
     async onload() {
         console.log('Image in Editor Plugin is loaded');
@@ -35,94 +28,19 @@ export default class OzanImagePlugin extends Plugin {
             this.registerEditorExtension(extension);
         }
 
-        // --> Legacy Editor (CM5) - Events only to be loaded on Desktop
-        if (!Platform.isMobile) {
-            this.addCommand({
-                id: 'toggle-render-all',
-                name: 'Legacy Editor: Toggle Render All',
-                callback: () => {
-                    this.handleToggleRenderAll(!this.settings.renderAll);
-                    this.settings.renderAll = !this.settings.renderAll;
-                    this.saveSettings();
-                },
-            });
-
-            this.addCommand({
-                id: 'toggle-WYSIWYG',
-                name: 'Legacy Editor: Toggle WYSIWYG',
-                callback: () => {
-                    this.handleWYSIWYG(!this.settings.WYSIWYG);
-                    this.settings.WYSIWYG = !this.settings.WYSIWYG;
-                    this.saveSettings();
-                },
-            });
-
-            this.addCommand({
-                id: 'toggle-render-pdf',
-                name: 'Legacy Editor: Toggle Render PDF',
-                callback: () => {
-                    this.settings.renderPDF = !this.settings.renderPDF;
-                    this.app.workspace.iterateCodeMirrors((cm) => {
-                        this.handleInitialLoad(cm);
-                    });
-                    this.saveSettings();
-                },
-            });
-
-            this.addCommand({
-                id: 'toggle-render-iframe',
-                name: 'Legacy Editor: Toggle Render Iframe',
-                callback: () => {
-                    this.settings.renderIframe = !this.settings.renderIframe;
-                    this.app.workspace.iterateCodeMirrors((cm) => {
-                        this.handleInitialLoad(cm);
-                    });
-                    this.saveSettings();
-                },
-            });
-
-            this.addCommand({
-                id: 'toggle-refresh-images-after-changes',
-                name: 'Legacy Editor: Toggle Refresh Images After Changes',
-                callback: () => {
-                    this.handleRefreshImages(!this.settings.refreshImagesAfterChange);
-                    this.settings.refreshImagesAfterChange = !this.settings.refreshImagesAfterChange;
-                    this.saveSettings();
-                },
-            });
-
-            document.on('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
-
-            document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
-
-            if (this.settings.previewOnHoverInternalLink) {
-                document.on('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
-            }
-
-            if (this.settings.WYSIWYG) this.load_WYSIWYG_Styles();
-            if (!this.settings.renderAll) return;
-            this.registerCodeMirror((cm: CodeMirror.Editor) => {
-                cm.on('change', this.codemirrorLineChanges);
-                this.handleInitialLoad(cm);
-            });
-            if (!this.settings.refreshImagesAfterChange) return;
-            this.app.vault.on('modify', this.handleFileModify);
+        // --> Custom Event Listeners
+        document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
+        document.on('contextmenu', `div.oz-image-widget-cm6 img[data-path]`, this.onImageMenu, false);
+        if (this.settings.previewOnHoverInternalLink) {
+            document.on('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
         }
     }
 
     onunload() {
-        // Unload CM5 Handlers
-        if (!Platform.isMobile) {
-            this.app.workspace.iterateCodeMirrors((cm) => {
-                cm.off('change', this.codemirrorLineChanges);
-                WidgetHandler.clearAllWidgets(cm);
-            });
-            this.app.vault.off('modify', this.handleFileModify);
-            document.off('contextmenu', `div.CodeMirror-linewidget.oz-image-widget > img[data-path]`, this.onImageMenu, false);
-            document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
-            document.off('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
-            this.unload_WYSIWYG_Styles();
-        }
+        // --> Unload Event Listeners
+        document.off('contextmenu', `div.oz-image-widget-cm6 img[data-path]`, this.onImageMenu, false);
+        document.off('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
+        document.off('mouseover', '.oz-obsidian-inner-link', this.filePreviewOnHover);
         console.log('Image in Editor Plugin is unloaded');
     }
 
@@ -152,107 +70,5 @@ export default class OzanImagePlugin extends Plugin {
 
     filePreviewOnHover = (event: MouseEvent, target: HTMLElement) => {
         this.app.workspace.trigger('link-hover', {}, event.target, target.getAttr('href'), target.getAttr('href'));
-    };
-
-    // Line Edit Changes
-    codemirrorLineChanges = (cm: any, change: any) => {
-        checkLines(cm, change.from.line, change.from.line + change.text.length - 1, this);
-    };
-
-    // Only Triggered during initial Load
-    handleInitialLoad = (cm: CodeMirror.Editor) => {
-        var lastLine = cm.lastLine();
-        var file = getFileCmBelongsTo(cm, this.app.workspace);
-        for (let i = 0; i < lastLine + 1; i++) {
-            checkLine(cm, i, file, this);
-        }
-    };
-
-    // Handle Toggle for renderAll
-    handleToggleRenderAll = (newRenderAll: boolean) => {
-        if (newRenderAll) {
-            this.registerCodeMirror((cm: CodeMirror.Editor) => {
-                cm.on('change', this.codemirrorLineChanges);
-                this.handleInitialLoad(cm);
-            });
-            if (this.settings.refreshImagesAfterChange) this.app.vault.on('modify', this.handleFileModify);
-        } else {
-            this.app.workspace.iterateCodeMirrors((cm) => {
-                cm.off('change', this.codemirrorLineChanges);
-                WidgetHandler.clearAllWidgets(cm);
-            });
-            this.app.vault.off('modify', this.handleFileModify);
-        }
-    };
-
-    // Handle Transclusion Setting Off
-    handleTransclusionSetting = (newSetting: boolean) => {
-        this.app.workspace.iterateCodeMirrors((cm) => {
-            if (!newSetting) {
-                for (let i = 0; i <= cm.lastLine(); i++) {
-                    let line = cm.lineInfo(i);
-                    WidgetHandler.clearTransclusionWidgets(line);
-                }
-            } else {
-                checkLines(cm, 0, cm.lastLine(), this);
-            }
-        });
-    };
-
-    // Handle Toggle for Refresh Images Settings
-    handleRefreshImages = (newRefreshImages: boolean) => {
-        if (newRefreshImages) {
-            this.app.vault.on('modify', this.handleFileModify);
-        } else {
-            this.app.vault.off('modify', this.handleFileModify);
-        }
-    };
-
-    // Handle File Changes to Refhres Images
-    handleFileModify = (file: TAbstractFile) => {
-        if (!(file instanceof TFile)) return;
-        if (ImageHandler.pathIsAnImage(file.path) || (excalidrawPluginIsLoaded(this.app) && isAnExcalidrawFile(file))) {
-            this.app.workspace.iterateCodeMirrors((cm) => {
-                var lastLine = cm.lastLine();
-                checkLines(cm, 0, lastLine, this, file.path);
-            });
-        }
-    };
-
-    // Handle WYSIWYG Toggle
-    handleWYSIWYG = (newWYSIWYG: boolean) => {
-        if (newWYSIWYG) {
-            this.load_WYSIWYG_Styles();
-        } else {
-            this.unload_WYSIWYG_Styles();
-        }
-    };
-
-    load_WYSIWYG_Styles = () => {
-        this.loadedStyles = Array<HTMLStyleElement>(0);
-        var style = document.createElement('style');
-        style.innerHTML = WYSIWYG_Style;
-        document.head.appendChild(style);
-        this.loadedStyles.push(style);
-    };
-
-    unload_WYSIWYG_Styles = () => {
-        if (!this.loadedStyles || typeof this.loadedStyles[Symbol.iterator] !== 'function') return;
-        for (let style of this.loadedStyles) {
-            document.head.removeChild(style);
-        }
-        this.loadedStyles = Array<HTMLStyleElement>(0);
-    };
-
-    addToImagePromiseList = (path: string) => {
-        if (!this.imagePromiseList.contains(path)) {
-            this.imagePromiseList.push(path);
-        }
-    };
-
-    removeFromImagePromiseList = (path: string) => {
-        if (this.imagePromiseList.contains(path)) {
-            this.imagePromiseList = this.imagePromiseList.filter((crPath) => crPath !== path);
-        }
     };
 }

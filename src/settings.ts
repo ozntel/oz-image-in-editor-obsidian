@@ -2,7 +2,6 @@ import { PluginSettingTab, Setting, App, Platform } from 'obsidian';
 import OzanImagePlugin from './main';
 
 export interface OzanImagePluginSettings {
-    renderAll: boolean;
     cm6RenderAll: boolean;
     renderImages: boolean;
     renderPDF: boolean;
@@ -16,7 +15,6 @@ export interface OzanImagePluginSettings {
 }
 
 export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
-    renderAll: true,
     cm6RenderAll: true,
     renderImages: true,
     renderPDF: true,
@@ -57,10 +55,6 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 
         /* -------------- NEW EDITOR SETTINGS  -------------- */
 
-        let newEditorHeader = containerEl.createEl('h2', { text: 'New Editor Settings' });
-        newEditorHeader.addClass('image-in-editor-editor-header');
-        let cm6Header = containerEl.createEl('h2', { text: '(CodeMirror 6)' });
-        cm6Header.addClass('image-in-editor-cm-header');
         let newEditorDescription = containerEl.createEl('div');
         newEditorDescription.innerHTML = `
         <p>
@@ -69,25 +63,14 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
         </p>
         `;
         new Setting(containerEl)
-            .setName('Render in New Editor')
-            .setDesc('Turn off this option if you want to stop rendering images in the new editor view. Disabling requires vault reload.')
+            .setName('Render All')
+            .setDesc('Turn off this option if you want to stop rendering images in the editor source mode. Disabling requires vault reload.')
             .addToggle((toggle) => {
                 toggle.setValue(this.plugin.settings.cm6RenderAll).onChange((value) => {
                     this.plugin.settings.cm6RenderAll = value;
                     this.plugin.saveSettings();
                 });
             });
-
-        /* -------------- SHARED SETTINGS  -------------- */
-
-        let sharedSettingsHeader = containerEl.createEl('h2', { text: 'Shared Settings' });
-        sharedSettingsHeader.addClass('image-in-editor-editor-header');
-        let sharedSettingsSubHeader = containerEl.createEl('h2', { text: '(CodeMirror 5 and 6)' });
-        sharedSettingsSubHeader.addClass('image-in-editor-cm-header');
-        let sharedSettingsDescription = containerEl.createEl('div');
-        sharedSettingsDescription.innerHTML = `
-        <p> The settings below are used both by New Editor and Legacy Editor. Changes will be reflected in both of them. </p>
-        `;
 
         new Setting(containerEl)
             .setName('Render Images in Editor')
@@ -107,7 +90,6 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             .addToggle((toggle) =>
                 toggle.setValue(this.plugin.settings.renderTransclusion).onChange((value) => {
                     this.plugin.settings.renderTransclusion = value;
-                    this.plugin.handleTransclusionSetting(value);
                     this.plugin.saveSettings();
                 })
             );
@@ -156,62 +138,5 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
                     }
                 })
             );
-
-        /* -------------- LEGACY EDITOR SETTINGS  -------------- */
-
-        let oldEditorHeader = containerEl.createEl('h2', { text: 'Legacy Editor Settings' });
-        oldEditorHeader.addClass('image-in-editor-editor-header');
-        let cm5Header = containerEl.createEl('h2', { text: '(CodeMirror 5)' });
-        cm5Header.addClass('image-in-editor-cm-header');
-        containerEl.createEl('p', { text: 'The settings provided below are specific only to the Legacy Editor' });
-
-        if (!Platform.isMobile) {
-            new Setting(containerEl)
-                .setName('Render in Legacy Editor')
-                .setDesc(
-                    "Turn off this option if you want to stop rendering images, PDF and drawings. If you turn off, the other settings won't have an effect"
-                )
-                .addToggle((toggle) =>
-                    toggle.setValue(this.plugin.settings.renderAll).onChange((value) => {
-                        this.plugin.handleToggleRenderAll(value);
-                        this.plugin.settings.renderAll = value;
-                        this.plugin.saveSettings();
-                    })
-                );
-
-            new Setting(containerEl)
-                .setName('Rich Link Widget for External Links')
-                .setDesc('Turn on this option if you want rich link widget to be visible within a line, where you have an external link')
-                .addToggle((toggle) =>
-                    toggle.setValue(this.plugin.settings.renderRichLink).onChange((value) => {
-                        this.plugin.settings.renderRichLink = value;
-                        this.plugin.saveSettings();
-                    })
-                );
-
-            new Setting(containerEl)
-                .setName('Refresh Images after Changes')
-                .setDesc('Turn on this option if you want images to refreshed once you edit the original file')
-                .addToggle((toggle) =>
-                    toggle.setValue(this.plugin.settings.refreshImagesAfterChange).onChange((value) => {
-                        this.plugin.handleRefreshImages(value);
-                        this.plugin.settings.refreshImagesAfterChange = value;
-                        this.plugin.saveSettings();
-                    })
-                );
-
-            new Setting(containerEl)
-                .setName('WYSIWYG Like Experience')
-                .setDesc('Turn on this option if you want WYSIWYG style to be loaded for editor view')
-                .addToggle((toggle) =>
-                    toggle.setValue(this.plugin.settings.WYSIWYG).onChange((value) => {
-                        this.plugin.settings.WYSIWYG = value;
-                        this.plugin.handleWYSIWYG(value);
-                        this.plugin.saveSettings();
-                    })
-                );
-        } else {
-            this.containerEl.createEl('p', { text: 'Legacy Editor is not available in Mobile Application. ' });
-        }
     }
 }
