@@ -19,9 +19,14 @@
     margin-top: 5px;
 }
 
-.oz-coffee-div {
+.oz-coffee-div,
+.oz-tip-div {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 10px;
+}
+
+.oz-tip-div img {
+    border-radius: 10px;
 }
 
 /* Line Numbers In Editor CodeBlock Renders */
