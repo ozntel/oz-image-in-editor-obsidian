@@ -25,8 +25,8 @@ type SuccessResponse = {
     links: { href: string; type: string }[];
 };
 
-const markdownLinkRegex = /(?<!\!)\[(^$|.*?)\]\((.*?)\)/;
-const linkRegex = /(?<=\]\().*(?=\))/;
+const markdownLinkRegex = /\!\[(^$|.*?)\]\((.*?)\)/;
+const linkRegex = /\]\(.*(?=\))/;
 
 interface LinkInLine {
     link: string;
@@ -38,9 +38,9 @@ export const getLinksInLine = (line: string): LinkInLine[] => {
     if (matches) {
         for (let match of matches) {
             let link = match.match(linkRegex);
-            if (link && validator.isURL(link[0])) {
+            if (link && validator.isURL(link[0].replace('](', ''))) {
                 linksInLine.push({
-                    link: link[0],
+                    link: link[0].replace('](', ''),
                 });
             }
         }

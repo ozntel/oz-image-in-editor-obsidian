@@ -12,13 +12,13 @@ const convertWikiLinksToMarkdown = (md: string): string => {
     let wikiRegex = /\[\[.*?\]\]/g;
     let matches = newMdText.match(wikiRegex);
     if (matches) {
-        let fileRegex = /(?<=\[\[).*?(?=(\]|\|))/;
-        let altRegex = /(?<=\|).*(?=]])/;
+        let fileRegex = /\[\[.*?(?=(\]|\|))/;
+        let altRegex = /\|.*(?=]])/;
         for (let wiki of matches) {
             let fileMatch = wiki.match(fileRegex);
             if (fileMatch) {
                 let altMatch = wiki.match(altRegex);
-                let mdLink = createMarkdownLink(fileMatch[0], altMatch ? altMatch[0] : '');
+                let mdLink = createMarkdownLink(fileMatch[0].replace('[[', ''), altMatch ? altMatch[0].replace('|', '') : '');
                 newMdText = newMdText.replace(wiki, mdLink);
             }
         }
@@ -35,14 +35,14 @@ const transclusionWithBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
 // --> Block Regex ![[hello#header1]]
 const transclusionBlockRegex = /!\[\[(.*)#((?!\^).*)\]\]/;
 // --> Get Block Id from Transclusion
-const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
+const transclusionBlockIdRegex = /#\^.*(?=]])/;
 // --> Get Header from Transclusion
-const transclusionHeaderText = /(?<=#).*(?=]])/;
+const transclusionHeaderText = /#.*(?=]])/;
 // --> Get File Name from Transclusion
-const transclusionFileNameRegex = /(?<=!\[\[)(.*)(?=#)/;
+const transclusionFileNameRegex = /!\[\[(.*)(?=#)/;
 // --> Whole File Transclusion
 const fileTransclusionRegex = /!\[\[.*?\]\]/;
-const fileTransclusionFileNameRegex = /(?<=\[\[).*?(?=\]\])/;
+const fileTransclusionFileNameRegex = /\[\[.*?(?=\]\])/;
 
 export const lineIsWithBlockId = (line: string) => {
     return line.match(transclusionWithBlockIdRegex);
@@ -69,15 +69,15 @@ export const getFile = (line: string, app: App, sourcePath: string): TFile | nul
         if (match[0] === '') return null;
     }
     if (!match) return null;
-    return app.metadataCache.getFirstLinkpathDest(match[0], sourcePath);
+    return app.metadataCache.getFirstLinkpathDest(match[0].replace('![[', '').replace('[[', ''), sourcePath);
 };
 
 export const getBlockId = (line: string) => {
-    return line.match(transclusionBlockIdRegex)[0];
+    return line.match(transclusionBlockIdRegex)[0].replace('#^', '');
 };
 
 export const getHeader = (line: string) => {
-    return line.match(transclusionHeaderText)[0];
+    return line.match(transclusionHeaderText)[0].replace('#', '');
 };
 
 const clearExclamationFromTransclusion = (md: string): string => {
@@ -89,14 +89,12 @@ const clearExclamationFromTransclusion = (md: string): string => {
 };
 
 const clearHashTags = (md: string): string => {
-    let hashtagRegex = /(?<=\s)#[^\s#]+|^#[^\s#]+/gm; // Make sure that first tag without space is also detected
+    let hashtagRegex = /( +)#[^\s#]+|^#[^\s#]+/gm; // Make sure that first tag without space is also detected
     let hashtags = md.match(hashtagRegex);
     if (!hashtags) return md;
     let mdText = md;
     for (let ht of hashtags) {
-        // --> // Doesn't start with > (prevent double span) (Re-clear issue solution)
-        let htRegex = new RegExp('(?<!\\>)' + escapeRegExp(ht), 'gm');
-        mdText = mdText.replace(htRegex, `<span class="hashtag">${ht}</span>`);
+        mdText = mdText.replace(ht, `<span class="hashtag">${ht}</span>`);
     }
     return mdText;
 };
@@ -237,9 +235,9 @@ const convertAdmonitions = (html: HTMLElement) => {
     let admonitionCodeElements = html.querySelectorAll('code[class*="language-ad-"]');
     admonitionCodeElements?.forEach((adCodeEl) => {
         let className = adCodeEl.className;
-        let titleRegex = /(?<=language-ad-).*?(?=\s)/;
+        let titleRegex = /language-ad-.*?(?=\s)/;
         let titleMatch = className.match(titleRegex);
-        let title: string = titleMatch ? titleMatch[0] : 'Note';
+        let title: string = titleMatch ? titleMatch[0].replace('language-ad-', '') : 'Note';
         let adElement = createAdmonitionEl(title, adCodeEl.innerHTML);
         adCodeEl.parentElement.replaceWith(adElement);
     });
@@ -388,27 +386,27 @@ export const wrapAllMathJaxsInCodeBlock = (md: string): string => {
 
     // --> If multiple line syntax
     let multipleLineRegex = /\$\$.*?\$\$/gs;
-    let multipleLineMathJaxRegex = /(?<=\$\$).*?(?=\$\$)/s;
+    let multipleLineMathJaxRegex = /\$\$.*?(?=\$\$)/s;
     let multipleLines = md.match(multipleLineRegex);
 
     if (multipleLines && multipleLines.length > 0) {
         for (let multipleLine of multipleLines) {
             let mathJaxMatch = multipleLine.match(multipleLineMathJaxRegex);
             if (!mathJaxMatch) continue;
-            newMd = newMd.replace(multipleLine, createSingleMathJaxCodeBlock(mathJaxMatch[0], 'newline'));
+            newMd = newMd.replace(multipleLine, createSingleMathJaxCodeBlock(mathJaxMatch[0].replace('$$', ''), 'newline'));
         }
     }
 
     // --> If single line syntax
     let singleLineRegex = /\$[^\s].*[^\s]\$/g;
-    let singleLineMathJaxRegex = /(?<=\$).*?(?=\$)/;
+    let singleLineMathJaxRegex = /\$.*?(?=\$)/;
     let singleLines = md.match(singleLineRegex);
 
     if (singleLines && singleLines.length > 0) {
         for (let line of singleLines) {
             let mathJaxMatch = line.match(singleLineMathJaxRegex);
             if (mathJaxMatch) {
-                newMd = newMd.replace(line, createSingleMathJaxCodeBlock(mathJaxMatch[0], 'inline'));
+                newMd = newMd.replace(line, createSingleMathJaxCodeBlock(mathJaxMatch[0].replace('$', ''), 'inline'));
             }
         }
     }

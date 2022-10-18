@@ -27,18 +27,19 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     const internalImageWikiMatch = lineText.match(internalImageWikiRegex);
 
     if (internalImageWikiMatch) {
-        const fileNameRegex = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
+        const fileNameRegex = /\[\[.*(jpe?g|png|gif|svg|bmp)/;
         const fileMatch = internalImageWikiMatch[0].match(fileNameRegex);
         if (fileMatch) {
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatch[0]), sourceFile.path);
+            const fileMatchClear = fileMatch[0].replace('[[', '');
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatchClear), sourceFile.path);
             if (file) {
-                const altRegex = /(?<=\|).*(?=]])/;
+                const altRegex = /\|.*(?=]])/;
                 const altMatch = internalImageWikiMatch[0].match(altRegex);
                 return {
                     type: 'vault-image',
                     match: internalImageWikiMatch[0],
-                    linkText: fileMatch[0],
-                    altText: altMatch ? altMatch[0] : '',
+                    linkText: fileMatchClear,
+                    altText: altMatch ? altMatch[0].replace('|', '') : '',
                     blockRef: '',
                     file: file,
                 };
@@ -52,10 +53,11 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     const pdfWikiMatch = lineText.match(pdfWikiRegex);
 
     if (pdfWikiMatch) {
-        const pdfWikiFileNameRegex = /(?<=\[\[).*.pdf/;
+        const pdfWikiFileNameRegex = /\[\[.*.pdf/;
         const pdfWikiFileNameMatch = pdfWikiMatch[0].match(pdfWikiFileNameRegex);
         if (pdfWikiFileNameMatch) {
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfWikiFileNameMatch[0]), sourceFile.path);
+            const pdfWikiFileNameMatchClear = pdfWikiFileNameMatch[0].replace('[[', '');
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfWikiFileNameMatchClear), sourceFile.path);
             if (file) {
                 const pdfPageNumberRegex = new RegExp('#page=[0-9]+');
                 const pdfPageNumberMatch = pdfWikiMatch[0].match(pdfPageNumberRegex);
@@ -76,23 +78,24 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     const pdfMdMatch = lineText.match(pdfMdRegex);
 
     if (pdfMdMatch) {
-        const pdfMdFileNameRegex = /(?<=\().*.pdf/;
+        const pdfMdFileNameRegex = /\(.*.pdf/;
         const pdfMdFileNameMatch = pdfMdMatch[0].match(pdfMdFileNameRegex);
         if (pdfMdFileNameMatch) {
+            const pdfMdFileNameMatchClear = pdfMdFileNameMatch[0].replace('(', '');
             const httpLinkRegex = /(http[s]?:\/\/)([^\/\s]+\/)(.*)/;
             const pdfPageNumberRegex = new RegExp('#page=[0-9]+');
             const pdfPageNumberMatch = pdfMdMatch[0].match(pdfPageNumberRegex);
 
-            if (httpLinkRegex.test(pdfMdFileNameMatch[0])) {
+            if (httpLinkRegex.test(pdfMdFileNameMatchClear)) {
                 return {
                     type: 'pdf-link',
                     match: pdfMdMatch[0],
-                    linkText: pdfMdFileNameMatch[0],
+                    linkText: pdfMdFileNameMatchClear,
                     altText: '',
                     blockRef: pdfPageNumberMatch ? pdfPageNumberMatch[0] : '',
                 };
             } else {
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfMdFileNameMatch[0]), sourceFile.path);
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(pdfMdFileNameMatchClear), sourceFile.path);
 
                 if (file) {
                     return {
@@ -114,16 +117,16 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
 
     const imageHttpMarkdownResult = lineText.match(imageHttpMarkdownRegex);
     if (imageHttpMarkdownResult) {
-        const fileNameRegex = /(?<=\().*(?=\))/;
+        const fileNameRegex = /\(.*(?=\))/;
         const fileMatch = imageHttpMarkdownResult[0].match(fileNameRegex);
-        if (fileMatch && fileMatch[0].match(httpLinkRegex)) {
-            const altRegex = /(?<=\[)(^$|.*)(?=\])/;
+        if (fileMatch && fileMatch[0].replace('(', '').match(httpLinkRegex)) {
+            const altRegex = /\[(^$|.*)(?=\])/;
             const altMatch = imageHttpMarkdownResult[0].match(altRegex);
             return {
                 type: 'external-image',
                 match: imageHttpMarkdownResult[0],
-                linkText: fileMatch[0],
-                altText: altMatch ? altMatch[0] : '',
+                linkText: fileMatch[0].replace('(', ''),
+                altText: altMatch ? altMatch[0].replace('[', '') : '',
                 blockRef: '',
             };
         }
@@ -134,18 +137,19 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     const internalImageMdMatch = lineText.match(internalImageMdRegex);
 
     if (internalImageMdMatch) {
-        const fileNameRegex = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
+        const fileNameRegex = /\(.*(jpe?g|png|gif|svg|bmp)/;
         const fileMatch = internalImageMdMatch[0].match(fileNameRegex);
         if (fileMatch) {
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatch[0]), sourceFile.path);
+            const fileMatchClear = fileMatch[0].replace('(', '');
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileMatchClear), sourceFile.path);
             if (file) {
-                const altRegex = /(?<=\[)(^$|.*)(?=\])/;
+                const altRegex = /\[(^$|.*)(?=\])/;
                 const altMatch = internalImageMdMatch[0].match(altRegex);
                 return {
                     type: 'vault-image',
                     match: internalImageMdMatch[0],
-                    linkText: fileMatch[0],
-                    altText: altMatch ? altMatch[0] : '',
+                    linkText: fileMatchClear,
+                    altText: altMatch ? altMatch[0].replace('[', '') : '',
                     blockRef: '',
                     file: file,
                 };
@@ -161,16 +165,17 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     const wikiTransclusionMatch = lineText.match(wikiRegex);
 
     if (mdTransclusionMatch || wikiTransclusionMatch) {
-        const mdFileNameRegex = /(?<=\]\().*?(?=\))/;
-        const wikiFileNameRegex = /(?<=\[\[).*?((?=\|))|(?<=\[\[).*?(?=\]\])/;
+        const mdFileNameRegex = /\]\(.*?(?=\))/;
+        const wikiFileNameRegex = /\[\[.*?((?=\|))|\[\[.*?(?=\]\])/;
 
         // 1. Check Excalidraw
         let fileNameMatch = lineText.match(mdTransclusionMatch ? mdFileNameRegex : wikiFileNameRegex);
         if (fileNameMatch) {
-            let file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
+            let fileNameMatchClear = fileNameMatch[0].replace('](', '').replace('[[', '');
+            let file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatchClear), sourceFile.path);
             if (file && ExcalidrawHandler.excalidrawPluginIsLoaded(plugin.app) && ExcalidrawHandler.isAnExcalidrawFile(file)) {
-                const mdAltRegex = /(?<=\[)(^$|.*)(?=\])/;
-                const wikiAltRegex = /(?<=\|).*(?=]])/;
+                const mdAltRegex = /\[(^$|.*)(?=\])/;
+                const wikiAltRegex = /\|.*(?=]])/;
                 const altRegex = mdTransclusionMatch ? mdAltRegex : wikiAltRegex;
                 const altMatch = lineText.match(altRegex);
 
@@ -178,7 +183,7 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
                     type: 'excalidraw',
                     match: mdTransclusionMatch ? mdTransclusionMatch[0] : wikiTransclusionMatch[0],
                     linkText: file.path,
-                    altText: altMatch ? altMatch[0] : '',
+                    altText: altMatch ? altMatch[0].replace('[', '').replace('|', '') : '',
                     blockRef: '',
                     file: file,
                 };
@@ -187,22 +192,23 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
 
         // 2. Transclusion
         if (wikiTransclusionMatch) {
-            const transclusionIdAndHeaderFileNameRegex = /(?<=!\[\[)(.*)(?=#)/;
+            const transclusionIdAndHeaderFileNameRegex = /!\[\[(.*)(?=#)/;
 
             // --> #^ Block Id Transclusion
             const transclusionBlockIdRegex = /!\[\[(.*)#\^(.*)\]\]/;
             const transclusionBlockIdMatch = lineText.match(transclusionBlockIdRegex);
             if (transclusionBlockIdMatch) {
                 const fileNameMatch = transclusionBlockIdMatch[0].match(transclusionIdAndHeaderFileNameRegex);
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
+                const fileNameMatchClear = fileNameMatch[0].replace('![[', '');
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatchClear), sourceFile.path);
                 if (file && file.extension === 'md') {
-                    const transclusionBlockIdRegex = /(?<=#\^).*(?=]])/;
+                    const transclusionBlockIdRegex = /#\^.*(?=]])/;
                     return {
                         type: 'blockid-transclusion',
                         match: wikiTransclusionMatch[0],
                         linkText: file.path,
                         altText: '',
-                        blockRef: lineText.match(transclusionBlockIdRegex)[0],
+                        blockRef: lineText.match(transclusionBlockIdRegex)[0].replace('#^', ''),
                         file: file,
                     };
                 }
@@ -213,25 +219,27 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
             const transclusionHeaderMatch = lineText.match(transclusionHeaderRegex);
             if (transclusionHeaderMatch) {
                 const fileNameMatch = transclusionHeaderMatch[0].match(transclusionIdAndHeaderFileNameRegex);
-                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
+                const fileNameMatchClear = fileNameMatch[0].replace('![[', '');
+                const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatchClear), sourceFile.path);
                 if (file && file.extension === 'md') {
-                    const transclusionHeaderTextRegex = /(?<=#).*(?=]])/;
+                    const transclusionHeaderTextRegex = /#.*(?=]])/;
                     return {
                         type: 'header-transclusion',
                         match: wikiTransclusionMatch[0],
                         linkText: file.path,
                         altText: '',
-                        blockRef: lineText.match(transclusionHeaderTextRegex)[0],
+                        blockRef: lineText.match(transclusionHeaderTextRegex)[0].replace('#', ''),
                         file: file,
                     };
                 }
             }
 
             // --> Whole File Transclusion
-            const fileTransclusionFileNameRegex = /(?<=\[\[).*?(?=\]\])/;
+            const fileTransclusionFileNameRegex = /\[\[.*?(?=\]\])/;
             const fileNameMatch = lineText.match(fileTransclusionFileNameRegex);
-            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatch[0]), sourceFile.path);
-            if (file && fileNameMatch[0] !== '' && file.extension === 'md') {
+            const fileNameMatchClear = fileNameMatch[0].replace('[[', '');
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileNameMatchClear), sourceFile.path);
+            if (file && fileNameMatchClear !== '' && file.extension === 'md') {
                 return {
                     type: 'file-transclusion',
                     match: wikiTransclusionMatch[0],

@@ -6,15 +6,15 @@ const image_regex = /.*.(jpe?g|png|gif|svg|bmp)/;
 
 // Regex for [[ ]] format
 const image_line_regex_1 = /!\[\[.*?(jpe?g|png|gif|svg|bmp).*?\]\]/;
-const file_name_regex_1 = /(?<=\[\[).*(jpe?g|png|gif|svg|bmp)/;
+const file_name_regex_1 = /\[\[.*(jpe?g|png|gif|svg|bmp)/;
 
 // Regex for ![ ]( ) format
 const image_line_regex_2 = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp)\)/;
-const file_name_regex_2 = /(?<=\().*(jpe?g|png|gif|svg|bmp)/;
+const file_name_regex_2 = /\(.*(jpe?g|png|gif|svg|bmp)/;
 
 // Regex for Links
-const file_name_regex_3 = /(?<=\[\[).*(?=\|)|(?<=\[\[).*(?=\]\])/;
-const file_name_regex_4 = /(?<=\().*(?=\))/;
+const file_name_regex_3 = /\[\[.*(?=\|)|\[\[.*(?=\]\])/;
+const file_name_regex_4 = /\(.*(?=\))/;
 
 // Check line if it is image
 export const getImageInLine = (line: string) => {
@@ -40,19 +40,19 @@ export const getImageFileNameAndAltText = (linkType: number, match: any) => {
     if (linkType == 1 || linkType == 3) {
         if (linkType == 1) file_name_regex = file_name_regex_1;
         if (linkType == 3) file_name_regex = file_name_regex_3;
-        alt_regex = /(?<=\|).*(?=]])/;
+        alt_regex = /\|.*(?=]])/;
     } else if (linkType == 2 || linkType == 4) {
         if (linkType == 2) file_name_regex = file_name_regex_2;
         if (linkType == 4) file_name_regex = file_name_regex_4;
-        alt_regex = /(?<=\[)(^$|.*)(?=\])/;
+        alt_regex = /\[(^$|.*)(?=\])/;
     }
 
     var file_match = match[0].match(file_name_regex);
     var alt_match = match[0].match(alt_regex);
 
     return {
-        fileName: file_match ? file_match[0] : '',
-        altText: alt_match ? alt_match[0] : '',
+        fileName: file_match ? file_match[0].replace('[[', '').replace('(', '') : '',
+        altText: alt_match ? alt_match[0].replace('[', '').replace('|', '') : '',
     };
 };
 

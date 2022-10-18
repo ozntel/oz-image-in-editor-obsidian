@@ -3,11 +3,11 @@ import OzanImagePlugin from 'src/main';
 import { pluginIsLoaded } from './obsidianHelper';
 
 const mdRegex = /!\[(^$|.*?)\]\(.*?\)/;
-const mdFileNameRegex = /(?<=\]\().*?(?=\))/;
-const mdAltRegex = /(?<=\[)(^$|.*)(?=\])/;
+const mdFileNameRegex = /\]\(.*?(?=\))/;
+const mdAltRegex = /\[(^$|.*)(?=\])/;
 const wikiRegex = /!\[\[.*?\]\]/;
-const wikiFileNameRegex = /(?<=\[\[).*?((?=\|))|(?<=\[\[).*?(?=\]\])/;
-const wikiAltRegex = /(?<=\|).*(?=]])/;
+const wikiFileNameRegex = /\[\[.*?((?=\|))|\[\[.*?(?=\]\])/;
+const wikiAltRegex = /\|.*(?=]])/;
 
 export const excalidrawPluginIsLoaded = (app: App) => {
     return pluginIsLoaded(app, 'obsidian-excalidraw-plugin');
@@ -36,7 +36,7 @@ export const lineMightHaveExcalidraw = (line: string) => {
 export const getFile = (line: string, sourcePath: string, plugin: OzanImagePlugin) => {
     let match = line.match(mdRegex.test(line) ? mdFileNameRegex : wikiFileNameRegex);
     if (match) {
-        let fileName = match[0];
+        let fileName = match[0].replace('[[', '').replace('](', '');
         let file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(fileName), sourcePath);
         return file;
     }
@@ -45,5 +45,5 @@ export const getFile = (line: string, sourcePath: string, plugin: OzanImagePlugi
 
 export const getAltText = (line: string) => {
     let altMatch = line.match(mdRegex.test(line) ? mdAltRegex : wikiAltRegex);
-    return altMatch ? altMatch[0] : '';
+    return altMatch ? altMatch[0].replace('[', '').replace('|', '') : '';
 };

@@ -1,10 +1,10 @@
 // Regex for [[ ]] format
 const pdf_regex_1 = /!\[\[.*(pdf)(.*)?\]\]/;
-const pdf_name_regex_1 = /(?<=\[\[).*.pdf/;
+const pdf_name_regex_1 = /\[\[.*.pdf/;
 
 // Regex for ![ ]( ) format
 const pdf_regex_2 = /!\[(^$|.*)\]\(.*(pdf)(.*)?\)/;
-const pdf_name_regex_2 = /(?<=\().*.pdf/;
+const pdf_name_regex_2 = /\(.*.pdf/;
 
 // Check line if it is a PDF
 export const getPdfInLine = (line: string) => {
@@ -23,7 +23,7 @@ export const getPdfName = (linkType: number, match: any): string => {
     if (linkType == 1) pdf_name_regex = pdf_name_regex_1;
     if (linkType == 2) pdf_name_regex = pdf_name_regex_2;
     var file_name_match = match[0].match(pdf_name_regex);
-    return file_name_match[0];
+    return file_name_match[0].replace('[[', '').replace('(', '');
 };
 
 export const getPdfPageNumber = (match: any): string | boolean => {
