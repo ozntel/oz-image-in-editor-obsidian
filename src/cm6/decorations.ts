@@ -52,7 +52,7 @@ export class StatefulDecorationSet {
                 const linkResult = detectLink({ lineText: line.text, plugin: plugin, sourceFile: sourceFile });
 
                 // --> External Link Render
-                if (linkResult && linkResult.type === 'external-image' && plugin.settings.renderImages) {
+                if (linkResult && ['external-image', 'local-image'].includes(linkResult.type) && plugin.settings.renderImages) {
                     const key = linkResult.linkText + linkResult.altText;
                     newDeco = this.decoCache[key];
                     if (!newDeco) {
@@ -89,7 +89,7 @@ export class StatefulDecorationSet {
                 }
 
                 // --> External PDF Link Render
-                else if (linkResult && linkResult.type === 'pdf-link' && plugin.settings.renderPDF) {
+                else if (linkResult && ['pdf-link', 'local-pdf'].includes(linkResult.type) && plugin.settings.renderPDF) {
                     const key = linkResult.linkText + linkResult.blockRef;
                     newDeco = this.decoCache[key];
                     if (!newDeco) {

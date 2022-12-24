@@ -7,7 +7,8 @@ export const transclusionTypes = ['file-transclusion', 'header-transclusion', 'b
 export type TransclusionType = 'file-transclusion' | 'header-transclusion' | 'blockid-transclusion';
 export type ImageType = 'vault-image' | 'external-image' | 'excalidraw';
 export type PdfType = 'pdf-link' | 'pdf-file';
-export type LinkType = 'iframe' | TransclusionType | ImageType | PdfType;
+export type LocalFileType = 'local-pdf' | 'local-image';
+export type LinkType = 'iframe' | TransclusionType | ImageType | PdfType | LocalFileType;
 
 interface LinkMatch {
     type: LinkType;
@@ -264,6 +265,53 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
             altText: '',
             blockRef: '',
         };
+    }
+
+    // --> F: Local File Wiki
+    const localFileWikiRegex = /!\[\[(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)(.*)?\]\]/;
+    const localFileNameRegex = /(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)/;
+    const localFileMatchWiki = lineText.match(localFileWikiRegex);
+
+    if (localFileMatchWiki) {
+        const localFileNameWikiMatch = localFileMatchWiki[0].match(localFileNameRegex);
+        if (localFileNameWikiMatch) {
+            const fileLink = localFileNameWikiMatch[0].replace('file:///', 'app://local/');
+            const localPDFPageNumberRegex = /#page=[0-9]+\]\]/;
+            const localPDFPageNumberMatch = localFileMatchWiki[0].match(localPDFPageNumberRegex);
+            const wikiAltRegex = /\|.*(?=]])/;
+            const wikiAltMatch = localFileMatchWiki[0].match(wikiAltRegex);
+
+            return {
+                type: fileLink.endsWith('.pdf') ? 'local-pdf' : 'local-image',
+                match: localFileMatchWiki[0],
+                linkText: decodeURI(fileLink),
+                altText: wikiAltMatch ? wikiAltMatch[0].replace('|', '') : '',
+                blockRef: localPDFPageNumberMatch ? localPDFPageNumberMatch[0].replace(']]', '') : '',
+            };
+        }
+    }
+
+    // --> G: Local File Markdown
+    const localFileMdRegex = /!\[(^$|.*)\]\((file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)(.*)?\)/;
+    const localFileMatchMd = lineText.match(localFileMdRegex);
+
+    if (localFileMatchMd) {
+        const localFileNameMdMatch = localFileMatchMd[0].match(localFileNameRegex);
+        if (localFileNameMdMatch) {
+            const fileLink = localFileNameMdMatch[0].replace('file:///', 'app://local/');
+            const localPDFPageNumberRegex = /#page=[0-9]+\)/;
+            const localPDFPageNumberMatch = localFileMatchMd[0].match(localPDFPageNumberRegex);
+            const mdAltRegex = /\[(^$|.*)(?=\])/;
+            const altMatch = localFileMatchMd[0].match(mdAltRegex);
+
+            return {
+                type: fileLink.endsWith('.pdf') ? 'local-pdf' : 'local-image',
+                match: localFileMatchMd[0],
+                linkText: decodeURI(fileLink),
+                altText: altMatch ? altMatch[0].replace('[', '') : '',
+                blockRef: localPDFPageNumberMatch ? localPDFPageNumberMatch[0].replace(')', '') : '',
+            };
+        }
     }
 
     // --> END: If there is no Match
