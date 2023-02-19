@@ -3,6 +3,10 @@
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ozntel/oz-image-in-editor-obsidian?style=for-the-badge)
 ![GitHub all releases](https://img.shields.io/github/downloads/ozntel/oz-image-in-editor-obsidian/total?style=for-the-badge)
 
+**Note**: As of `Version 2.1.3`, support for legacy editor has been removed. If you still want to use this plugin with the legacy editor, please manually install `Version 2.1.2`, which is the latest version compatible with the Legacy editor.
+
+**Important**: This plugin only supports `Source Mode` of the new editor starting from `Version 2.1.3`. If you use `Live Preview`, this plugin will automatically disable all widgets to avoid any duplicate image, pdf, excalidraw etc.
+
 ## 📕 Brief Explanation
 
 -   Plugin helps you to view `images`, `iframes`, `PDF Files`, `excalidraw` drawings and `transclusions` directly under the Editor view without a necessity to switch to Preview mode.
@@ -12,56 +16,78 @@
 
 ## 📕 Formats Supported
 
--   `!( ALT-TEXT )[ IMAGE-NAME ]`
-    <span style="color: #d1672a">Sample</span>: `![ #x-small ]( myimage.png )`
+```markdown
+FORMAT: !(ALT_TEXT)[IMAGE_PATH_OR_NAME]
+SAMPLE: ![#x-small](myimage.png)
+```
 
--   `![[ IMAGE-NAME | ALT-TEXT ]]`
-    <span style="color: #d1672a">Sample</span>: `![[ myimage.png | #x-small ]]`
+```markdown
+FORMAT: ![[IMAGE_PATH_OR_NAME|ALT_TEXT]]
+SAMPLE: ![[myimage.png|#x-small]]
+```
 
--   `![[ IMAGE-NAME ]]`
-    <span style="color: #d1672a">Sample</span>: `![[ myimage.gif ]]`
+```markdown
+FORMAT: ![[IMAGE_PATH_OR_NAME]]
+SAMPLE: ![[myimage.png]]
+```
 
 **Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`
 
 ## 📕 Image View Size
 
-Relative and Absolute Path will give you possibility to add `alt` text for the image. You can decide about the size of the image using following
-alt texts:
+Relative and Absolute Path will give you possibility to add `alt` text for the image. You can decide about the size of the image using alt texts like `#small`, `#x-small` and `#xx-small`:
 
-1. `#small`
-2. `#x-small`
-3. `#xx-small`
+```markdown
+![[myImage.png|#xx-small]]
+!(#x-small)[myImage.png]
+```
 
 #### New Sizing Feature:
 
 You can now use the formats below to scale the images:
 
-1. **Width x Height**: `![100x100](image.png)`
+```markdown
+Width x Height
+![100x100](image.png)
+```
 
-2. **Width**: `![300](image.png)`
+```markdown
+Only Width
+![300](image.png)
+```
 
-#### Invert Color Feature
+### 📕 Invert Color Feature
 
 Similar to `Minimal Theme`, you can add `#invert` within the `alt-text` to view the images in `invert color` mode:
 
--   `![[image.png|#invert]]`
--   `![#invert](image.png)`
+```markdown
+![[image.png|#invert]]
+```
+
+```markdown
+![#invert](image.png)
+```
 
 ## 📕 Transclusions Rendering
 
 The plugin now renders the Transclusions within the Editor. You can use as `file` transclusion, `block id` and `header`:
 
--   `![[myFile]]`
--   `![[myFile#^316sd1]]`
--   `![[myFile#Header2]]`
+```markdown
+File Transclusion
+![[myFile]]
+```
+
+```markdown
+Block Transclusion
+![[myFile#^316sd1]]
+```
+
+```markdown
+Header Transclusion
+![[myFile#Header2]]
+```
 
 To be able to use this functionality, you need to enable render in plugin settings.
-
-Sample Views:
-
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusion-header.png" width="70%"/>
-
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/transclusion-block.png" width="70%"/>
 
 ## 📕 Wikilink to Markdown & Markdown to Wikilink
 
@@ -73,19 +99,17 @@ After a nice collaboration with Zsolt, you can now view `excalidraw` drawings wi
 
 Usage with `excalidraw` extension:
 
--   `![[drawing.excalidraw|ALT-TEXT]]`
--   `!(ALT-TEXT)[drawing.excalidraw]`
+```markdown
+![[drawing.excalidraw|ALT_TEXT]]
+![[drawing|ALT-TEXT]]
+```
 
-Usage with the new format (You don't need to add `.md` extension anymore):
+```markdown
+!(ALT_TEXT)[drawing.excalidraw]
+!(ALT-TEXT)[drawing]
+```
 
--   `![[drawing|ALT-TEXT]]`
--   `!(ALT-TEXT)[drawing]`
-
-**Important:** If you are using `1.2.x` version of Excalidraw plugin, `Wikilinks` format needs to include `.md` extension, otherwise, drawing won't be rendered in Editor.
-
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/excalidraw-support.png" width="70%"/>
-
--   You can now turn on/off rendering option for `Excalidraw` drawings.
+You can turn on/off rendering option for `Excalidraw` drawings.
 
 ## 📕 PDF Render Feature
 
@@ -93,56 +117,44 @@ You can turn on option for rendering the PDF files in the Editor mode.
 You can view both from local files and from the internet.
 You can also start viewing the `PDF` file from certain page number using the following pattern:
 
--   `![[myfile.pdf#page=12]]`
--   `![](myfile.pdf#page=12)`
-
-### Samples
-
-**Local PDF File**
-
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-local-file.png" width="70%"/>
-
-**PDF File From a Link**
-
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/pdf-from-link.png" width="70%"/>
+```markdown
+![[myfile.pdf#page=12]]
+![](myfile.pdf#page=12)
+```
 
 ## 📕 iFrame Render Feature
 
 You can turn on the `iFrame` option from settings to render `iframes` within the editor:
 
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/iframe-render.png" width="70%"/>
+**Samples**:
 
-## 📕 New Settings Options
+```html
+<iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/L9fJM2jCPlU"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen
+></iframe>
+```
 
-### Refresh Images After Changes
+```html
+<iframe width="550" height="315" src="https://ozan.pl" />
+```
 
-You can now turn on option to refresh images after each file update. It is especially useful for `excalidraw` drawings:
+## 📕 Local Files
 
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/refresh-images-settings.png" width="80%"/>
+It is also possible to view supported files even if the files are not located within the Obsidian Vault. Let's say if you have a file located under your Downloads folder, you can use either `file:///` or `app://local/` prefixes to view the file in Editor:
 
-### Turn On / Turn Off Image Rendering
+```md
+![[file:////Users/mycomputer/Downloads/Images/IMG_1122.jpg]]
+```
 
-You have an option now to toggle image rendering in your editor:
+## 📕 Toggle Render Options
 
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/render-toggle-settings.png" width="80%"/>
-
-You can do toggle rendering by a command from the pallette:
-
-<img src="https://raw.githubusercontent.com/ozntel/oz-image-in-editor-obsidian/master/images/render-toggle-command.png" width="80%"/>
-
-## 📕 Sample Image Render Views
-
-### Markdown Format
-
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Absolute_Path_View.png" width="70%"/>
-
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Relative_Path_View.png" width="70%"/>
-
-### Wikilinks format
-
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Shortest_Path_Possible_View.png" width="70%"/>
-
-<img src="https://github.com/ozntel/oz-image-in-editor-obsidian/raw/master/images/Wikilinks_2.png" width="70%"/>
+You have an option to toggle render for images, pdf, iframes, transclusions and excalidraws in your plugin settings. You can also toggle render by using the commands available in the command pallette. Toggling `Render All` option will require you to reload the vault.
 
 ## 📕 Contact
 
