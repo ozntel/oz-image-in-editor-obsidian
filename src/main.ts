@@ -15,6 +15,60 @@ export default class OzanImagePlugin extends Plugin {
 
         await this.loadSettings();
 
+        this.addCommand({
+            id: 'toggle-render-all',
+            name: 'Toggle Render All (Requires reload of vault)',
+            callback: () => {
+                this.settings.cm6RenderAll = !this.settings.cm6RenderAll;
+                this.saveSettings();
+            },
+        });
+
+        this.addCommand({
+            id: 'toggle-render-images',
+            name: 'Toggle Render Images',
+            callback: () => {
+                this.settings.renderImages = !this.settings.renderImages;
+                this.saveSettings();
+            },
+        });
+
+        this.addCommand({
+            id: 'toggle-render-pdfs',
+            name: 'Toggle Render PDF',
+            callback: () => {
+                this.settings.renderPDF = !this.settings.renderPDF;
+                this.saveSettings();
+            },
+        });
+
+        this.addCommand({
+            id: 'toggle-render-transclusion',
+            name: 'Toggle Render Transclusions',
+            callback: () => {
+                this.settings.renderTransclusion = !this.settings.renderTransclusion;
+                this.saveSettings();
+            },
+        });
+
+        this.addCommand({
+            id: 'toggle-render-iframe',
+            name: 'Toggle Render Iframes',
+            callback: () => {
+                this.settings.renderIframe = !this.settings.renderIframe;
+                this.saveSettings();
+            },
+        });
+
+        this.addCommand({
+            id: 'toggle-render-excalidraw',
+            name: 'Toggle Render Excalidraws',
+            callback: () => {
+                this.settings.renderExcalidraw = !this.settings.renderExcalidraw;
+                this.saveSettings();
+            },
+        });
+
         try {
             loadMathJax();
             loadMermaid();
