@@ -7,6 +7,7 @@ import { buildExtension } from 'src/cm6';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
+    renderedMsgFiles: TFile[] = [];
 
     async onload() {
         console.log('Image in Editor Plugin is loaded');

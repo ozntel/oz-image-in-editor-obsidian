@@ -113,21 +113,28 @@ class PDFWidget extends WidgetType {
 /* ------------------ Custom HTML WIDGET ------------------ */
 
 interface CustomHTMLWidgetParams {
-    htmlText: string;
+    htmlText?: string;
+    htmlEl?: HTMLElement;
 }
 
 class CustomHTMLWidget extends WidgetType {
     readonly htmlText: string;
+    htmlEl: HTMLElement;
 
-    constructor({ htmlText }: CustomHTMLWidgetParams) {
+    constructor({ htmlText, htmlEl }: CustomHTMLWidgetParams) {
         super();
         this.htmlText = htmlText;
+        this.htmlEl = htmlEl;
     }
 
     toDOM() {
         let divNode = document.createElement('div');
         divNode.addClass('oz-custom-html-widget-cm6');
-        divNode.innerHTML = this.htmlText.trim();
+        if (this.htmlText) {
+            divNode.innerHTML = this.htmlText.trim();
+        } else {
+            divNode.appendChild(this.htmlEl);
+        }
         return divNode;
     }
 

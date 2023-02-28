@@ -7,8 +7,9 @@ export const transclusionTypes = ['file-transclusion', 'header-transclusion', 'b
 export type TransclusionType = 'file-transclusion' | 'header-transclusion' | 'blockid-transclusion';
 export type ImageType = 'vault-image' | 'external-image' | 'excalidraw';
 export type PdfType = 'pdf-link' | 'pdf-file';
+export type MSGType = 'msg-file';
 export type LocalFileType = 'local-pdf' | 'local-image';
-export type LinkType = 'iframe' | TransclusionType | ImageType | PdfType | LocalFileType;
+export type LinkType = 'iframe' | TransclusionType | ImageType | PdfType | LocalFileType | MSGType;
 
 interface LinkMatch {
     type: LinkType;
@@ -151,6 +152,29 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
                     match: internalImageMdMatch[0],
                     linkText: fileMatchClear,
                     altText: altMatch ? altMatch[0].replace('[', '') : '',
+                    blockRef: '',
+                    file: file,
+                };
+            }
+        }
+    }
+
+    // --> C1. Outlook MSG Links
+    const msgWikiRegex = /!\[\[.*(msg)(.*)?\]\]/;
+    const msgWikiMatch = lineText.match(msgWikiRegex);
+
+    if (msgWikiMatch) {
+        const msgWikiFileNameRegex = /\[\[.*.msg/;
+        const msgWikiFileNameMatch = msgWikiMatch[0].match(msgWikiFileNameRegex);
+        if (msgWikiFileNameMatch) {
+            const msgWikiFileNameMatchClear = msgWikiFileNameMatch[0].replace('[[', '');
+            const file = plugin.app.metadataCache.getFirstLinkpathDest(decodeURIComponent(msgWikiFileNameMatchClear), sourceFile.path);
+            if (file) {
+                return {
+                    type: 'msg-file',
+                    match: msgWikiMatch[0],
+                    linkText: '',
+                    altText: '',
                     blockRef: '',
                     file: file,
                 };

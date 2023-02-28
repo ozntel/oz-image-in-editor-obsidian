@@ -10,6 +10,7 @@ import { ImageDecoration, PDFDecoration, CustomHTMLDecoration, TransclusionDecor
 import { detectLink, transclusionTypes } from 'src/cm6/linkDetector';
 import { getLinesToCheckForRender } from 'src/cm6/cm6Helper';
 import { statefulDecorations } from 'src/cm6/stateField';
+import { MSGHandlerPlugin } from 'src/types';
 
 export class StatefulDecorationSet {
     editor: EditorView;
@@ -106,6 +107,24 @@ export class StatefulDecorationSet {
                         const arr = new Uint8Array(buffer);
                         const blob = new Blob([arr], { type: 'application/pdf' });
                         newDeco = PDFDecoration({ url: URL.createObjectURL(blob) + linkResult.blockRef, filePath: linkResult.file.path });
+                    }
+                }
+
+                // --> Internal MSG File
+                else if (plugin.settings.renderMsgFile && linkResult && linkResult.type === 'msg-file') {
+                    let msgHandlerPlugin: MSGHandlerPlugin | null = ObsidianHelpers.pluginIsLoaded(plugin.app, 'msg-handler');
+                    if (msgHandlerPlugin) {
+                        let file = linkResult.file;
+                        let htmlMsgRenderElement = document.createElement('div');
+                        await msgHandlerPlugin.renderMSG({
+                            msgFile: file,
+                            targetEl: htmlMsgRenderElement,
+                        });
+                        newDeco = this.decoCache[file.path] = CustomHTMLDecoration({
+                            htmlEl: htmlMsgRenderElement,
+                        });
+                        // Store renderedMsgFile for Later Blob Cleanup in viewPlugin > destroy
+                        plugin.renderedMsgFiles.push(file);
                     }
                 }
 

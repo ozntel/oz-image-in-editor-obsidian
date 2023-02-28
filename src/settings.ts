@@ -7,6 +7,7 @@ export interface OzanImagePluginSettings {
     renderPDF: boolean;
     renderIframe: boolean;
     renderExcalidraw: boolean;
+    renderMsgFile: boolean;
     renderRichLink: boolean;
     renderTransclusion: boolean;
     previewOnHoverInternalLink: boolean;
@@ -20,6 +21,7 @@ export const DEFAULT_SETTINGS: OzanImagePluginSettings = {
     renderPDF: true,
     renderIframe: false,
     renderExcalidraw: false,
+    renderMsgFile: false,
     renderRichLink: false,
     renderTransclusion: false,
     previewOnHoverInternalLink: false,
@@ -126,10 +128,32 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('Render Excalidraw in Editor')
-            .setDesc('Turn on this option if you want drawings to be rendered in Editor')
+            .setDesc(
+                `
+                Turn on this option if you want drawings to be rendered in Editor.
+                You need to have "Excalidraw" plugin installed so that this
+                option works.
+                `
+            )
             .addToggle((toggle) =>
                 toggle.setValue(this.plugin.settings.renderExcalidraw).onChange((value) => {
                     this.plugin.settings.renderExcalidraw = value;
+                    this.plugin.saveSettings();
+                })
+            );
+
+        new Setting(containerEl)
+            .setName('Render Outlook MSG Files in Editor')
+            .setDesc(
+                `
+                Turn on this option if you want outlook MSG Files to be rendered in Editor. 
+                You need to have "MSG Handler" plugin installed so that
+                this option works
+                `
+            )
+            .addToggle((toggle) =>
+                toggle.setValue(this.plugin.settings.renderMsgFile).onChange((value) => {
+                    this.plugin.settings.renderMsgFile = value;
                     this.plugin.saveSettings();
                 })
             );
