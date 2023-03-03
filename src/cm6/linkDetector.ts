@@ -160,11 +160,11 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     }
 
     // --> C1. Outlook MSG Links
-    const msgWikiRegex = /!\[\[.*(msg)(.*)?\]\]/;
+    const msgWikiRegex = /!\[\[.*(msg|eml)(.*)?\]\]/;
     const msgWikiMatch = lineText.match(msgWikiRegex);
 
     if (msgWikiMatch) {
-        const msgWikiFileNameRegex = /\[\[.*.msg/;
+        const msgWikiFileNameRegex = /\[\[.*.(msg|eml)/;
         const msgWikiFileNameMatch = msgWikiMatch[0].match(msgWikiFileNameRegex);
         if (msgWikiFileNameMatch) {
             const msgWikiFileNameMatchClear = msgWikiFileNameMatch[0].replace('[[', '');
