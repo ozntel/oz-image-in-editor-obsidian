@@ -152,6 +152,15 @@ It is also possible to view supported files even if the files are not located wi
 ![[file:////Users/mycomputer/Downloads/Images/IMG_1122.jpg]]
 ```
 
+## 📕 MSG and EML Files (Outlook)
+
+Starting from version 2.1.8, the plugin also supports render of `msg` and `eml` extensions directly in the editor. To be able to use this option, you need to install **MSG Handler** plugin since the render engine is dependent on **MSG Handler** plugin. Use Wikilinks to render like following:
+
+```md
+![[MyMessageFromOutlook.msg]]
+![[AnotherMessageToSee.eml]]
+```
+
 ## 📕 Toggle Render Options
 
 You have an option to toggle render for images, pdf, iframes, transclusions and excalidraws in your plugin settings. You can also toggle render by using the commands available in the command pallette. Toggling `Render All` option will require you to reload the vault.
