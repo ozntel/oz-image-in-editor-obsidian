@@ -1,3 +1,55 @@
+/* @settings
+
+name: Ozan's Image in Editor Plugin
+id: oz-image-in-editor-plugin
+settings:
+
+    -
+        id: oz-img-in-editor-max-transclusion-height
+        title: Transclusion Embed Maximum Height
+        description: Set the max height of transclusion render in editor as px
+        type: variable-number
+        default: 600
+        format: px
+    -
+        id: oz-img-in-editor-max-msg-height
+        title: MSG Embed Maximum Height
+        description: Set the max height of msg render in editor as px
+        type: variable-number
+        default: 300
+        format: px
+    -
+        id: oz-img-in-editor-img-size-xx-small
+        title: Alt Text "#xx-small" Maximum Image Width
+        description: Set the max width of images with "#xx-small" alt text
+        type: variable-number
+        default: 25
+        format: "%"
+    -
+        id: oz-img-in-editor-img-size-x-small
+        title: Alt Text "#x-small" Maximum Image Width
+        description: Set the max width of images with "#x-small" alt text
+        type: variable-number
+        default: 50
+        format: "%"
+    -
+        id: oz-img-in-editor-img-size-small
+        title: Alt Text "#small" Maximum Image Width
+        description: Set the max width of images with "#small" alt text
+        type: variable-number
+        default: 75
+        format: "%"
+*/
+
+.theme-light,
+.theme-dark {
+    --oz-img-in-editor-max-msg-height: 300px;
+    --oz-img-in-editor-max-transclusion-height: 600px;
+    --oz-img-in-editor-img-size-xx-small: 25%;
+    --oz-img-in-editor-img-size-x-small: 50%;
+    --oz-img-in-editor-img-size-small: 75%;
+}
+
 .CodeMirror-linewidget img {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -13,7 +65,7 @@
 .oz-transclusion-widget-cm6 {
     padding: 3px 3px 3px 19px;
     border: 0.7px solid var(--text-muted);
-    max-height: 600px;
+    max-height: var(oz-img-in-editor-max-transclusion-height);
     overflow: auto;
     border-radius: 7px;
     margin-top: 5px;
@@ -190,20 +242,17 @@ div.oz-transclusion-widget-cm6 pre {
 
 div.oz-image-widget > img[alt$='#small'],
 div.oz-image-widget-cm6 > img[alt$='#small'] {
-    max-width: 75% !important;
-    min-width: 200pt !important;
+    max-width: var(--oz-img-in-editor-img-size-small) !important;
 }
 
 div.oz-image-widget > img[alt$='#x-small'],
 div.oz-image-widget-cm6 > img[alt$='#x-small'] {
-    max-width: 50% !important;
-    min-width: 100pt !important;
+    max-width: var(--oz-img-in-editor-img-size-x-small) !important;
 }
 
 div.oz-image-widget > img[alt$='#xx-small'],
 div.oz-image-widget-cm6 > img[alt$='#xx-small'] {
-    max-width: 25% !important;
-    min-width: 50pt !important;
+    max-width: var(--oz-img-in-editor-img-size-xx-small) !important;
 }
 
 /* Style For CM6 */
@@ -286,7 +335,7 @@ div.oz-pdf-widget-cm6 + br {
 }
 
 .oz-custom-html-widget-cm6 .msg-handler-plugin-renderer {
-    max-height: 300px;
+    max-height: var(--oz-img-in-editor-max-msg-height);
     overflow-y: scroll;
     border: 0.1px solid var(--text-muted);
     padding: 10px;
