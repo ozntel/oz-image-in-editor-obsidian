@@ -340,3 +340,10 @@ div.oz-pdf-widget-cm6 + br {
     border: 0.1px solid var(--text-muted);
     padding: 10px;
 }
+
+.cm-line:has(div.is-collapsed) .oz-custom-html-widget-cm6,
+.cm-line:has(div.is-collapsed) .oz-image-widget-cm6,
+.cm-line:has(div.is-collapsed) .oz-pdf-widget-cm6,
+.cm-line:has(div.is-collapsed) .oz-transclusion-widget-cm6 {
+    display: none;
+}
