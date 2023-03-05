@@ -165,6 +165,10 @@ Starting from version 2.1.8, the plugin also supports render of `msg` and `eml` 
 
 You have an option to toggle render for images, pdf, iframes, transclusions and excalidraws in your plugin settings. You can also toggle render by using the commands available in the command pallette. Toggling `Render All` option will require you to reload the vault.
 
+## 📕 Style Settings Plugin Support
+
+Some of the style settings (i.e. max width of #small, #x-small alt text, or max height of render of transclusions or msg/eml files) of Ozan's Image in Editor plugin are exposed within [Style Settings Plugin](https://github.com/mgmeyers/obsidian-style-settings).
+
 ## 📕 Contact
 
 If you have any issue or you have any suggestion, please feel free to reach me out directly using contact page of my website [ozan.pl/contact/](https://www.ozan.pl/contact/) or directly to <me@ozan.pl>.
