@@ -28,21 +28,7 @@ export const getViewPlugin = (params: { plugin: OzanImagePlugin }): Extension =>
                 }
             }
 
-            destroy() {
-                // Clean MSG Handler Blobs in case they exist for rendered MSG
-                if (plugin.renderedMsgFiles.length > 0) {
-                    // Check if plugin is loaded
-                    let msgHandlerPlugin: MSGHandlerPlugin | null = pluginIsLoaded(plugin.app, 'msg-handler');
-                    if (msgHandlerPlugin) {
-                        // loop loaded msg files and remove related blobs
-                        for (let renderedMsgFile of plugin.renderedMsgFiles) {
-                            // use CleanLoadedBlobs provided by msgHandlerPlugin
-                            msgHandlerPlugin.cleanLoadedBlobs({ all: false, forMsgFile: renderedMsgFile });
-                        }
-                    }
-                    plugin.renderedMsgFiles = [];
-                }
-            }
+            destroy() {}
         }
     );
 

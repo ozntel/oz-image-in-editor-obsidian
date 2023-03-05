@@ -123,8 +123,6 @@ export class StatefulDecorationSet {
                         newDeco = this.decoCache[file.path] = CustomHTMLDecoration({
                             htmlEl: htmlMsgRenderElement,
                         });
-                        // Store renderedMsgFile for Later Blob Cleanup in viewPlugin > destroy
-                        plugin.renderedMsgFiles.push(file);
                     }
                 }
 
