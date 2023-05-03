@@ -1,6 +1,7 @@
 import { TFile } from 'obsidian';
 import OzanImagePlugin from 'src/main';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
+import * as ObsidianHelper from 'src/util/obsidianHelper';
 
 export const transclusionTypes = ['file-transclusion', 'header-transclusion', 'blockid-transclusion'];
 
@@ -292,14 +293,17 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     }
 
     // --> F: Local File Wiki
+    /* @deprecated Local File Wiki is not supported anymore
+    https://discord.com/channels/686053708261228577/1103015564055691324/1103025035498758154
+    ***************************************************************************************************
     const localFileWikiRegex = /!\[\[(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)(.*)?\]\]/;
-    const localFileNameRegex = /(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)/;
     const localFileMatchWiki = lineText.match(localFileWikiRegex);
 
     if (localFileMatchWiki) {
         const localFileNameWikiMatch = localFileMatchWiki[0].match(localFileNameRegex);
         if (localFileNameWikiMatch) {
-            const fileLink = localFileNameWikiMatch[0].replace('file:///', 'app://local/');
+            let resourcePathPrefix = ObsidianHelper.getObsidianResourcePathPrefix();
+            const fileLink = localFileNameWikiMatch[0].replace('file:///', resourcePathPrefix);
             const localPDFPageNumberRegex = /#page=[0-9]+\]\]/;
             const localPDFPageNumberMatch = localFileMatchWiki[0].match(localPDFPageNumberRegex);
             const wikiAltRegex = /\|.*(?=]])/;
@@ -314,15 +318,19 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
             };
         }
     }
+    ***************************************************************************************************
+    */
 
     // --> G: Local File Markdown
     const localFileMdRegex = /!\[(^$|.*)\]\((file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)(.*)?\)/;
+    const localFileNameRegex = /(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)/;
     const localFileMatchMd = lineText.match(localFileMdRegex);
 
     if (localFileMatchMd) {
         const localFileNameMdMatch = localFileMatchMd[0].match(localFileNameRegex);
         if (localFileNameMdMatch) {
-            const fileLink = localFileNameMdMatch[0].replace('file:///', 'app://local/');
+            let resourcePathPrefix = ObsidianHelper.getObsidianResourcePathPrefix();
+            const fileLink = localFileNameMdMatch[0].replace('file:///', resourcePathPrefix);
             const localPDFPageNumberRegex = /#page=[0-9]+\)/;
             const localPDFPageNumberMatch = localFileMatchMd[0].match(localPDFPageNumberRegex);
             const mdAltRegex = /\[(^$|.*)(?=\])/;

@@ -1,4 +1,4 @@
-import { normalizePath, TFile } from 'obsidian';
+import { normalizePath, TFile, Platform } from 'obsidian';
 import OzanImagePlugin from '../main';
 import * as PDFHandler from 'src/util/pdfHandler';
 import * as ExcalidrawHandler from 'src/util/excalidrawHandler';
@@ -66,7 +66,8 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
         // Prepare the src for the Image
         if (linkInLine.result) {
             // Local File URL Correction (Outside of Vault)
-            if (filename.startsWith('file:///')) filename = filename.replace('file:///', 'app://local/');
+            let resourcePathPrefix = ObsidianHelper.getObsidianResourcePathPrefix();
+            if (filename.startsWith('file:///')) filename = filename.replace('file:///', resourcePathPrefix);
             img.src = decodeURI(filename);
         } else {
             // Get Image File

@@ -1,5 +1,5 @@
 // @ts-ignore
-import { Workspace, Vault, TFile, App, Keymap } from 'obsidian';
+import { Workspace, Vault, TFile, App, Keymap, Platform } from 'obsidian';
 
 // Getting Active Markdown File
 export const getActiveNoteFile = (workspace: Workspace) => {
@@ -26,4 +26,10 @@ export const pluginIsLoaded = (app: App, pluginId: string) => {
 
 export const livePreviewActive = (app: App): boolean => {
     return (app.vault as any).config?.livePreview;
+};
+
+export const getObsidianResourcePathPrefix = () => {
+    // Check https://discord.com/channels/686053708261228577/1103015564055691324/1103035015404728320
+    //@ts-ignore
+    return Platform?.resourcePathPrefix || 'app://local/';
 };
