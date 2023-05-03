@@ -67,7 +67,7 @@ export const checkLine: any = async (cm: CodeMirror.Editor, lineNumber: number, 
         if (linkInLine.result) {
             // Local File URL Correction (Outside of Vault)
             let resourcePathPrefix = ObsidianHelper.getObsidianResourcePathPrefix();
-            if (filename.startsWith('file:///')) filename = filename.replace('file:///', resourcePathPrefix);
+            filename = filename.replace(filename.startsWith('file:///') ? 'file:///' : 'app://local/', resourcePathPrefix);
             img.src = decodeURI(filename);
         } else {
             // Get Image File

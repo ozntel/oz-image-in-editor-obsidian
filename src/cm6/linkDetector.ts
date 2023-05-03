@@ -303,7 +303,7 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
         const localFileNameWikiMatch = localFileMatchWiki[0].match(localFileNameRegex);
         if (localFileNameWikiMatch) {
             let resourcePathPrefix = ObsidianHelper.getObsidianResourcePathPrefix();
-            const fileLink = localFileNameWikiMatch[0].replace('file:///', resourcePathPrefix);
+            const fileLink = localFileNameWikiMatch[0].replace(localFileNameWikiMatch[0].startsWith('file:///') ? 'file:///' : 'app://local/', resourcePathPrefix);
             const localPDFPageNumberRegex = /#page=[0-9]+\]\]/;
             const localPDFPageNumberMatch = localFileMatchWiki[0].match(localPDFPageNumberRegex);
             const wikiAltRegex = /\|.*(?=]])/;
@@ -330,7 +330,10 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
         const localFileNameMdMatch = localFileMatchMd[0].match(localFileNameRegex);
         if (localFileNameMdMatch) {
             let resourcePathPrefix = ObsidianHelper.getObsidianResourcePathPrefix();
-            const fileLink = localFileNameMdMatch[0].replace('file:///', resourcePathPrefix);
+            const fileLink = localFileNameMdMatch[0].replace(
+                localFileNameMdMatch[0].startsWith('file:///') ? 'file:///' : 'app://local/',
+                resourcePathPrefix
+            );
             const localPDFPageNumberRegex = /#page=[0-9]+\)/;
             const localPDFPageNumberMatch = localFileMatchMd[0].match(localPDFPageNumberRegex);
             const mdAltRegex = /\[(^$|.*)(?=\])/;
