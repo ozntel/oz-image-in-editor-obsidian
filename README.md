@@ -149,7 +149,7 @@ You can turn on the `iFrame` option from settings to render `iframes` within the
 It is also possible to view supported files even if the files are not located within the Obsidian Vault. Let's say if you have a file located under your Downloads folder, you can use either `file:///` or `app://local/` prefixes to view the file in Editor:
 
 ```md
-![[file:////Users/mycomputer/Downloads/Images/IMG_1122.jpg]]
+![My Local File](file:////Users/mycomputer/Downloads/Images/IMG_1122.jpg)
 ```
 
 ## 📕 MSG and EML Files (Outlook)
