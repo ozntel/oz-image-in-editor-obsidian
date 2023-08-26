@@ -26,11 +26,11 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
 
     // --> A. Internal Image Links
     // 1. [[ ]] format
-    const internalImageWikiRegex = /!\[\[.*?(jpe?g|png|gif|svg|bmp).*?\]\]/;
+    const internalImageWikiRegex = /!\[\[.*?(jpe?g|png|gif|svg|bmp|webp).*?\]\]/;
     const internalImageWikiMatch = lineText.match(internalImageWikiRegex);
 
     if (internalImageWikiMatch) {
-        const fileNameRegex = /\[\[.*(jpe?g|png|gif|svg|bmp)/;
+        const fileNameRegex = /\[\[.*(jpe?g|png|gif|svg|bmp|webp)/;
         const fileMatch = internalImageWikiMatch[0].match(fileNameRegex);
         if (fileMatch) {
             const fileMatchClear = fileMatch[0].replace('[[', '');
@@ -136,11 +136,11 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     }
 
     // 2. ![ ]( ) format
-    const internalImageMdRegex = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp)\)/;
+    const internalImageMdRegex = /!\[(^$|.*?)\]\(.*?(jpe?g|png|gif|svg|bmp|webp)\)/;
     const internalImageMdMatch = lineText.match(internalImageMdRegex);
 
     if (internalImageMdMatch) {
-        const fileNameRegex = /\(.*(jpe?g|png|gif|svg|bmp)/;
+        const fileNameRegex = /\(.*(jpe?g|png|gif|svg|bmp|webp)/;
         const fileMatch = internalImageMdMatch[0].match(fileNameRegex);
         if (fileMatch) {
             const fileMatchClear = fileMatch[0].replace('(', '');
@@ -322,8 +322,8 @@ export const detectLink = (params: { lineText: string; sourceFile: TFile; plugin
     */
 
     // --> G: Local File Markdown
-    const localFileMdRegex = /!\[(^$|.*)\]\((file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)(.*)?\)/;
-    const localFileNameRegex = /(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp)/;
+    const localFileMdRegex = /!\[(^$|.*)\]\((file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp|.webp)(.*)?\)/;
+    const localFileNameRegex = /(file\:\/\/\/|app\:\/\/local\/).*(.pdf|.jpe?g|.png|.gif|.svg|.bmp|.webp)/;
     const localFileMatchMd = lineText.match(localFileMdRegex);
 
     if (localFileMatchMd) {
