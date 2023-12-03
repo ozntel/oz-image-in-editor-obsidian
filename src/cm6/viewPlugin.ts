@@ -3,7 +3,6 @@ import { EditorView, ViewPlugin, ViewUpdate } from '@codemirror/view';
 import OzanImagePlugin from 'src/main';
 import { StatefulDecorationSet } from 'src/cm6/decorations';
 import { livePreviewActive, pluginIsLoaded } from 'src/util/obsidianHelper';
-import { MSGHandlerPlugin } from 'src/types';
 
 // --> View Plugin
 export const getViewPlugin = (params: { plugin: OzanImagePlugin }): Extension => {

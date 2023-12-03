@@ -31,7 +31,7 @@ FORMAT: ![[IMAGE_PATH_OR_NAME]]
 SAMPLE: ![[myimage.png]]
 ```
 
-**Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`
+**Scanned Image Formats** : `jpg`, `jpeg`, `png`, `gif`, `svg`, `bmp`, `webp`
 
 ## 📕 Image View Size
 

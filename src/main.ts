@@ -4,9 +4,11 @@ import { OzanImagePluginSettings, DEFAULT_SETTINGS } from './settings';
 import * as ObsidianHelpers from 'src/util/obsidianHelper';
 import * as ImageHandler from 'src/util/imageHandler';
 import { buildExtension } from 'src/cm6';
+import { Extension } from '@codemirror/state';
 
 export default class OzanImagePlugin extends Plugin {
     settings: OzanImagePluginSettings;
+    editorExtensions: Extension[] = [];
 
     async onload() {
         console.log('Image in Editor Plugin is loaded');
@@ -77,10 +79,8 @@ export default class OzanImagePlugin extends Plugin {
         }
 
         // --> New Editor (CM6)
-        if (this.settings.cm6RenderAll) {
-            const extension = buildExtension({ plugin: this });
-            this.registerEditorExtension(extension);
-        }
+        this.registerEditorExtension(this.editorExtensions);
+        if (this.settings.cm6RenderAll) this.loadCM6Extension();
 
         // --> Custom Event Listeners
         document.on('click', `.oz-obsidian-inner-link`, this.onClickTransclusionLink);
@@ -105,6 +105,17 @@ export default class OzanImagePlugin extends Plugin {
     async saveSettings() {
         await this.saveData(this.settings);
     }
+
+    loadCM6Extension = () => {
+        const extension = buildExtension({ plugin: this });
+        this.editorExtensions.push(extension);
+        this.app.workspace.updateOptions();
+    };
+
+    unloadCM6Extension = () => {
+        this.editorExtensions.length = 0;
+        this.app.workspace.updateOptions();
+    };
 
     // Context Menu for Rendered Images
     onImageMenu = (event: MouseEvent, target: HTMLElement) => {

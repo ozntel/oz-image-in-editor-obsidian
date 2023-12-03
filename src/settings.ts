@@ -80,13 +80,18 @@ export class OzanImagePluginSettingsTab extends PluginSettingTab {
             .addToggle((toggle) => {
                 toggle.setValue(this.plugin.settings.cm6RenderAll).onChange((value) => {
                     this.plugin.settings.cm6RenderAll = value;
+                    if (value) {
+                        this.plugin.loadCM6Extension();
+                    } else {
+                        this.plugin.unloadCM6Extension();
+                    }
                     this.plugin.saveSettings();
                 });
             });
 
         new Setting(containerEl)
             .setName('Render Images in Editor')
-            .setDesc('Turn on this option if you want Image files (jpeg, jpg, png, gif, svg, bmp) to be rendered in Editor')
+            .setDesc('Turn on this option if you want Image files (jpeg, jpg, png, gif, svg, bmp, webp) to be rendered in Editor')
             .addToggle((toggle) =>
                 toggle.setValue(this.plugin.settings.renderImages).onChange((value) => {
                     this.plugin.settings.renderImages = value;
